@@ -6,5 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2022-04-26
+- Created flutter project
+### Added
+- Home, login and profile pages created
+- Linked login page to Homepage
+
 ## [0.0.0] - 2022-04-24
 - Project created
