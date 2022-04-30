@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:healthcare_for_u/screen/homepage.dart';
 import 'package:healthcare_for_u/screen/signupform.dart';
-//import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -11,7 +10,6 @@ class LoginPage extends StatefulWidget {
 
   @override
   _LoginPageState createState() {
-    // TODO: implement createState
     return _LoginPageState();
   }
 }
@@ -39,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           children: [
             const Text(
-              'Login', // potenzialmente spostare nell'appBar
+              'Login',
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   height: 5,
@@ -56,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          /// Eamil
+                          // Email
                           TextFormField(
                             decoration:
                                 const InputDecoration(labelText: 'Email'),
@@ -64,11 +62,11 @@ class _LoginPageState extends State<LoginPage> {
                               if (value == null || value.trim().isEmpty) {
                                 return 'Please enter your email address';
                               }
-                              if (value != 'bug@expert.com') {
+                              if (value != 'user') {
                                 return 'Wrong Email';
                               }
                               // Check if the entered email has the right format
-                              if (value == 'bug@expert.com') {
+                              if (value == 'user') {
                                 return null;
                               }
                             },
@@ -84,10 +82,10 @@ class _LoginPageState extends State<LoginPage> {
                               if (value == null || value.trim().isEmpty) {
                                 return 'This field is required';
                               }
-                              if (value != '5TrNgP5Wd') {
+                              if (value != '12345') {
                                 return 'Wrong Password';
                               }
-                              if (value == '5TrNgP5Wd') {
+                              if (value == '12345') {
                                 return null;
                               }
                             },

@@ -14,9 +14,7 @@ class SignUpForm extends StatelessWidget {
   Widget build(BuildContext context) {
     print('${SignUpForm.routename} built');
     return Scaffold(
-      appBar: AppBar(
-        title: Text(SignUpForm.routename),
-      ),
+      appBar: AppBar(title: Text(SignUpForm.routename), centerTitle: true),
       body: Center(
         child: Text('Hello, world!'),
       ),
