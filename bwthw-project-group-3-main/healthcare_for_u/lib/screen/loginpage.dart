@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:healthcare_for_u/screen/homepage.dart';
 import 'package:healthcare_for_u/screen/signupform.dart';
@@ -98,13 +99,37 @@ class _LoginPageState extends State<LoginPage> {
                               onPressed: _trySubmitForm,
                               child: const Text('Sign In')),
                           const SizedBox(height: 20),
-                          Text('If you aren\'t registered, sign up today!'),
-                          const SizedBox(height: 20),
-                          OutlinedButton(
-                              onPressed: () {
-                                Navigator.pushNamed(context, SignUpForm.route);
-                              },
-                              child: const Text('Sign Up')),
+                          
+                          RichText(
+                        text: TextSpan(
+                      text: "Don't have an account?",
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: " Sign up",
+                          style: const TextStyle(
+                            color: Colors.purple,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.pushNamed(context, SignUpForm.route);
+                            },
+                        ),
+                        const TextSpan(
+                          text: " today!",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                           
+                          ),
+                        ),
+                      ],
+                    )),
                         ],
                       )),
                 ),
