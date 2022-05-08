@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'calendarpage.dart';
+import 'healthpage.dart';
 import 'homepage.dart';
 import 'loginpage.dart';
 //import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -32,15 +35,24 @@ class ProfilePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             IconButton(
-              tooltip: 'Open navigation menu',
-              icon: const Icon(Icons.menu),
-              onPressed: () {},
+              tooltip: 'Calendar',
+              icon: const Icon(Icons.calendar_month),
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, CalendarPage.route);
+              },
             ),
             IconButton(
               tooltip: 'Home',
               icon: const Icon(Icons.home),
               onPressed: () {
                 Navigator.pushReplacementNamed(context, HomePage.route);
+              },
+            ),
+            IconButton(
+              tooltip: 'Check your health status',
+              icon: const Icon(MdiIcons.heartFlash),
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, HealthPage.route);
               },
             ),
             IconButton(
