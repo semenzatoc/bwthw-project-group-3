@@ -1,9 +1,11 @@
+import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'calendarpage.dart';
 import 'healthpage.dart';
 import 'homepage.dart';
 import 'loginpage.dart';
+import 'package:healthcare_for_u/utils/appcredentials.dart';
 //import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 // Aggiungere popup menu button/bottom sheet per logout/edit/delete
@@ -64,7 +66,41 @@ class ProfilePage extends StatelessWidget {
         ),
       ),
       body: Center(
-        child: Text('Hello, world!'),
+        child: ElevatedButton(
+          onPressed: () async {
+            // Authorize the app
+            String? userId = await FitbitConnector.authorize(
+                context: context,
+                clientID: AppCredentials.fitbitClientID,
+                clientSecret: AppCredentials.fitbitClientSecret,
+                redirectUri: AppCredentials.fitbitRedirectUri,
+                callbackUrlScheme: AppCredentials.fitbitCallbackScheme);
+
+            //Instantiate a proper data manager
+            FitbitActivityTimeseriesDataManager
+                fitbitActivityTimeseriesDataManager =
+                FitbitActivityTimeseriesDataManager(
+              clientID: AppCredentials.fitbitClientID,
+              clientSecret: AppCredentials.fitbitClientSecret,
+              type: 'steps',
+            );
+
+            //Fetch data
+            final stepsData = await fitbitActivityTimeseriesDataManager
+                .fetch(FitbitActivityTimeseriesAPIURL.dayWithResource(
+              date: DateTime.now().subtract(Duration(days: 1)),
+              userID: userId,
+              resource: fitbitActivityTimeseriesDataManager.type,
+            )) as List<FitbitActivityTimeseriesData>;
+
+            // Use them as you want
+            final snackBar = SnackBar(
+                content:
+                    Text('Yesterday you walked ${stepsData[0].value} steps!'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          },
+          child: Text('Tap to authorize'),
+        ),
       ),
     );
   } //build

@@ -33,6 +33,7 @@ dependencies:
   material_design_icons_flutter: ^5.0.6595
   table_calendar: ^3.0.5
   intl: ^0.17.0
+  fitbitter: ^1.1.1
 
   cupertino_icons: ^1.0.2
 
