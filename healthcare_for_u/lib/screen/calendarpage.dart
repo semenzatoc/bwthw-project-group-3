@@ -101,7 +101,17 @@ class _CalendarPageState extends State<CalendarPage> {
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 final steps = snapshot.data as double;
-                                return _textSteps(steps, 10000);
+                                if (steps > 0) {
+                                  return _textSteps(steps, 10000);
+                                } else {
+                                  return const Text(
+                                    'No data available for today',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                    ),
+                                  );
+                                }
                               } else {
                                 return CircularProgressIndicator();
                               }
