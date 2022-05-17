@@ -1,6 +1,7 @@
 import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'calendarpage.dart';
 import 'healthpage.dart';
 import 'homepage.dart';
@@ -10,12 +11,17 @@ import 'package:healthcare_for_u/utils/appcredentials.dart';
 
 // Aggiungere popup menu button/bottom sheet per logout/edit/delete
 // Riportare informazioni personali: Nome/età/peso/altezza/bmi/etc
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key}) : super(key: key);
 
   static const route = '/profile';
   static const routename = 'Profile Page';
 
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     print('${ProfilePage.routename} built');
@@ -66,20 +72,44 @@ class ProfilePage extends StatelessWidget {
         ),
       ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () async {
-            // Authorize the app
-            String? userId = await FitbitConnector.authorize(
-                context: context,
-                clientID: AppCredentials.fitbitClientID,
-                clientSecret: AppCredentials.fitbitClientSecret,
-                redirectUri: AppCredentials.fitbitRedirectUri,
-                callbackUrlScheme: AppCredentials.fitbitCallbackScheme);
-          },
-          child: Text('Tap to authorize'),
+        child: Column(
+          children: [
+            FutureBuilder(
+                future: SharedPreferences.getInstance(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final sp = snapshot.data as SharedPreferences;
+                    return Text('Hello ${sp.getString('name')}');
+                  } else {
+                    return Text('You have failed');
+                  }
+                }),
+            ElevatedButton(
+              onPressed: () async {
+                // Authorize the app
+                String? userId = await FitbitConnector.authorize(
+                    context: context,
+                    clientID: AppCredentials.fitbitClientID,
+                    clientSecret: AppCredentials.fitbitClientSecret,
+                    redirectUri: AppCredentials.fitbitRedirectUri,
+                    callbackUrlScheme: AppCredentials.fitbitCallbackScheme);
+
+                //Instantiate a proper data manager
+                FitbitActivityTimeseriesDataManager
+                    fitbitActivityTimeseriesDataManager =
+                    FitbitActivityTimeseriesDataManager(
+                  clientID: AppCredentials.fitbitClientID,
+                  clientSecret: AppCredentials.fitbitClientSecret,
+                  type: 'steps',
+                );
+              },
+              child: Text('Tap to authorize'),
+            ),
+          ],
         ),
       ),
     );
-  } //build
-
+  }
 } //ProfilePage
+
+  

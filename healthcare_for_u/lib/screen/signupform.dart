@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:conditional_questions/conditional_questions.dart';
 import 'package:healthcare_for_u/screen/loginpage.dart';
 import 'package:healthcare_for_u/screen/profilepage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 //import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -20,6 +21,7 @@ class SignUpForm extends StatefulWidget {
 
 class _SignUpFormState extends State<SignUpForm> {
   final _key = GlobalKey<QuestionFormState>();
+  List<FormElement> answer_list = [];
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +38,8 @@ class _SignUpFormState extends State<SignUpForm> {
             splashColor: Colors.lightBlue,
             onPressed: () async {
               if (_key.currentState!.validate()) {
+                answer_list = _key.currentState!.getElementList();
+                saveAnswers(answer_list);
                 Navigator.pushNamed(context, LoginPage.route);
               }
             },
@@ -46,7 +50,16 @@ class _SignUpFormState extends State<SignUpForm> {
     );
   }
 }
-//Chiedere come salvare le risposte che vengono inserite
+
+//Future<SharedPreferences>
+void saveAnswers(List<FormElement> answer_list) async {
+  final sp = await SharedPreferences.getInstance();
+  final questionList = ['name', 'gender', 'dob', 'weight', 'height'];
+  for (var i = 0; i < answer_list.length; i++) {
+    sp.setString(questionList[i], answer_list[i].answer);
+  }
+  //return sp;
+}
 
 List<Question> questions() {
   return [
