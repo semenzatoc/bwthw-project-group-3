@@ -9,6 +9,7 @@ import 'package:table_calendar/table_calendar.dart';
 import '../utils/appcredentials.dart';
 import 'homepage.dart';
 import 'healthpage.dart';
+import 'package:healthcare_for_u/models/achievement.dart';
 
 class CalendarPage extends StatefulWidget {
   static const route = '/calendar';
@@ -102,7 +103,22 @@ class _CalendarPageState extends State<CalendarPage> {
                               if (snapshot.hasData) {
                                 final steps = snapshot.data as double;
                                 if (steps > 0) {
-                                  return _textSteps(steps, 10000);
+                                  final achievement = _getAchievement(steps);
+                                  return Column(
+                                    children: [
+                                      _textSteps(steps, 10000),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text('You were a ${achievement.title}!'),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Image(
+                                          image: AssetImage(
+                                              achievement.assetPicture!))
+                                    ],
+                                  );
                                 } else {
                                   return const Text(
                                     'No data available for today',
@@ -192,5 +208,20 @@ class _CalendarPageState extends State<CalendarPage> {
             ),
           ],
         ));
+  }
+
+  Achievement _getAchievement(double steps) {
+    Achievement achievement = Achievement();
+    if (steps < 5500) {
+      achievement.setTitle('Amoeba');
+      achievement.setPicture('assets/trying.jpg');
+    } else if (steps >= 5500 && steps < 10000) {
+      achievement.setTitle('Fighter');
+      achievement.setPicture('assets/fighter.jpg');
+    } else {
+      achievement.setTitle('Champion');
+      achievement.setPicture('assets/champion.jpg');
+    }
+    return achievement;
   }
 } //_CalendarPageState
