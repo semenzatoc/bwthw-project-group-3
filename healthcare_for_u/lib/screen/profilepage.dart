@@ -75,29 +75,6 @@ class ProfilePage extends StatelessWidget {
                 clientSecret: AppCredentials.fitbitClientSecret,
                 redirectUri: AppCredentials.fitbitRedirectUri,
                 callbackUrlScheme: AppCredentials.fitbitCallbackScheme);
-
-            //Instantiate a proper data manager
-            FitbitActivityTimeseriesDataManager
-                fitbitActivityTimeseriesDataManager =
-                FitbitActivityTimeseriesDataManager(
-              clientID: AppCredentials.fitbitClientID,
-              clientSecret: AppCredentials.fitbitClientSecret,
-              type: 'steps',
-            );
-
-            //Fetch data
-            final stepsData = await fitbitActivityTimeseriesDataManager
-                .fetch(FitbitActivityTimeseriesAPIURL.dayWithResource(
-              date: DateTime.now().subtract(Duration(days: 1)),
-              userID: userId,
-              resource: fitbitActivityTimeseriesDataManager.type,
-            )) as List<FitbitActivityTimeseriesData>;
-
-            // Use them as you want
-            final snackBar = SnackBar(
-                content:
-                    Text('Yesterday you walked ${stepsData[0].value} steps!'));
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
           },
           child: Text('Tap to authorize'),
         ),

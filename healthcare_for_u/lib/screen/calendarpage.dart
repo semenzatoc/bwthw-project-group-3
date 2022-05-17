@@ -107,13 +107,9 @@ class _CalendarPageState extends State<CalendarPage> {
                                   return Column(
                                     children: [
                                       _textSteps(steps, 10000),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
+                                      SizedBox(height: 10),
                                       Text('You were a ${achievement.title}!'),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
+                                      SizedBox(height: 10),
                                       Image(
                                           image: AssetImage(
                                               achievement.assetPicture!))

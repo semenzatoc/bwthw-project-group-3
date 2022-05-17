@@ -23,6 +23,19 @@ class _LoginPageState extends State<LoginPage> {
   String _password = '';
   String _confirmPassword = '';
 
+  /* @override
+  void initState() {
+    super.initState();
+    _checkLogin();
+  }
+
+  void _checkLogin() {
+    final sp = await SharedPreferences.getInstance();
+if (sp.getString('username')!= null){
+  Navigator.of(context).pushReplacementNamed(HomePage.route);
+}
+  }*/
+
   void _trySubmitForm() {
     final bool? isValid = _formKey.currentState?.validate();
     if (isValid == true) {
