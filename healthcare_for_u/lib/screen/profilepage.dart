@@ -71,19 +71,90 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
       ),
-      body: Center(
-        child: Column(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            FutureBuilder(
-                future: SharedPreferences.getInstance(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final sp = snapshot.data as SharedPreferences;
-                    return Text('Hello ${sp.getString('name')}');
-                  } else {
-                    return Text('You have failed');
-                  }
-                }),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(100),
+              child: Image( image: AssetImage('assets/trying.jpg'),
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
+              ),
+            ),
+          SizedBox(height: 20,),
+            Card(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FutureBuilder(
+                      future: SharedPreferences.getInstance(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          final sp = snapshot.data as SharedPreferences;
+                          return Row(
+                              children: [
+                              Icon(MdiIcons.account), SizedBox(width: 15,),
+                              Text('${sp.getString('name')}', style: TextStyle(fontSize: 20),)
+                            ],
+                          );
+                        } else {
+                          return Text('No data available');
+                        }
+                      }),
+                      SizedBox(height: 10,),Divider(height: 10, thickness: 1, indent: 10, endIndent: 0, color: Colors.grey,),SizedBox(height: 10,),
+                      FutureBuilder(
+                      future: SharedPreferences.getInstance(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          final sp = snapshot.data as SharedPreferences;
+                          return Row(
+                            children: [
+                              Icon(MdiIcons.cakeVariantOutline),SizedBox(width: 15,),
+                              Text('${sp.getString('dob')}',style: TextStyle(fontSize: 20),)
+                            ],
+                          );
+                        } else {
+                          return Text('No data available');
+                        }
+                      }),
+                      SizedBox(height: 10,),Divider(height: 10, thickness: 1, indent: 10, endIndent: 0, color: Colors.grey,),SizedBox(height: 10,),
+                      FutureBuilder(
+                      future: SharedPreferences.getInstance(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          final sp = snapshot.data as SharedPreferences;
+                          return Row(
+                            children: [
+                              Icon(MdiIcons.weight), SizedBox(width: 15,),
+                              Text('${sp.getString('weight')} kg ',style: TextStyle(fontSize: 20),)
+                            ],
+                          );
+                        } else {
+                          return Text('No data available');
+                        }
+                      }),
+                      SizedBox(height: 10,),Divider(height: 10, thickness: 1, indent: 10, endIndent: 0, color: Colors.grey,),SizedBox(height: 10,),
+                      FutureBuilder(
+                      future: SharedPreferences.getInstance(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          final sp = snapshot.data as SharedPreferences;
+                          return Row(
+                            children: [
+                              Icon(MdiIcons.humanMaleHeightVariant), SizedBox(width: 15,),
+                              Text('${sp.getString('height')} cm',style: TextStyle(fontSize: 20),)
+                            ],
+                          );
+                        } else {
+                          return Text('No data available');
+                        }
+                      }),
+                  SizedBox(height: 10,), 
+                ],
+              ),
+            ),
+            SizedBox(height: 40,),
             ElevatedButton(
               onPressed: () async {
                 // Authorize the app
@@ -107,8 +178,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 } //ProfilePage
 
