@@ -63,259 +63,91 @@ class _HomePageState extends State<HomePage> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-              FutureBuilder(
-                  future: _fetchSteps(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      final steps = snapshot.data as double;
-                      if (steps > 0) {
-                        final percentage = stepsPercentage(steps);
-                        return Stack(alignment: Alignment.center, children: [
-                          SizedBox(
-                            height: 150,
-                            width: 150,
-                            child: CircularProgressIndicator(
-                              backgroundColor: Colors.grey,
-                              color: Color.fromARGB(255, 242, 85, 28),
-                              value: percentage,
-                            ),
-                          ),
-                          Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(MdiIcons.footPrint, size: 40),
-                                SizedBox(height: 5,),
-                                Text('$steps',
-                                  style: TextStyle(
-                                      fontSize: 20),
-                                ),SizedBox(height: 5,),
-                                Text('Steps',
-                                    style: TextStyle(
-                                        fontSize: 20))
-                              ])
-                        ]);
-                      } else {
-                        return Stack(alignment: Alignment.center, children: [
-                          SizedBox(
-                            height: 100,
-                            width: 100,
-                            child: CircularProgressIndicator(
-                              backgroundColor: Colors.grey,
-                              color: Color.fromARGB(255, 242, 85, 28),
-                              value: 0,
-                            ),
-                          ),
-                          Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(MdiIcons.footPrint, size: 40.0), SizedBox(height: 5,),
-                                Text('$steps',
-                                  style: TextStyle(
-                                      fontSize: 20),
-                                ),SizedBox(height: 5,),
-                                Text('Steps',
-                                    style: TextStyle(
-                                        fontSize: 20))
-                              ])
-                        ]);
-                      }
-                    } else {
-                      return CircularProgressIndicator();
-                    }
-                  }),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              _dataCircle(
+                  'steps', MdiIcons.footPrint, Color.fromARGB(255, 242, 85, 28))
             ]),
-            SizedBox(
-              height: 25,
-            ),
+            const SizedBox(height: 25),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                FutureBuilder(
-                    future: _fetchCalories(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        final calories = snapshot.data as double;
-                        if (calories > 0) {
-                          final calPercentage = caloriesPercentage(calories);
-                          return Stack(alignment: Alignment.center, children: [
-                            SizedBox(
-                              height: 150,
-                              width: 150,
-                              child: CircularProgressIndicator(
-                                backgroundColor: Colors.grey,
-                                color: Color.fromARGB(255, 237, 80, 132),
-                                value: calPercentage,
-                              ),
-                            ),
-                            Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(MdiIcons.fire, size: 40,),SizedBox(height: 5,),
-                                  Text('$calories',
-                                    style: TextStyle(
-                                        fontSize: 20),
-                                  ),SizedBox(height: 5,),
-                                  Text('Calories',
-                                      style: TextStyle(
-                                          fontSize: 20))
-                                ])
-                          ]);
-                        } else {
-                          return Stack(alignment: Alignment.center, children: [
-                            SizedBox(
-                              height: 150,
-                              width: 150,
-                              child: CircularProgressIndicator(
-                                backgroundColor: Colors.grey,
-                                color: Color.fromARGB(255, 237, 80, 132),
-                                value: 0,
-                              ),
-                            ),
-                            Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(MdiIcons.fire, size: 40,),SizedBox(height: 5,),
-                                  Text('$calories',
-                                    style: TextStyle(
-                                        fontSize: 20),
-                                  ),SizedBox(height: 5,),
-                                  Text('Calories',
-                                      style: TextStyle(
-                                          fontSize: 20))
-                                ])
-                          ]);
-                        }
-                      } else {
-                        return CircularProgressIndicator();
-                      }
-                    }),
-                    SizedBox(width: 20,),
-                    FutureBuilder(
-                    future: _fetchFloors(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        final floors = snapshot.data as double;
-                        if (floors > 0) {
-                          final floorPercentage = floorsPercentage(floors);
-                          return Stack(alignment: Alignment.center, children: [
-                            SizedBox(
-                              height: 150,
-                              width: 150,
-                              child: CircularProgressIndicator(
-                                backgroundColor: Colors.grey,
-                                color: Color.fromARGB(255, 61, 239, 159),
-                                value: floorPercentage,
-                              ),
-                            ),
-                            Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(MdiIcons.stairs, size: 40,),SizedBox(height: 5,),
-                                  Text('$floors',
-                                    style: TextStyle(
-                                        fontSize: 20),
-                                  ),SizedBox(height: 5,),
-                                  Text('Floors',
-                                      style: TextStyle(
-                                          fontSize: 20))
-                                ])
-                          ]);
-                        } else {
-                          return Stack(alignment: Alignment.center, children: [
-                            SizedBox(
-                              height: 150,
-                              width: 150,
-                              child: CircularProgressIndicator(
-                                backgroundColor: Colors.grey,
-                                color: Color.fromARGB(255, 61, 239, 159),
-                                value: 0,
-                              ),
-                            ),
-                            Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(MdiIcons.stairs, size: 40,),SizedBox(height: 5,),
-                                  Text('$floors',
-                                    style: TextStyle(
-                                        fontSize: 20),
-                                  ),SizedBox(height: 5,),
-                                  Text('Floors',
-                                      style: TextStyle(
-                                          fontSize: 20))
-                                ])
-                          ]);
-                        }
-                      } else {
-                        return CircularProgressIndicator();
-                      }
-                    }),
-              ],)
+                _dataCircle('calories', MdiIcons.fire,
+                    Color.fromARGB(255, 237, 80, 132)),
+                const SizedBox(width: 20),
+                _dataCircle('floors', MdiIcons.stairs,
+                    Color.fromARGB(255, 61, 239, 159))
+              ],
+            )
           ],
         ));
-  }
+  } // build
 
-  Future<double?> _fetchSteps() async {
+  Future<double?> _fetchData(String dataType) async {
     FitbitActivityTimeseriesDataManager fitbitActivityTimeseriesDataManager =
         FitbitActivityTimeseriesDataManager(
       clientID: AppCredentials.fitbitClientID,
       clientSecret: AppCredentials.fitbitClientSecret,
-      type: 'steps',
+      type: dataType,
     );
 
-    final steps = await fitbitActivityTimeseriesDataManager
+    final data = await fitbitActivityTimeseriesDataManager
         .fetch(FitbitActivityTimeseriesAPIURL.dayWithResource(
       date: DateTime.now(),
       userID: '7ML2XV',
       resource: fitbitActivityTimeseriesDataManager.type,
     )) as List<FitbitActivityTimeseriesData>;
-    return steps[0].value as double;
-  }
+    return data[0].value as double;
+  } // fetchData
 
-    Future<double?> _fetchCalories() async {
-    FitbitActivityTimeseriesDataManager fitbitActivityTimeseriesDataManager =
-        FitbitActivityTimeseriesDataManager(
-      clientID: AppCredentials.fitbitClientID,
-      clientSecret: AppCredentials.fitbitClientSecret,
-      type: 'calories',
-    );
+  double getPercentage(String dataType, double n) {
+    double goal;
+    if (dataType == 'calories') {
+      goal = 2000;
+    } else if (dataType == 'steps') {
+      goal = 15000;
+    } else {
+      goal = 10;
+    }
+    return n / goal;
+  } // getPercentage
 
-    final calories = await fitbitActivityTimeseriesDataManager
-        .fetch(FitbitActivityTimeseriesAPIURL.dayWithResource(
-      date: DateTime.now(),
-      userID: '7ML2XV',
-      resource: fitbitActivityTimeseriesDataManager.type,
-    )) as List<FitbitActivityTimeseriesData>;
-    return calories[0].value as double;
-  }
+  Widget _dataStack(
+      double data, String dataType, IconData dataIcon, Color dataColor) {
+    return Stack(alignment: Alignment.center, children: [
+      SizedBox(
+        height: 150,
+        width: 150,
+        child: CircularProgressIndicator(
+          backgroundColor: Colors.grey,
+          color: dataColor,
+          value: getPercentage(dataType, data),
+        ),
+      ),
+      Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Icon(dataIcon, size: 40),
+        const SizedBox(height: 5),
+        Text('$data', style: const TextStyle(fontSize: 20)),
+        const SizedBox(height: 5),
+        Text('${dataType[0].toUpperCase()}${dataType.substring(1)}',
+            style: const TextStyle(fontSize: 20))
+      ])
+    ]);
+  } //_dataStack
 
-      Future<double?> _fetchFloors() async {
-    FitbitActivityTimeseriesDataManager fitbitActivityTimeseriesDataManager =
-        FitbitActivityTimeseriesDataManager(
-      clientID: AppCredentials.fitbitClientID,
-      clientSecret: AppCredentials.fitbitClientSecret,
-      type: 'floors',
-    );
-
-    final floors = await fitbitActivityTimeseriesDataManager
-        .fetch(FitbitActivityTimeseriesAPIURL.dayWithResource(
-      date: DateTime.now(),
-      userID: '7ML2XV',
-      resource: fitbitActivityTimeseriesDataManager.type,
-    )) as List<FitbitActivityTimeseriesData>;
-    return floors[0].value as double;
-  }
-
-  // _fetchSteps //build
-  double stepsPercentage(double steps) {
-    return steps / 15000;
-  }
-    double caloriesPercentage(double calories) {
-    return calories /2000;
-  }
-    double floorsPercentage(double calories) {
-    return calories /10;
-  }
+  Widget _dataCircle(String dataType, IconData dataIcon, Color dataColor) {
+    return FutureBuilder(
+        future: _fetchData(dataType),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final data = snapshot.data as double;
+            if (data > 0) {
+              return _dataStack(data, dataType, dataIcon, dataColor);
+            } else {
+              return _dataStack(0, dataType, dataIcon, dataColor);
+            }
+          } else {
+            return CircularProgressIndicator();
+          }
+        });
+  } // _dataCircle
 }
