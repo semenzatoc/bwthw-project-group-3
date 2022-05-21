@@ -1,51 +1,49 @@
 import 'package:fitbitter/fitbitter.dart';
 import 'appcredentials.dart';
 
-Future<bool> fetchMonthActivity() async {
+Future<bool> _calcMonthActivity() async {
   //Minutes very active in the past month
-  FitbitActivityTimeseriesDataManager fitbitVeryActiveTimeseriesDataManager =
-      FitbitActivityTimeseriesDataManager(
-          clientID: AppCredentials.fitbitClientID,
-          clientSecret: AppCredentials.fitbitClientSecret,
-          type: 'minutesVeryActive');
-
-  final durationVeryActive = await fitbitVeryActiveTimeseriesDataManager
-      .fetch(FitbitActivityTimeseriesAPIURL.dateRangeWithResource(
-    userID: '7ML2XV',
-    startDate: DateTime.now().subtract(Duration(days: 30)),
-    endDate: DateTime.now(),
-    resource: fitbitVeryActiveTimeseriesDataManager.type,
-  )) as List<FitbitActivityTimeseriesData>;
-
+  final durationVeryActive = await _fetchMonthActivity('minutesVeryActive');
   //Minutes fairly active in the past month
-  FitbitActivityTimeseriesDataManager fitbitFairlyActiveTimeseriesDataManager =
-      FitbitActivityTimeseriesDataManager(
-          clientID: AppCredentials.fitbitClientID,
-          clientSecret: AppCredentials.fitbitClientSecret,
-          type: 'minutesFairlyActive');
-
-  final durationFairlyActive = await fitbitFairlyActiveTimeseriesDataManager
-      .fetch(FitbitActivityTimeseriesAPIURL.dateRangeWithResource(
-    userID: '7ML2XV',
-    startDate: DateTime.now().subtract(Duration(days: 30)),
-    endDate: DateTime.now(),
-    resource: fitbitFairlyActiveTimeseriesDataManager.type,
-  )) as List<FitbitActivityTimeseriesData>;
-
-  //Classified as active if minimum of 30 minutes activity in more than 50% of days in the past month
+  final durationFairlyActive = await _fetchMonthActivity('minutesFairlyActive');
+  //Classified as active if minimum of 30 minutes activity in more than 50% of
+  //days in the past month
   double minDailyActive = 0;
   int countActiveDays = 0;
-  for (var i = 0; i < durationVeryActive.length; i++) {
+
+  for (var i = 0; i < 30; i++) {
     minDailyActive = minDailyActive +
         (durationVeryActive[i].value as double) +
         (durationFairlyActive[i].value as double);
+
     if (minDailyActive > 30) {
       countActiveDays = countActiveDays + 1;
     }
   } // for
   bool activity = false;
-  if (countActiveDays / durationVeryActive.length > 0.5) {
+  if (countActiveDays / 30 > 0.5) {
     activity = true;
   }
   return activity;
-} // fetchActivity
+  // fetchActivity
+}
+
+Future<List<FitbitActivityTimeseriesData>> _fetchMonthActivity(
+    String dataType) async {
+  FitbitActivityTimeseriesDataManager fitbitVeryActiveTimeseriesDataManager =
+      FitbitActivityTimeseriesDataManager(
+          clientID: AppCredentials.fitbitClientID,
+          clientSecret: AppCredentials.fitbitClientSecret,
+          type: dataType);
+
+  final durationActivity = await fitbitVeryActiveTimeseriesDataManager
+      .fetch(FitbitActivityTimeseriesAPIURL.dateRangeWithResource(
+    userID: '7ML2XV',
+    startDate:
+        DateTime.now().subtract(Duration(days: 30)), //fetching 30 days ago
+    endDate:
+        DateTime.now().subtract(Duration(days: 1)), //fetching until yesterday
+    resource: fitbitVeryActiveTimeseriesDataManager.type,
+  )) as List<FitbitActivityTimeseriesData>;
+  return durationActivity;
+}

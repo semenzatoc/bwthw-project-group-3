@@ -79,7 +79,12 @@ class _ProfilePageState extends State<ProfilePage> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final sp = snapshot.data as SharedPreferences;
-                    return Text('Hello ${sp.getString('name')}');
+                    return Column(
+                      children: [
+                        Text('Weight ${sp.getString('weight')}'),
+                        Text('Height ${sp.getString('height')}')
+                      ],
+                    );
                   } else {
                     return Text('You have failed');
                   }
@@ -93,15 +98,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     clientSecret: AppCredentials.fitbitClientSecret,
                     redirectUri: AppCredentials.fitbitRedirectUri,
                     callbackUrlScheme: AppCredentials.fitbitCallbackScheme);
-
-                //Instantiate a proper data manager
-                FitbitActivityTimeseriesDataManager
-                    fitbitActivityTimeseriesDataManager =
-                    FitbitActivityTimeseriesDataManager(
-                  clientID: AppCredentials.fitbitClientID,
-                  clientSecret: AppCredentials.fitbitClientSecret,
-                  type: 'steps',
-                );
               },
               child: Text('Tap to authorize'),
             ),

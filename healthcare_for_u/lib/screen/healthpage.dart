@@ -29,7 +29,7 @@ class _HealthPageState extends State<HealthPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Text('FINnish Diabetes RIsk SCore (FINDRISC)'),
+            title: Text('FINnish Diabetes RIsk SCore \n(FINDRISC)'),
             centerTitle: true),
         bottomNavigationBar: BottomAppBar(
           color: Colors.white,
@@ -82,14 +82,6 @@ class _HealthPageState extends State<HealthPage> {
                             splashColor: Colors.lightBlue,
                             onPressed: () async {
                               if (_key.currentState!.validate()) {
-                                diabetes_list =
-                                    _key.currentState!.getElementList();
-                                saveDiabetes(diabetes_list);
-                                bool physicalActivity =
-                                    await fetchMonthActivity();
-                                int riskValue =
-                                    diabetesRisk(sp, gender, physicalActivity);
-                                final riskLevel = getRisklevel(riskValue);
                                 showDialog<String>(
                                     context: context,
                                     builder: (BuildContext context) =>
@@ -104,16 +96,54 @@ class _HealthPageState extends State<HealthPage> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.center,
                                               children: [
-                                                SizedBox(height: 10),
-                                                Text(
-                                                    'Your total risk score is: $riskValue!',
-                                                    textAlign:
-                                                        TextAlign.center),
-                                                SizedBox(height: 10),
-                                                Text(
-                                                    'The risk of developing type 2 diabetes within 10 years is classified as ${riskLevel.title} = ${riskLevel.description}',
-                                                    textAlign:
-                                                        TextAlign.center),
+                                                FutureBuilder(
+                                                    future:
+                                                        _calcMonthActivity(),
+                                                    builder:
+                                                        (context, snapshot) {
+                                                      if (snapshot.hasData) {
+                                                        diabetes_list = _key
+                                                            .currentState!
+                                                            .getElementList();
+                                                        _saveDiabetes(
+                                                            diabetes_list);
+                                                        /*bool physicalActivity =
+                                    await _calcMonthActivity();*/
+                                                        int riskValue =
+                                                            diabetesRisk(
+                                                                sp,
+                                                                gender,
+                                                                snapshot);
+                                                        final riskLevel =
+                                                            _getRiskLevel(
+                                                                riskValue);
+                                                        return Column(
+                                                          children: [
+                                                            SizedBox(
+                                                                height: 10),
+                                                            Text(
+                                                                'Your total risk score is:'
+                                                                '$riskValue!',
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center),
+                                                            SizedBox(
+                                                                height: 10),
+                                                            Text(
+                                                                'The risk of developing type'
+                                                                ' 2 diabetes within 10 years'
+                                                                ' is classified as '
+                                                                '${riskLevel.title} = '
+                                                                '${riskLevel.description}',
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center),
+                                                          ],
+                                                        );
+                                                      } else {
+                                                        return CircularProgressIndicator();
+                                                      }
+                                                    })
                                               ]),
                                           actions: [
                                             TextButton(
@@ -126,7 +156,7 @@ class _HealthPageState extends State<HealthPage> {
                               }
                             })
                       ],
-                      leading: [
+                      leading: const [
                         Text(
                             "Complete the type 2 diabetes risk assessment form",
                             style: TextStyle(
@@ -144,11 +174,11 @@ class _HealthPageState extends State<HealthPage> {
   }
 } //HealthPage
 
-void saveDiabetes(List<FormElement> diabetes_list) async {
+void _saveDiabetes(List<FormElement> diabetes_list) async {
   final sp = await SharedPreferences.getInstance();
   final questionList2 = [
-    'weight2',
-    'height2',
+    'weight',
+    'height',
     'waist',
     'veg',
     'med',
@@ -156,11 +186,14 @@ void saveDiabetes(List<FormElement> diabetes_list) async {
     'diab'
   ];
   for (var i = 0; i < diabetes_list.length; i++) {
-    sp.setString(questionList2[i], diabetes_list[i].answer);
+    if (diabetes_list[i].answer == '') {
+    } else {
+      sp.setString(questionList2[i], diabetes_list[i].answer);
+    }
   }
 }
 
-RiskLevel getRisklevel(int risk) {
+RiskLevel _getRiskLevel(int risk) {
   RiskLevel riskLevel = RiskLevel();
   if (risk < 7) {
     riskLevel.setTitle('LOW');
@@ -193,7 +226,7 @@ List<Question> questions(gender) {
         // not mandattory
       ),
       PolarQuestion(
-          question: "Waist circumference measured below the rist",
+          question: "Waist circumference measured below the ribs",
           answers: ["Less than 80 cm", "80-88 cm", 'More than 88 cm'],
           isMandatory: true),
       PolarQuestion(
@@ -245,8 +278,8 @@ List<Question> questions(gender) {
           answers: ["Yes", "No"],
           isMandatory: true),
       PolarQuestion(
-          question:
-              "Have any of the members of your immediate family or other relatives been diagnosed with diabetes (type1 or type 2)?",
+          question: "Have any of the members of your immediate family or other"
+              " relatives been diagnosed with diabetes (type1 or type 2)?",
           answers: [
             "No",
             "Yes: grandparent, aunt, uncle or first cousin",
@@ -255,4 +288,50 @@ List<Question> questions(gender) {
           isMandatory: true)
     ];
   }
+}
+
+Future<List<FitbitActivityTimeseriesData>> _fetchMonthActivity(
+    String dataType) async {
+  FitbitActivityTimeseriesDataManager fitbitVeryActiveTimeseriesDataManager =
+      FitbitActivityTimeseriesDataManager(
+          clientID: AppCredentials.fitbitClientID,
+          clientSecret: AppCredentials.fitbitClientSecret,
+          type: dataType);
+
+  final durationActivity = await fitbitVeryActiveTimeseriesDataManager
+      .fetch(FitbitActivityTimeseriesAPIURL.dateRangeWithResource(
+    userID: '7ML2XV',
+    startDate:
+        DateTime.now().subtract(Duration(days: 30)), //fetching 30 days ago
+    endDate:
+        DateTime.now().subtract(Duration(days: 1)), //fetching until yesterday
+    resource: fitbitVeryActiveTimeseriesDataManager.type,
+  )) as List<FitbitActivityTimeseriesData>;
+  return durationActivity;
+}
+
+Future<bool> _calcMonthActivity() async {
+  //Minutes very active in the past month
+  final durationVeryActive = await _fetchMonthActivity('minutesVeryActive');
+  //Minutes fairly active in the past month
+  final durationFairlyActive = await _fetchMonthActivity('minutesFairlyActive');
+  //Classified as active if minimum of 30 minutes activity in more than 50% of
+  //days in the past month
+  double minDailyActive = 0;
+  int countActiveDays = 0;
+
+  for (var i = 0; i < 30; i++) {
+    minDailyActive = minDailyActive +
+        (durationVeryActive[i].value as double) +
+        (durationFairlyActive[i].value as double);
+
+    if (minDailyActive > 30) {
+      countActiveDays = countActiveDays + 1;
+    }
+  } // for
+  bool activity = false;
+  if (countActiveDays / 30 > 0.5) {
+    activity = true;
+  }
+  return activity;
 }

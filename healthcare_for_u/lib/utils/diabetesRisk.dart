@@ -17,7 +17,7 @@ int diabetesRisk(sp, gender, physicalActivity) {
   }
 
   //BMI
-  if (sp.getString('height2') != null) {
+  /* if (sp.getString('height2') != null) {
     //aggiorno i parametri di height da vedere in profile page
     sp.setString('height', sp.getString('height2'));
     //richiamo funzione per aggiornare bmi e lo aggiorno
@@ -28,7 +28,9 @@ int diabetesRisk(sp, gender, physicalActivity) {
     sp.setString('weight', sp.getString('weight2'));
     //richiamo funzione per aggiornare bmi e lo aggiorno
     //sp.setString('bmi', sp.getString('bmi2'))
-  }
+  }*/
+
+  //
   //double bmi = double.parse(sp.getString('bmi'));
   //if (bmi >= 25 && bmi <= 30) {
   //risk = risk + 1;
