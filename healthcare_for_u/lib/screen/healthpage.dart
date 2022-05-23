@@ -1,4 +1,5 @@
 import 'package:healthcare_for_u/models/risklevel.dart';
+import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:fitbitter/fitbitter.dart';
 import 'package:healthcare_for_u/screen/profilepage.dart';
@@ -7,6 +8,8 @@ import 'package:healthcare_for_u/utils/diabetesRisk.dart';
 import 'package:healthcare_for_u/utils/fetchMonthActivity.dart';
 import 'package:conditional_questions/conditional_questions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:step_progress_indicator/step_progress_indicator.dart';
+import 'package:xen_popup_card/xen_card.dart';
 import 'homepage.dart';
 import 'calendarpage.dart';
 
@@ -29,7 +32,7 @@ class _HealthPageState extends State<HealthPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Text('FINnish Diabetes RIsk SCore \n(FINDRISC)'),
+            title: const Text('FINnish Diabetes RIsk SCore \n(FINDRISC)'),
             centerTitle: true),
         bottomNavigationBar: BottomAppBar(
           color: Colors.white,
@@ -77,17 +80,93 @@ class _HealthPageState extends State<HealthPage> {
                       children: questions(gender),
                       trailing: [
                         MaterialButton(
-                            child: Text("Discover your risk score!"),
+                            child: const Text("Discover your risk score!"),
                             color: Colors.blue,
                             splashColor: Colors.lightBlue,
                             onPressed: () async {
                               if (_key.currentState!.validate()) {
                                 showDialog<String>(
                                     context: context,
+                                    builder: (BuildContext context) => Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 80),
+                                          child: XenPopupCard(
+                                            appBar: const XenCardAppBar(
+                                                child: Text(
+                                              'Total Risk Score',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold),
+                                            )),
+                                            //gutter: gutter,
+                                            body: Column(
+                                              children: [
+                                                FutureBuilder(
+                                                    future:
+                                                        _calcMonthActivity(),
+                                                    builder:
+                                                        (context, snapshot) {
+                                                      if (snapshot.hasData) {
+                                                        diabetes_list = _key
+                                                            .currentState!
+                                                            .getElementList();
+                                                        _saveDiabetes(
+                                                            diabetes_list);
+                                                        /*bool physicalActivity =
+                                          await _calcMonthActivity();*/
+                                                        int riskValue =
+                                                            diabetesRisk(
+                                                                sp,
+                                                                gender,
+                                                                snapshot);
+                                                        final riskLevel =
+                                                            _getRiskLevel(
+                                                                riskValue);
+                                                        return Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            const SizedBox(
+                                                                height: 10),
+                                                            Text(
+                                                                'Your total risk score is:'
+                                                                '$riskValue!',
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center),
+                                                            SizedBox(
+                                                                height: 20),
+                                                            GradientProgress(
+                                                                riskValue),
+                                                            const SizedBox(
+                                                                height: 10),
+                                                            Text(
+                                                                'The risk of developing type'
+                                                                ' 2 diabetes within 10 years'
+                                                                ' is classified as '
+                                                                '${riskLevel.title} = '
+                                                                '${riskLevel.description}',
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center),
+                                                          ],
+                                                        );
+                                                      } else {
+                                                        return const LinearProgressIndicator();
+                                                      }
+                                                    })
+                                              ],
+                                            ),
+                                          ),
+                                        ));
+                                /*showDialog<String>(
+                                    context: context,
                                     builder: (BuildContext context) =>
+                                    
                                         AlertDialog(
                                           alignment: Alignment.center,
-                                          title: Text('Total risk score',
+                                          title: const Text('Total risk score',
                                               textAlign: TextAlign.center),
                                           content: Column(
                                               mainAxisAlignment:
@@ -108,7 +187,7 @@ class _HealthPageState extends State<HealthPage> {
                                                         _saveDiabetes(
                                                             diabetes_list);
                                                         /*bool physicalActivity =
-                                    await _calcMonthActivity();*/
+                                        await _calcMonthActivity();*/
                                                         int riskValue =
                                                             diabetesRisk(
                                                                 sp,
@@ -119,7 +198,7 @@ class _HealthPageState extends State<HealthPage> {
                                                                 riskValue);
                                                         return Column(
                                                           children: [
-                                                            SizedBox(
+                                                            const SizedBox(
                                                                 height: 10),
                                                             Text(
                                                                 'Your total risk score is:'
@@ -128,6 +207,11 @@ class _HealthPageState extends State<HealthPage> {
                                                                     TextAlign
                                                                         .center),
                                                             SizedBox(
+                                                                height: 20,
+                                                                child:
+                                                                    GradientProgress(
+                                                                        25)),
+                                                            const SizedBox(
                                                                 height: 10),
                                                             Text(
                                                                 'The risk of developing type'
@@ -141,7 +225,7 @@ class _HealthPageState extends State<HealthPage> {
                                                           ],
                                                         );
                                                       } else {
-                                                        return CircularProgressIndicator();
+                                                        return const CircularProgressIndicator();
                                                       }
                                                     })
                                               ]),
@@ -152,7 +236,7 @@ class _HealthPageState extends State<HealthPage> {
                                               child: const Text('Close'),
                                             ),
                                           ],
-                                        ));
+                                        ));*/
                               }
                             })
                       ],
@@ -166,7 +250,7 @@ class _HealthPageState extends State<HealthPage> {
                                 color: Colors.blue))
                       ]);
                 } else {
-                  return Text(
+                  return const Text(
                       'Not enough data available'); // se non ho fatto il sign up form
                 }
               }),
@@ -191,6 +275,52 @@ void _saveDiabetes(List<FormElement> diabetes_list) async {
       sp.setString(questionList2[i], diabetes_list[i].answer);
     }
   }
+}
+
+Widget GradientProgress(int riskValue) {
+  return Stack(alignment: AlignmentDirectional.centerStart, children: [
+    const StepProgressIndicator(
+      totalSteps: 26,
+      currentStep: 0,
+      direction: Axis.horizontal,
+      size: 20,
+      padding: 0,
+      //selectedColor: Color.fromARGB(255, 59, 213, 255).withOpacity(0.2),
+      unselectedColor: Colors.black,
+      roundedEdges: Radius.circular(10),
+      /* selectedGradientColor: const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Colors.green, Colors.yellow, Colors.red],
+      ),*/
+      unselectedGradientColor: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Colors.green, Colors.yellow, Colors.red],
+      ),
+    ),
+    StepProgressIndicator(
+      totalSteps: 26,
+      currentStep: riskValue,
+      direction: Axis.horizontal,
+      size: 21,
+      padding: 0,
+      //progressDirection: TextDirection.RTL,
+      selectedColor: Color.fromARGB(255, 8, 36, 44).withOpacity(0.0),
+      unselectedColor: Colors.white,
+      roundedEdges: const Radius.circular(10),
+      /* selectedGradientColor: const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Colors.green, Colors.yellow, Colors.red],
+      ),*/
+      /*unselectedGradientColor: const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Colors.green, Colors.yellow, Colors.red],
+      ),*/
+    ),
+  ]);
 }
 
 RiskLevel _getRiskLevel(int risk) {
@@ -301,10 +431,10 @@ Future<List<FitbitActivityTimeseriesData>> _fetchMonthActivity(
   final durationActivity = await fitbitVeryActiveTimeseriesDataManager
       .fetch(FitbitActivityTimeseriesAPIURL.dateRangeWithResource(
     userID: '7ML2XV',
-    startDate:
-        DateTime.now().subtract(Duration(days: 30)), //fetching 30 days ago
-    endDate:
-        DateTime.now().subtract(Duration(days: 1)), //fetching until yesterday
+    startDate: DateTime.now()
+        .subtract(const Duration(days: 30)), //fetching 30 days ago
+    endDate: DateTime.now()
+        .subtract(const Duration(days: 1)), //fetching until yesterday
     resource: fitbitVeryActiveTimeseriesDataManager.type,
   )) as List<FitbitActivityTimeseriesData>;
   return durationActivity;

@@ -7,7 +7,7 @@ import 'package:healthcare_for_u/screen/signupform.dart';
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
 
-  static const route = '/login';
+  static const route = '/';
   static const routename = 'Login Page';
 
   @override

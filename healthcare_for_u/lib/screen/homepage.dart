@@ -11,7 +11,7 @@ import 'healthpage.dart';
 class HomePage extends StatelessWidget {
   HomePage({Key? key}) : super(key: key);
 
-  static const route = '/';
+  static const route = '/home';
   static const routename = 'Home Page';
 
   @override

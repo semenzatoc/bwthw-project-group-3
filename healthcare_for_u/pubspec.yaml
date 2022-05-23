@@ -35,8 +35,11 @@ dependencies:
   intl: ^0.17.0
   fitbitter: ^1.1.1
   shared_preferences: ^2.0.15
+  step_progress_indicator: ^1.0.2
+  xen_popup_card: ^0.0.1
 
   cupertino_icons: ^1.0.2
+
 
 dev_dependencies:
   flutter_test:

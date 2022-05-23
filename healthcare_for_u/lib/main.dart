@@ -19,8 +19,8 @@ class MyApp extends StatelessWidget {
       //theme: ThemeData(colorScheme: Colors.green),
       initialRoute: LoginPage.route,
       routes: {
-        HomePage.route: (context) => HomePage(),
         LoginPage.route: (context) => LoginPage(),
+        HomePage.route: (context) => HomePage(),
         ProfilePage.route: (context) => ProfilePage(),
         SignUpForm.route: (context) => SignUpForm(),
         CalendarPage.route: (context) => CalendarPage(),
