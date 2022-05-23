@@ -32,8 +32,7 @@ class _ProfilePageState extends State<ProfilePage> {
           actions: [
             IconButton(
                 onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(context, LoginPage.route,
-                      (Route<dynamic> route) => false);
+                  _toLoginPage(context);
                 },
                 icon: Icon(Icons.logout))
           ]),
@@ -93,15 +92,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     clientSecret: AppCredentials.fitbitClientSecret,
                     redirectUri: AppCredentials.fitbitRedirectUri,
                     callbackUrlScheme: AppCredentials.fitbitCallbackScheme);
-
-                //Instantiate a proper data manager
-                FitbitActivityTimeseriesDataManager
-                    fitbitActivityTimeseriesDataManager =
-                    FitbitActivityTimeseriesDataManager(
-                  clientID: AppCredentials.fitbitClientID,
-                  clientSecret: AppCredentials.fitbitClientSecret,
-                  type: 'steps',
-                );
               },
               child: Text('Tap to authorize'),
             ),
@@ -110,6 +100,13 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
-} //ProfilePage
 
-  
+  void _toLoginPage(BuildContext context) async {
+    //Unset the 'username' filed in SharedPreference
+    final sp = await SharedPreferences.getInstance();
+    sp.remove('username');
+
+    Navigator.pushNamedAndRemoveUntil(
+        context, LoginPage.route, (Route<dynamic> route) => false);
+  }
+} //ProfilePage
