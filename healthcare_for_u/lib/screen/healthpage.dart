@@ -73,7 +73,7 @@ class _HealthPageState extends State<HealthPage> {
               future: SharedPreferences.getInstance(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  final sp = snapshot.data as SharedPreferences;
+                  var sp = snapshot.data as SharedPreferences;
                   final gender = sp.getString('gender');
                   return ConditionalQuestions(
                       key: _key,
@@ -85,6 +85,10 @@ class _HealthPageState extends State<HealthPage> {
                             splashColor: Colors.lightBlue,
                             onPressed: () async {
                               if (_key.currentState!.validate()) {
+                                diabetes_list =
+                                    _key.currentState!.getElementList();
+                                _saveDiabetes(diabetes_list);
+                                sp = await SharedPreferences.getInstance();
                                 showDialog<String>(
                                     context: context,
                                     builder: (BuildContext context) => Padding(
@@ -108,11 +112,6 @@ class _HealthPageState extends State<HealthPage> {
                                                     builder:
                                                         (context, snapshot) {
                                                       if (snapshot.hasData) {
-                                                        diabetes_list = _key
-                                                            .currentState!
-                                                            .getElementList();
-                                                        _saveDiabetes(
-                                                            diabetes_list);
                                                         /*bool physicalActivity =
                                           await _calcMonthActivity();*/
                                                         int riskValue =
@@ -123,6 +122,8 @@ class _HealthPageState extends State<HealthPage> {
                                                         final riskLevel =
                                                             _getRiskLevel(
                                                                 riskValue);
+                                                        sp.setInt(
+                                                            'risk', riskValue);
                                                         return Column(
                                                           mainAxisSize:
                                                               MainAxisSize.min,
@@ -160,83 +161,6 @@ class _HealthPageState extends State<HealthPage> {
                                             ),
                                           ),
                                         ));
-                                /*showDialog<String>(
-                                    context: context,
-                                    builder: (BuildContext context) =>
-                                    
-                                        AlertDialog(
-                                          alignment: Alignment.center,
-                                          title: const Text('Total risk score',
-                                              textAlign: TextAlign.center),
-                                          content: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              mainAxisSize: MainAxisSize.min,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                FutureBuilder(
-                                                    future:
-                                                        _calcMonthActivity(),
-                                                    builder:
-                                                        (context, snapshot) {
-                                                      if (snapshot.hasData) {
-                                                        diabetes_list = _key
-                                                            .currentState!
-                                                            .getElementList();
-                                                        _saveDiabetes(
-                                                            diabetes_list);
-                                                        /*bool physicalActivity =
-                                        await _calcMonthActivity();*/
-                                                        int riskValue =
-                                                            diabetesRisk(
-                                                                sp,
-                                                                gender,
-                                                                snapshot);
-                                                        final riskLevel =
-                                                            _getRiskLevel(
-                                                                riskValue);
-                                                        return Column(
-                                                          children: [
-                                                            const SizedBox(
-                                                                height: 10),
-                                                            Text(
-                                                                'Your total risk score is:'
-                                                                '$riskValue!',
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .center),
-                                                            SizedBox(
-                                                                height: 20,
-                                                                child:
-                                                                    GradientProgress(
-                                                                        25)),
-                                                            const SizedBox(
-                                                                height: 10),
-                                                            Text(
-                                                                'The risk of developing type'
-                                                                ' 2 diabetes within 10 years'
-                                                                ' is classified as '
-                                                                '${riskLevel.title} = '
-                                                                '${riskLevel.description}',
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .center),
-                                                          ],
-                                                        );
-                                                      } else {
-                                                        return const CircularProgressIndicator();
-                                                      }
-                                                    })
-                                              ]),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () => Navigator.pop(
-                                                  context, 'Cancel'),
-                                              child: const Text('Close'),
-                                            ),
-                                          ],
-                                        ));*/
                               }
                             })
                       ],
