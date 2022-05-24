@@ -1,7 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:healthcare_for_u/models/login.dart';
 import 'package:healthcare_for_u/screen/homepage.dart';
 import 'package:healthcare_for_u/screen/signupform.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 //import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class LoginPage extends StatefulWidget {
@@ -23,28 +25,35 @@ class _LoginPageState extends State<LoginPage> {
   String _password = '';
   String _confirmPassword = '';
 
-  /* @override
+  @override
   void initState() {
     super.initState();
+    //Check if the user is already logged in before rendering the login page
     _checkLogin();
-  }
+  } //initState
 
-  void _checkLogin() {
+  void _checkLogin() async {
+    //Get the SharedPreference instance and check if the value of the 'username' filed is set or not
     final sp = await SharedPreferences.getInstance();
-if (sp.getString('username')!= null){
-  Navigator.of(context).pushReplacementNamed(HomePage.route);
-}
-  }*/
+    if (sp.getString('username') != null) {
+      //If 'username is set, push the HomePage
+      Navigator.pushReplacementNamed(context, HomePage.route);
+    } //if
+  } //_checkLogin
 
-  void _trySubmitForm() {
+  void _trySubmitForm(LoginCouples data) async {
     final bool? isValid = _formKey.currentState?.validate();
     if (isValid == true) {
+      final sp = await SharedPreferences.getInstance();
+      sp.setString('username', data.username!);
+
       Navigator.pushReplacementNamed(context, HomePage.route);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    LoginCouples logData;
     return Scaffold(
       body: Container(
         color: Color.fromARGB(255, 92, 171, 235),
@@ -108,7 +117,11 @@ if (sp.getString('username')!= null){
                           ),
                           const SizedBox(height: 20),
                           OutlinedButton(
-                              onPressed: _trySubmitForm,
+                              onPressed: () {
+                                logData = LoginCouples(
+                                    username: _userEmail, password: _password);
+                                _trySubmitForm(logData);
+                              },
                               child: const Text('Sign In')),
                           const SizedBox(height: 20),
 

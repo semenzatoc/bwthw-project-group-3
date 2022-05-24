@@ -2,8 +2,6 @@ import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:step_progress_indicator/step_progress_indicator.dart';
-import 'package:xen_popup_card/xen_card.dart';
 import 'calendarpage.dart';
 import 'healthpage.dart';
 import 'homepage.dart';
@@ -35,8 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
           actions: [
             IconButton(
                 onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(context, LoginPage.route,
-                      (Route<dynamic> route) => false);
+                  _toLoginPage(context);
                 },
                 icon: Icon(Icons.logout))
           ]),
@@ -90,15 +87,6 @@ class _ProfilePageState extends State<ProfilePage> {
                           padding: const EdgeInsets.symmetric(horizontal: 70),
                           child: GradientProgress(25),
                         ),
-                        CircularStepProgressIndicator(
-                          totalSteps: 20,
-                          currentStep: 6,
-                          selectedColor: Colors.cyan,
-                          unselectedColor: Colors.yellowAccent,
-                          selectedStepSize: 3.0,
-                          unselectedStepSize: 9.0,
-                          width: 100,
-                        ),
                         Text('Height ${sp.getString('height')}')
                       ],
                     );
@@ -106,19 +94,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     return Text('You have failed');
                   }
                 }),
-            ElevatedButton(
-                onPressed: () {
-                  showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) => XenPopupCard(
-                            appBar: XenCardAppBar(child: Text('Test')),
-                            //gutter: gutter,
-                            body: ListView(
-                              children: [GradientProgress(25)],
-                            ),
-                          ));
-                },
-                child: Text('Dialog')),
             ElevatedButton(
               onPressed: () async {
                 // Authorize the app
@@ -135,5 +110,14 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
     );
+  }
+
+  void _toLoginPage(BuildContext context) async {
+    //Unset the 'username' filed in SharedPreference
+    final sp = await SharedPreferences.getInstance();
+    sp.remove('username');
+
+    Navigator.pushNamedAndRemoveUntil(
+        context, LoginPage.route, (Route<dynamic> route) => false);
   }
 } //ProfilePage
