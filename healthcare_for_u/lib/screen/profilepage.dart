@@ -28,14 +28,14 @@ class _ProfilePageState extends State<ProfilePage> {
     print('${ProfilePage.routename} built');
     return Scaffold(
       appBar: AppBar(
-          title: Text(ProfilePage.routename),
+          title: const Text(ProfilePage.routename),
           centerTitle: true,
           actions: [
             IconButton(
                 onPressed: () {
                   _toLoginPage(context);
                 },
-                icon: Icon(Icons.logout))
+                icon: const Icon(Icons.logout))
           ]),
       bottomNavigationBar: BottomAppBar(
         color: Colors.white,
@@ -71,43 +71,144 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
       ),
-      body: Center(
-        child: Column(
-          children: [
-            FutureBuilder(
-                future: SharedPreferences.getInstance(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final sp = snapshot.data as SharedPreferences;
-
-                    return Column(
-                      children: [
-                        Text('Weight ${sp.getString('weight')}'),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 70),
-                          child: GradientProgress(25),
-                        ),
-                        Text('Height ${sp.getString('height')}')
-                      ],
-                    );
-                  } else {
-                    return Text('You have failed');
-                  }
-                }),
-            ElevatedButton(
-              onPressed: () async {
-                // Authorize the app
-                String? userId = await FitbitConnector.authorize(
-                    context: context,
-                    clientID: AppCredentials.fitbitClientID,
-                    clientSecret: AppCredentials.fitbitClientSecret,
-                    redirectUri: AppCredentials.fitbitRedirectUri,
-                    callbackUrlScheme: AppCredentials.fitbitCallbackScheme);
-              },
-              child: Text('Tap to authorize'),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(100),
+            child: const Image(
+                image: AssetImage('assets/trying.jpg'),
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Card(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FutureBuilder(
+                    future: SharedPreferences.getInstance(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final sp = snapshot.data as SharedPreferences;
+                        return Row(
+                          children: [
+                            const Icon(MdiIcons.account),
+                            const SizedBox(
+                              width: 15,
+                            ),
+                            Text(
+                              '${sp.getString('name')}',
+                              style: const TextStyle(fontSize: 20),
+                            )
+                          ],
+                        );
+                      } else {
+                        return const Text('No data available');
+                      }
+                    }),
+                const SizedBox(height: 10),
+                const Divider(
+                    height: 10,
+                    thickness: 1,
+                    indent: 10,
+                    endIndent: 0,
+                    color: Colors.grey),
+                const SizedBox(height: 10),
+                FutureBuilder(
+                    future: SharedPreferences.getInstance(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final sp = snapshot.data as SharedPreferences;
+                        return Row(
+                          children: [
+                            const Icon(MdiIcons.cakeVariantOutline),
+                            const SizedBox(width: 15),
+                            Text(
+                              '${sp.getString('dob')}',
+                              style: const TextStyle(fontSize: 20),
+                            )
+                          ],
+                        );
+                      } else {
+                        return const Text('No data available');
+                      }
+                    }),
+                const SizedBox(height: 10),
+                const Divider(
+                    height: 10,
+                    thickness: 1,
+                    indent: 10,
+                    endIndent: 0,
+                    color: Colors.grey),
+                const SizedBox(height: 10),
+                FutureBuilder(
+                    future: SharedPreferences.getInstance(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final sp = snapshot.data as SharedPreferences;
+                        return Row(
+                          children: [
+                            const Icon(MdiIcons.weight),
+                            const SizedBox(width: 15),
+                            Text(
+                              '${sp.getString('weight')} kg ',
+                              style: const TextStyle(fontSize: 20),
+                            )
+                          ],
+                        );
+                      } else {
+                        return const Text('No data available');
+                      }
+                    }),
+                const SizedBox(height: 10),
+                const Divider(
+                    height: 10,
+                    thickness: 1,
+                    indent: 10,
+                    endIndent: 0,
+                    color: Colors.grey),
+                const SizedBox(height: 10),
+                FutureBuilder(
+                    future: SharedPreferences.getInstance(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final sp = snapshot.data as SharedPreferences;
+                        return Row(
+                          children: [
+                            const Icon(MdiIcons.humanMaleHeightVariant),
+                            const SizedBox(width: 15),
+                            Text(
+                              '${sp.getString('height')} cm',
+                              style: const TextStyle(fontSize: 20),
+                            )
+                          ],
+                        );
+                      } else {
+                        return const Text('No data available');
+                      }
+                    }),
+                const SizedBox(height: 10),
+              ],
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 40),
+          ElevatedButton(
+            onPressed: () async {
+              // Authorize the app
+              String? userId = await FitbitConnector.authorize(
+                  context: context,
+                  clientID: AppCredentials.fitbitClientID,
+                  clientSecret: AppCredentials.fitbitClientSecret,
+                  redirectUri: AppCredentials.fitbitRedirectUri,
+                  callbackUrlScheme: AppCredentials.fitbitCallbackScheme);
+            },
+            child: const Text('Tap to authorize'),
+          ),
+        ],
       ),
     );
   }
