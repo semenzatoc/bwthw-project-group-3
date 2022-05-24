@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:healthcare_for_u/models/login.dart';
+import 'package:healthcare_for_u/screen/authpage.dart';
 import 'package:healthcare_for_u/screen/homepage.dart';
 import 'package:healthcare_for_u/screen/signupform.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -47,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
       final sp = await SharedPreferences.getInstance();
       sp.setString('username', data.username!);
 
-      Navigator.pushReplacementNamed(context, HomePage.route);
+      Navigator.pushReplacementNamed(context, AuthPage.route);
     }
   }
 

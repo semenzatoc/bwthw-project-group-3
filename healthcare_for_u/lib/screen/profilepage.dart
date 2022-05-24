@@ -195,19 +195,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             ),
           ),
-          const SizedBox(height: 40),
-          ElevatedButton(
-            onPressed: () async {
-              // Authorize the app
-              String? userId = await FitbitConnector.authorize(
-                  context: context,
-                  clientID: AppCredentials.fitbitClientID,
-                  clientSecret: AppCredentials.fitbitClientSecret,
-                  redirectUri: AppCredentials.fitbitRedirectUri,
-                  callbackUrlScheme: AppCredentials.fitbitCallbackScheme);
-            },
-            child: const Text('Tap to authorize'),
-          ),
+          
         ],
       ),
     );

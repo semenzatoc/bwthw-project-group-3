@@ -6,6 +6,7 @@ import 'screen/profilepage.dart';
 import 'screen/signupform.dart';
 import 'screen/healthpage.dart';
 import 'screen/calendarpage.dart';
+import 'screen/authpage.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
       initialRoute: LoginPage.route,
       routes: {
         LoginPage.route: (context) => LoginPage(),
+        AuthPage.route: (context) => AuthPage(),
         HomePage.route: (context) => HomePage(),
         ProfilePage.route: (context) => ProfilePage(),
         SignUpForm.route: (context) => SignUpForm(),

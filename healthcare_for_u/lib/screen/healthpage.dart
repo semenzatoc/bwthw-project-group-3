@@ -5,7 +5,7 @@ import 'package:fitbitter/fitbitter.dart';
 import 'package:healthcare_for_u/screen/profilepage.dart';
 import 'package:healthcare_for_u/utils/appcredentials.dart';
 import 'package:healthcare_for_u/utils/diabetesRisk.dart';
-import 'package:healthcare_for_u/utils/fetchMonthActivity.dart';
+import 'package:healthcare_for_u/utils/dataFetcher.dart';
 import 'package:conditional_questions/conditional_questions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
@@ -89,6 +89,7 @@ class _HealthPageState extends State<HealthPage> {
                                     _key.currentState!.getElementList();
                                 _saveDiabetes(diabetes_list);
                                 sp = await SharedPreferences.getInstance();
+                                DataFetcher fetcher = DataFetcher();
                                 showDialog<String>(
                                     context: context,
                                     builder: (BuildContext context) => Padding(
@@ -107,8 +108,8 @@ class _HealthPageState extends State<HealthPage> {
                                             body: Column(
                                               children: [
                                                 FutureBuilder(
-                                                    future:
-                                                        _calcMonthActivity(),
+                                                    future: fetcher
+                                                        .calcMonthActivity(),
                                                     builder:
                                                         (context, snapshot) {
                                                       if (snapshot.hasData) {
