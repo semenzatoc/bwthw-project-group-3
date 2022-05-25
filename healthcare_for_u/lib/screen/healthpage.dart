@@ -113,8 +113,6 @@ class _HealthPageState extends State<HealthPage> {
                                                     builder:
                                                         (context, snapshot) {
                                                       if (snapshot.hasData) {
-                                                        /*bool physicalActivity =
-                                          await _calcMonthActivity();*/
                                                         int riskValue =
                                                             diabetesRisk(
                                                                 sp,

@@ -1,4 +1,5 @@
 import 'package:fitbitter/fitbitter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'appcredentials.dart';
 
 class DataFetcher {
@@ -38,9 +39,11 @@ class DataFetcher {
             clientSecret: AppCredentials.fitbitClientSecret,
             type: dataType);
 
+    final sp = await SharedPreferences.getInstance();
+
     final durationActivity = await fitbitVeryActiveTimeseriesDataManager
         .fetch(FitbitActivityTimeseriesAPIURL.monthWithResource(
-      userID: '7ML2XV',
+      userID: sp.getString('userId'),
       baseDate:
           DateTime.now().subtract(Duration(days: 1)), //fetching until yesterday
       resource: fitbitVeryActiveTimeseriesDataManager.type,

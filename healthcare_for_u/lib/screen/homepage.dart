@@ -2,6 +2,7 @@ import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
 import 'package:healthcare_for_u/screen/profilepage.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/appcredentials.dart';
 import 'calendarpage.dart';
@@ -90,10 +91,12 @@ class _HomePageState extends State<HomePage> {
       type: dataType,
     );
 
+    final sp = await SharedPreferences.getInstance();
+
     final data = await fitbitActivityTimeseriesDataManager
         .fetch(FitbitActivityTimeseriesAPIURL.dayWithResource(
       date: DateTime.now(),
-      userID: '7ML2XV',
+      userID: sp.getString('userId'),
       resource: fitbitActivityTimeseriesDataManager.type,
     )) as List<FitbitActivityTimeseriesData>;
     return data[0].value as double;

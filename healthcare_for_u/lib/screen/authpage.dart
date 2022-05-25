@@ -44,6 +44,8 @@ class _AuthPageState extends State<AuthPage> {
                     clientSecret: AppCredentials.fitbitClientSecret,
                     redirectUri: AppCredentials.fitbitRedirectUri,
                     callbackUrlScheme: AppCredentials.fitbitCallbackScheme);
+                final sp = await SharedPreferences.getInstance();
+                sp.setString('userId', userId!);
                 Navigator.pushReplacementNamed(context, HomePage.route);
               },
               child: const Text('Tap to authorize'),
