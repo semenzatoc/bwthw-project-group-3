@@ -13,7 +13,7 @@ class DataFetcher {
     double minDailyActive = 0;
     int countActiveDays = 0;
 
-    for (var i = 0; i < 30; i++) {
+    for (var i = 0; i < 31; i++) {
       minDailyActive = minDailyActive +
           (durationVeryActive[i].value as double) +
           (durationFairlyActive[i].value as double);
@@ -39,11 +39,9 @@ class DataFetcher {
             type: dataType);
 
     final durationActivity = await fitbitVeryActiveTimeseriesDataManager
-        .fetch(FitbitActivityTimeseriesAPIURL.dateRangeWithResource(
+        .fetch(FitbitActivityTimeseriesAPIURL.monthWithResource(
       userID: '7ML2XV',
-      startDate:
-          DateTime.now().subtract(Duration(days: 30)), //fetching 30 days ago
-      endDate:
+      baseDate:
           DateTime.now().subtract(Duration(days: 1)), //fetching until yesterday
       resource: fitbitVeryActiveTimeseriesDataManager.type,
     )) as List<FitbitActivityTimeseriesData>;

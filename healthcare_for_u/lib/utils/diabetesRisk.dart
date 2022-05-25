@@ -17,26 +17,15 @@ int diabetesRisk(sp, gender, physicalActivity) {
   }
 
   //BMI
-  /* if (sp.getString('height2') != null) {
-    //aggiorno i parametri di height da vedere in profile page
-    sp.setString('height', sp.getString('height2'));
-    //richiamo funzione per aggiornare bmi e lo aggiorno
-    //sp.setString('bmi', sp.getString('bmi2'))
-  }
-  if (sp.getString('weight2') != null) {
-    //aggiorno i parametri di weight da vedere in profile page
-    sp.setString('weight', sp.getString('weight2'));
-    //richiamo funzione per aggiornare bmi e lo aggiorno
-    //sp.setString('bmi', sp.getString('bmi2'))
+  /*double height = double.parse(sp.getString('height'));
+  double weight = double.parse(sp.getString('weight'));
+  double bmi = calculateBMI(height, weight);
+  sp.setDouble('bmi', bmi);
+  if (bmi >= 25 && bmi <= 30) {
+  risk = risk + 1;
+  } else if (bmi >30) {
+  risk = risk + 3;
   }*/
-
-  //
-  //double bmi = double.parse(sp.getString('bmi'));
-  //if (bmi >= 25 && bmi <= 30) {
-  //risk = risk + 1;
-  //} else if (bmi >30) {
-  //risk = risk + 3;
-  //}
 
   //Waist circumference
   String waist = sp.getString('waist');
