@@ -195,7 +195,6 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             ),
           ),
-          
         ],
       ),
     );
@@ -206,6 +205,11 @@ class _ProfilePageState extends State<ProfilePage> {
     final sp = await SharedPreferences.getInstance();
     sp.remove('username');
 
+    // unauthorize Fitbit connection
+    await FitbitConnector.unauthorize(
+        clientID: '<OAuth 2.0 Client ID>', clientSecret: '<Client Secret>');
+
+    // return to login page
     Navigator.pushNamedAndRemoveUntil(
         context, LoginPage.route, (Route<dynamic> route) => false);
   }
