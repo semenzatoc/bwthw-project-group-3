@@ -1,17 +1,13 @@
-import 'package:fitbitter/fitbitter.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'calendarpage.dart';
 import 'healthpage.dart';
 import 'homepage.dart';
 import 'loginpage.dart';
-import 'package:healthcare_for_u/utils/appcredentials.dart';
 
-//import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
-// Aggiungere popup menu button/bottom sheet per logout/edit/delete
-// Riportare informazioni personali: Nome/età/peso/altezza/bmi/etc
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key}) : super(key: key);
 
@@ -25,7 +21,6 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
-    print('${ProfilePage.routename} built');
     return Scaffold(
       appBar: AppBar(
           title: const Text(ProfilePage.routename),
@@ -74,14 +69,7 @@ class _ProfilePageState extends State<ProfilePage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(100),
-            child: const Image(
-                image: AssetImage('assets/trying.jpg'),
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover),
-          ),
+          imageProfile(),
           const SizedBox(
             height: 20,
           ),
@@ -195,7 +183,6 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             ),
           ),
-          
         ],
       ),
     );
@@ -208,5 +195,79 @@ class _ProfilePageState extends State<ProfilePage> {
 
     Navigator.pushNamedAndRemoveUntil(
         context, LoginPage.route, (Route<dynamic> route) => false);
+  }
+
+  Widget imageProfile() {
+    return FutureBuilder(
+        future: SharedPreferences.getInstance(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            var sp = snapshot.data as SharedPreferences;
+            String? path = sp.getString('imagepath');
+            return Center(
+              child: Stack(children: <Widget>[
+                CircleAvatar(
+                    radius: 80,
+                    backgroundImage: path == ''
+                        ? const AssetImage("assets/trying.jpg")
+                        : FileImage(File(path!)) as ImageProvider),
+                Positioned(
+                  bottom: 20,
+                  right: 20,
+                  child: InkWell(
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: ((BuildContext context) => bottomSheet()),
+                      );
+                    },
+                    child: Icon(Icons.camera_alt, color: Colors.teal, size: 28),
+                  ),
+                ),
+              ]),
+            );
+          } else {
+            return const Text(
+                'Not enough data available'); // se non ho fatto il sign up form
+          }
+        });
+  }
+
+  Widget bottomSheet() {
+    return Container(
+        height: 100,
+        width: MediaQuery.of(context).size.width,
+        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        child: Column(children: <Widget>[
+          Text(
+            "Choose profile photo",
+            style: TextStyle(fontSize: 20),
+          ),
+          SizedBox(height: 20),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+            IconButton(
+                onPressed: () {
+                  takePhoto(ImageSource.camera);
+                },
+                icon: Icon(Icons.camera),
+                tooltip: "Camera"),
+            IconButton(
+                onPressed: () {
+                  takePhoto(ImageSource.gallery);
+                },
+                icon: Icon(Icons.image),
+                tooltip: "Gallery")
+          ])
+        ]));
+  }
+
+  void takePhoto(ImageSource source) async {
+    XFile? _imagefile;
+    final ImagePicker _picker = ImagePicker();
+    final XFile? pickedFile = await _picker.pickImage(source: source);
+    final sp = await SharedPreferences.getInstance();
+    setState(() {
+      sp.setString('imagepath', pickedFile!.path);
+    });
   }
 } //ProfilePage

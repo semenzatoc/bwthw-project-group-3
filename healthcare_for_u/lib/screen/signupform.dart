@@ -39,6 +39,8 @@ class _SignUpFormState extends State<SignUpForm> {
             onPressed: () async {
               if (_key.currentState!.validate()) {
                 answer_list = _key.currentState!.getElementList();
+                final sp = await SharedPreferences.getInstance();
+                sp.setString('imagepath', '');
                 saveAnswers(answer_list);
                 Navigator.pushNamed(context, LoginPage.route);
               }
