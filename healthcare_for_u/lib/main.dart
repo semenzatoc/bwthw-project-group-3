@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:healthcare_for_u/screen/healthpage.dart';
+import 'package:healthcare_for_u/screen/userpage.dart';
 import 'screen/loginpage.dart';
 import 'screen/homepage.dart';
 import 'screen/profilepage.dart';
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
         HomePage.route: (context) => HomePage(),
         ProfilePage.route: (context) => ProfilePage(),
         SignUpForm.route: (context) => SignUpForm(),
+        UserPage.route:(context) => UserPage(),
         CalendarPage.route: (context) => CalendarPage(),
         HealthPage.route: (context) => HealthPage(),
       },
