@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:healthcare_for_u/screen/profilepage.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../utils/appcredentials.dart';
 import 'homepage.dart';
@@ -163,10 +164,12 @@ class _CalendarPageState extends State<CalendarPage> {
       type: 'steps',
     );
 
+    final sp = await SharedPreferences.getInstance();
+
     final steps = await fitbitActivityTimeseriesDataManager
         .fetch(FitbitActivityTimeseriesAPIURL.dayWithResource(
       date: day,
-      userID: '7ML2XV',
+      userID: sp.getString('userId'),
       resource: fitbitActivityTimeseriesDataManager.type,
     )) as List<FitbitActivityTimeseriesData>;
     return steps[0].value as double;
