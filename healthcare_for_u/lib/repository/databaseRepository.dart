@@ -15,6 +15,35 @@ class DatabaseRepository extends ChangeNotifier {
     return results;
   } //findAllUsers
 
+  //This method wraps the findUser() method of the DAO
+  Future<List<User>> findUser(String? username) async {
+    final results = await database.userDao.findUser(username!);
+    return results;
+  } //findUser
+
+  //This method wraps the findUser() method of the DAO
+  Future<String> getUsername(String? username) async {
+    final results = await database.userDao.getUsername(username!);
+    return results as String;
+  } //findUser
+
+  //This method wraps the getPassword() method of the DAO
+  Future<List<User>> getPassword(String? username) async {
+    final results = await database.userDao.getPassword(username!);
+    return results;
+  } //findUser
+
+  //This method searches the database and returns TRUE if username is already
+  //there
+  Future<bool> isRegistered(String? username) async {
+    if (username == null) {
+      return false;
+    }
+    final user = await database.userDao.findUser(username);
+    final results = user.isNotEmpty;
+    return results;
+  } //isRegistered
+
   //This method wraps the insertUser() method of the DAO.
   //Then, it notifies the listeners that something changed.
   Future<void> insertUser(User user) async {

@@ -12,8 +12,8 @@ class User {
 
   final String password;
 
-  final bool isAuthorized;
+  //final bool isAuthorized;
 
   //Default constructor
-  User(this.id, this.username, this.password, this.isAuthorized);
+  User(this.id, this.username, this.password); //, this.isAuthorized);
 }//Todo

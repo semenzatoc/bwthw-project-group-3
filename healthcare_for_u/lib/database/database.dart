@@ -10,8 +10,8 @@ import 'entities/activity.dart';
 part 'database.g.dart'; // the generated code will be there
 
 @TypeConverters([DateTimeConverter])
-@Database(version: 1, entities: [User, Activity])
+@Database(version: 1, entities: [User])
 abstract class AppDatabase extends FloorDatabase {
   UserDao get userDao;
-  ActivityDao get activityDao;
+  //ActivityDao get activityDao;
 }

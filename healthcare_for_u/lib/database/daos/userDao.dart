@@ -9,8 +9,17 @@ abstract class UserDao {
   @Query('SELECT * FROM User')
   Future<List<User>> findAllUsers();
 
+  @Query('SELECT * FROM User WHERE username = :username')
+  Future<List<User>> findUser(String username);
+
+  @Query('SELECT username FROM User WHERE username = :username')
+  Future<List<User>> getUsername(String username);
+
+  @Query('SELECT password FROM User WHERE username = :username')
+  Future<List<User>> getPassword(String username);
+
   //Query #2: INSERT -> this allows to add a User in the table
-  @Insert(onConflict: OnConflictStrategy.abort)
+  @Insert(onConflict: OnConflictStrategy.replace)
   Future<void> insertUser(User user);
 
   //Query #3: DELETE -> this allows to delete a User from the table
@@ -22,6 +31,6 @@ abstract class UserDao {
   Future<void> updatePassword(String user, String pwd);
 
   //Query #5: UPDATE -> this allows to update User details
-  @Query('UPDATE Users SET isAuthorized = :auth WHERE username = :user')
-  Future<void> setAuthorization(String user, bool auth);
+  /* @Query('UPDATE Users SET isAuthorized = :auth WHERE username = :user')
+  Future<void> setAuthorization(String user, bool auth);*/
 }//MealDao
