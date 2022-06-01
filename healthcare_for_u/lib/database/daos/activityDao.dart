@@ -13,7 +13,10 @@ abstract class ActivityDao {
   @Query('SELECT * FROM Activity WHERE date = :day')
   Future<List<Activity>> getDayActivity(DateTime day);
 
-  //Query #2: SELECT -> this allows to obtain the steps of selected day
+  @Query('SELECT * FROM Activity WHERE date IN (:days)')
+  Future<List<Activity>> findActivityInPeriod(List<DateTime> days);
+
+  /*//Query #2: SELECT -> this allows to obtain the steps of selected day
   @Query('SELECT steps FROM Activity WHERE date = :day')
   Future<List<Activity>> getDaySteps(DateTime day);
 
@@ -27,7 +30,7 @@ abstract class ActivityDao {
 
   //Query #2: SELECT -> this allows to obtain the minutes of selected day
   @Query('SELECT minutes FROM Activity WHERE date = :day')
-  Future<List<Activity>> getDayMinutes(DateTime day);
+  Future<List<Activity>> getDayMinutes(DateTime day);*/
 
   //Query #2: INSERT -> this allows to add a Activity in the table
   @Insert(onConflict: OnConflictStrategy.abort)
@@ -41,7 +44,7 @@ abstract class ActivityDao {
   @Update()
   Future<void> updateActivity(Activity activity);
 
-  //Query #4: UPDATE -> this allows to update Activity details
+  /* //Query #4: UPDATE -> this allows to update Activity details
   @Query('UPDATE Activity SET steps = :steps WHERE date = :day')
-  Future<void> setSteps(int steps, DateTime day);
-}//MealDao
+  Future<void> setSteps(int steps, DateTime day);*/
+}//ActivityDao

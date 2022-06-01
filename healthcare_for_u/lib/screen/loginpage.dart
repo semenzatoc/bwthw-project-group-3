@@ -63,11 +63,8 @@ class _LoginPageState extends State<LoginPage> {
                 future: Provider.of<DatabaseRepository>(context, listen: false)
                     .findAllUsers(),
                 builder: (context, snapshot) {
-                  // final userList = snapshot.data as List<User>;
-                  // print(userList.first.username);
                   if (snapshot.hasData) {
                     final userList = snapshot.data as List<User>;
-                    print(userList.first.username);
                     return Column(children: [
                       const Text(
                         'Login',

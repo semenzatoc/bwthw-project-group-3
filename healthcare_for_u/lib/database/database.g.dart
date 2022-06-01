@@ -63,6 +63,8 @@ class _$AppDatabase extends AppDatabase {
 
   UserDao? _userDaoInstance;
 
+  ActivityDao? _activityDaoInstance;
+
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback? callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
@@ -83,6 +85,8 @@ class _$AppDatabase extends AppDatabase {
       onCreate: (database, version) async {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `User` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` TEXT NOT NULL, `password` TEXT NOT NULL)');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `Activity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `user` TEXT NOT NULL, `date` INTEGER NOT NULL, `steps` INTEGER NOT NULL, `floors` INTEGER NOT NULL, `calories` INTEGER NOT NULL, `minutes` REAL NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -94,6 +98,11 @@ class _$AppDatabase extends AppDatabase {
   UserDao get userDao {
     return _userDaoInstance ??= _$UserDao(database, changeListener);
   }
+
+  @override
+  ActivityDao get activityDao {
+    return _activityDaoInstance ??= _$ActivityDao(database, changeListener);
+  }
 }
 
 class _$UserDao extends UserDao {
@@ -102,6 +111,15 @@ class _$UserDao extends UserDao {
         _userInsertionAdapter = InsertionAdapter(
             database,
             'User',
+            (User item) => <String, Object?>{
+                  'id': item.id,
+                  'username': item.username,
+                  'password': item.password
+                }),
+        _userUpdateAdapter = UpdateAdapter(
+            database,
+            'User',
+            ['id'],
             (User item) => <String, Object?>{
                   'id': item.id,
                   'username': item.username,
@@ -125,6 +143,8 @@ class _$UserDao extends UserDao {
 
   final InsertionAdapter<User> _userInsertionAdapter;
 
+  final UpdateAdapter<User> _userUpdateAdapter;
+
   final DeletionAdapter<User> _userDeletionAdapter;
 
   @override
@@ -135,7 +155,7 @@ class _$UserDao extends UserDao {
   }
 
   @override
-  Future<List<User>> findUser(String username) async {
+  Future<List<User?>> findUser(String username) async {
     return _queryAdapter.queryList('SELECT * FROM User WHERE username = ?1',
         mapper: (Map<String, Object?> row) => User(row['id'] as int?,
             row['username'] as String, row['password'] as String),
@@ -143,38 +163,143 @@ class _$UserDao extends UserDao {
   }
 
   @override
-  Future<List<User>> getUsername(String username) async {
-    return _queryAdapter.queryList(
-        'SELECT username FROM User WHERE username = ?1',
-        mapper: (Map<String, Object?> row) => User(row['id'] as int?,
-            row['username'] as String, row['password'] as String),
-        arguments: [username]);
-  }
-
-  @override
-  Future<List<User>> getPassword(String username) async {
-    return _queryAdapter.queryList(
-        'SELECT password FROM User WHERE username = ?1',
-        mapper: (Map<String, Object?> row) => User(row['id'] as int?,
-            row['username'] as String, row['password'] as String),
-        arguments: [username]);
-  }
-
-  @override
-  Future<void> updatePassword(String user, String pwd) async {
-    await _queryAdapter.queryNoReturn(
-        'UPDATE Users SET password = ?2 WHERE username = ?1',
-        arguments: [user, pwd]);
+  Future<void> deleteAllUser() async {
+    await _queryAdapter.queryNoReturn('DELETE FROM User');
   }
 
   @override
   Future<void> insertUser(User user) async {
-    await _userInsertionAdapter.insert(user, OnConflictStrategy.replace);
+    await _userInsertionAdapter.insert(user, OnConflictStrategy.fail);
+  }
+
+  @override
+  Future<void> updateUser(User user) async {
+    await _userUpdateAdapter.update(user, OnConflictStrategy.replace);
   }
 
   @override
   Future<void> deleteUser(User user) async {
     await _userDeletionAdapter.delete(user);
+  }
+}
+
+class _$ActivityDao extends ActivityDao {
+  _$ActivityDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database),
+        _activityInsertionAdapter = InsertionAdapter(
+            database,
+            'Activity',
+            (Activity item) => <String, Object?>{
+                  'id': item.id,
+                  'user': item.user,
+                  'date': _dateTimeConverter.encode(item.date),
+                  'steps': item.steps,
+                  'floors': item.floors,
+                  'calories': item.calories,
+                  'minutes': item.minutes
+                }),
+        _activityUpdateAdapter = UpdateAdapter(
+            database,
+            'Activity',
+            ['id'],
+            (Activity item) => <String, Object?>{
+                  'id': item.id,
+                  'user': item.user,
+                  'date': _dateTimeConverter.encode(item.date),
+                  'steps': item.steps,
+                  'floors': item.floors,
+                  'calories': item.calories,
+                  'minutes': item.minutes
+                }),
+        _activityDeletionAdapter = DeletionAdapter(
+            database,
+            'Activity',
+            ['id'],
+            (Activity item) => <String, Object?>{
+                  'id': item.id,
+                  'user': item.user,
+                  'date': _dateTimeConverter.encode(item.date),
+                  'steps': item.steps,
+                  'floors': item.floors,
+                  'calories': item.calories,
+                  'minutes': item.minutes
+                });
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<Activity> _activityInsertionAdapter;
+
+  final UpdateAdapter<Activity> _activityUpdateAdapter;
+
+  final DeletionAdapter<Activity> _activityDeletionAdapter;
+
+  @override
+  Future<List<Activity>> findAllActivities() async {
+    return _queryAdapter.queryList('SELECT * FROM Activity',
+        mapper: (Map<String, Object?> row) => Activity(
+            row['id'] as int?,
+            row['user'] as String,
+            _dateTimeConverter.decode(row['date'] as int),
+            row['steps'] as int,
+            row['calories'] as int,
+            row['floors'] as int,
+            row['minutes'] as double));
+  }
+
+  @override
+  Future<List<Activity>> getDayActivity(DateTime day) async {
+    return _queryAdapter.queryList('SELECT * FROM Activity WHERE date = ?1',
+        mapper: (Map<String, Object?> row) => Activity(
+            row['id'] as int?,
+            row['user'] as String,
+            _dateTimeConverter.decode(row['date'] as int),
+            row['steps'] as int,
+            row['calories'] as int,
+            row['floors'] as int,
+            row['minutes'] as double),
+        arguments: [_dateTimeConverter.encode(day)]);
+  }
+
+  @override
+  Future<List<Activity>> findActivityInPeriod(List<DateTime> days) async {
+    const offset = 1;
+    final _sqliteVariablesForDays =
+        Iterable<String>.generate(days.length, (i) => '?${i + offset}')
+            .join(',');
+    return _queryAdapter.queryList(
+        'SELECT * FROM Activity WHERE date IN (' +
+            _sqliteVariablesForDays +
+            ')',
+        mapper: (Map<String, Object?> row) => Activity(
+            row['id'] as int?,
+            row['user'] as String,
+            _dateTimeConverter.decode(row['date'] as int),
+            row['steps'] as int,
+            row['calories'] as int,
+            row['floors'] as int,
+            row['minutes'] as double),
+        arguments: [
+          ...days.map((element) => _dateTimeConverter.encode(element))
+        ]);
+  }
+
+  @override
+  Future<void> insertActivity(Activity activity) async {
+    await _activityInsertionAdapter.insert(activity, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> updateActivity(Activity activity) async {
+    await _activityUpdateAdapter.update(activity, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteActivity(Activity activity) async {
+    await _activityDeletionAdapter.delete(activity);
   }
 }
 

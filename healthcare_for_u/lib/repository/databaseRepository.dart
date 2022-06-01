@@ -1,4 +1,5 @@
 import 'package:healthcare_for_u/database/database.dart';
+import 'package:healthcare_for_u/database/entities/activity.dart';
 import 'package:healthcare_for_u/database/entities/user.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +10,7 @@ class DatabaseRepository extends ChangeNotifier {
   //Default constructor
   DatabaseRepository({required this.database});
 
+////User methods
   //This method wraps the findAllUsers() method of the DAO
   Future<List<User>> findAllUsers() async {
     final results = await database.userDao.findAllUsers();
@@ -16,20 +18,8 @@ class DatabaseRepository extends ChangeNotifier {
   } //findAllUsers
 
   //This method wraps the findUser() method of the DAO
-  Future<List<User>> findUser(String? username) async {
+  Future<List<User?>> findUser(String? username) async {
     final results = await database.userDao.findUser(username!);
-    return results;
-  } //findUser
-
-  //This method wraps the findUser() method of the DAO
-  Future<String> getUsername(String? username) async {
-    final results = await database.userDao.getUsername(username!);
-    return results as String;
-  } //findUser
-
-  //This method wraps the getPassword() method of the DAO
-  Future<List<User>> getPassword(String? username) async {
-    final results = await database.userDao.getPassword(username!);
     return results;
   } //findUser
 
@@ -58,4 +48,30 @@ class DatabaseRepository extends ChangeNotifier {
     notifyListeners();
   } //removeUser
 
+//// Activity methods
+  Future<List<Activity?>> findAllActivities() async {
+    final results = await database.activityDao.findAllActivities();
+    return results;
+  } //findAllUsers
+
+  //This method wraps the findUser() method of the DAO
+  Future<List<Activity?>> findActivity(DateTime day) async {
+    final results = await database.activityDao.getDayActivity(day);
+    return results;
+  } //findUser
+
+  Future<int> getDaySteps(DateTime day) async {
+    final results = await database.activityDao.getDayActivity(day);
+    return results.first.steps;
+  } //getDaySteps
+
+  Future<int> getDayFloors(DateTime day) async {
+    final results = await database.activityDao.getDayActivity(day);
+    return results.first.floors;
+  } //getDayFloors
+
+  Future<int> getDayCalories(DateTime day) async {
+    final results = await database.activityDao.getDayActivity(day);
+    return results.first.calories;
+  } //getDayCalories
 } //DatabaseRepository

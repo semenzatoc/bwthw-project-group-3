@@ -10,27 +10,26 @@ abstract class UserDao {
   Future<List<User>> findAllUsers();
 
   @Query('SELECT * FROM User WHERE username = :username')
-  Future<List<User>> findUser(String username);
+  Future<List<User?>> findUser(String username);
 
-  @Query('SELECT username FROM User WHERE username = :username')
+  /* @Query('SELECT username FROM User WHERE username = :username')
   Future<List<User>> getUsername(String username);
 
   @Query('SELECT password FROM User WHERE username = :username')
-  Future<List<User>> getPassword(String username);
+  Future<List<User>> getPassword(String username);*/
+
+  @Query('DELETE FROM User')
+  Future<void> deleteAllUser();
 
   //Query #2: INSERT -> this allows to add a User in the table
-  @Insert(onConflict: OnConflictStrategy.replace)
+  @Insert(onConflict: OnConflictStrategy.fail)
   Future<void> insertUser(User user);
 
   //Query #3: DELETE -> this allows to delete a User from the table
   @delete
   Future<void> deleteUser(User user);
 
-  //Query #4: UPDATE -> this allows to update User details
-  @Query('UPDATE Users SET password = :pwd WHERE username = :user')
-  Future<void> updatePassword(String user, String pwd);
-
-  //Query #5: UPDATE -> this allows to update User details
-  /* @Query('UPDATE Users SET isAuthorized = :auth WHERE username = :user')
-  Future<void> setAuthorization(String user, bool auth);*/
-}//MealDao
+  //Query #4: UPDATE -> this allows to update a User entry
+  @Update(onConflict: OnConflictStrategy.replace)
+  Future<void> updateUser(User user);
+}//UserDao
