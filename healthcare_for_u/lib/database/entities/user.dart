@@ -12,6 +12,11 @@ class User {
 
   final String password;
 
+  //final double weight;
+  //final double height;
+  //final DateTime dob;
+  //final String profilepicture;
+
   //final bool isAuthorized;
 
   //Default constructor
