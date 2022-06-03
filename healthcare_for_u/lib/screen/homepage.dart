@@ -22,13 +22,11 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    //Check if the user is already logged in before rendering the login page
     _getLastUpdate();
+    //_updateDB();
   } //initState
 
   _getLastUpdate() async {
-    //Get the SharedPreference instance and check if the value of the 'username' filed is set or not
-
     final sp = await SharedPreferences.getInstance();
     if (sp.getInt('lastSteps') == null ||
         sp.getInt('lastFloors') == null ||

@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
         HomePage.route: (context) => HomePage(),
         ProfilePage.route: (context) => ProfilePage(),
         SignUpForm.route: (context) => SignUpForm(),
-        UserPage.route:(context) => UserPage(),
+        UserPage.route: (context) => UserPage(),
         CalendarPage.route: (context) => CalendarPage(),
         HealthPage.route: (context) => HealthPage(),
       },
