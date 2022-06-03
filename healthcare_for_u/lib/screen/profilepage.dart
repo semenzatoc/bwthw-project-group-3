@@ -7,6 +7,8 @@ import 'calendarpage.dart';
 import 'healthpage.dart';
 import 'homepage.dart';
 import 'loginpage.dart';
+import 'package:healthcare_for_u/utils/appcredentials.dart';
+import 'package:healthcare_for_u/utils/BMI.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key}) : super(key: key);
@@ -67,7 +69,6 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           imageProfile(),
           const SizedBox(
@@ -84,14 +85,62 @@ class _ProfilePageState extends State<ProfilePage> {
                         final sp = snapshot.data as SharedPreferences;
                         return Row(
                           children: [
-                            const Icon(MdiIcons.account),
-                            const SizedBox(
+                            SizedBox(
                               width: 15,
                             ),
-                            Text(
-                              '${sp.getString('name')}',
-                              style: const TextStyle(fontSize: 20),
-                            )
+                            Icon(
+                              MdiIcons.account,
+                              size: 30,
+                            ),
+                            SizedBox(
+                              width: 50,
+                            ),
+                            TextButton(
+                              child: const Text(
+                                'Profile',
+                                style: TextStyle(
+                                    fontSize: 20, color: Colors.black),
+                              ),
+                              onPressed: () {
+                                showDialog<String>(
+                                  context: context,
+                                  builder: (BuildContext context) => Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 80),
+                                      child: AlertDialog(
+                                          title: const Text('Profile'),
+                                          content: SingleChildScrollView(
+                                            child: ListBody(
+                                              children: <Widget>[
+                                                Row(children: [
+                                                  Icon(MdiIcons.account),
+                                                  Text(
+                                                      'Name: ${sp.getString('name')}'),
+                                                ]),
+                                                SizedBox(
+                                                  height: 15,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Icon(MdiIcons
+                                                        .cakeVariantOutline),
+                                                    Text(
+                                                        'Date of Birth: ${sp.getString('dob')}'),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () => Navigator.pop(
+                                                  context, 'Cancel'),
+                                              child: const Text('Cancel'),
+                                            ),
+                                          ])),
+                                );
+                              },
+                            ),
                           ],
                         );
                       } else {
@@ -111,75 +160,80 @@ class _ProfilePageState extends State<ProfilePage> {
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         final sp = snapshot.data as SharedPreferences;
+                        var bmi = BMI(sp);
                         return Row(
                           children: [
-                            const Icon(MdiIcons.cakeVariantOutline),
-                            const SizedBox(width: 15),
-                            Text(
-                              '${sp.getString('dob')}',
-                              style: const TextStyle(fontSize: 20),
-                            )
+                            SizedBox(
+                              width: 15,
+                            ),
+                            Icon(
+                              MdiIcons.heart,
+                              size: 30,
+                            ),
+                            SizedBox(
+                              width: 50,
+                            ),
+                            TextButton(
+                              child: const Text(
+                                'Health Status',
+                                style: TextStyle(
+                                    fontSize: 20, color: Colors.black),
+                              ),
+                              onPressed: () {
+                                showDialog<String>(
+                                  context: context,
+                                  builder: (BuildContext context) => Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 80),
+                                      child: AlertDialog(
+                                          title: const Text('Health Status'),
+                                          content: SingleChildScrollView(
+                                            child: ListBody(
+                                              children: <Widget>[
+                                                Row(children: [
+                                                  Icon(MdiIcons.weight),
+                                                  Text(
+                                                      'Weight: ${sp.getString('weight')} kg'),
+                                                ]),
+                                                SizedBox(
+                                                  height: 15,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Icon(MdiIcons
+                                                        .humanMaleHeightVariant),
+                                                    Text(
+                                                        'Height: ${sp.getString('height')} cm'),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 15,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Icon(MdiIcons.heart),
+                                                    Text('BMI $bmi'),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () => Navigator.pop(
+                                                  context, 'Cancel'),
+                                              child: const Text('Cancel'),
+                                            ),
+                                          ])),
+                                );
+                              },
+                            ),
                           ],
                         );
                       } else {
                         return const Text('No data available');
                       }
                     }),
-                const SizedBox(height: 10),
-                const Divider(
-                    height: 10,
-                    thickness: 1,
-                    indent: 10,
-                    endIndent: 0,
-                    color: Colors.grey),
-                const SizedBox(height: 10),
-                FutureBuilder(
-                    future: SharedPreferences.getInstance(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        final sp = snapshot.data as SharedPreferences;
-                        return Row(
-                          children: [
-                            const Icon(MdiIcons.weight),
-                            const SizedBox(width: 15),
-                            Text(
-                              '${sp.getString('weight')} kg ',
-                              style: const TextStyle(fontSize: 20),
-                            )
-                          ],
-                        );
-                      } else {
-                        return const Text('No data available');
-                      }
-                    }),
-                const SizedBox(height: 10),
-                const Divider(
-                    height: 10,
-                    thickness: 1,
-                    indent: 10,
-                    endIndent: 0,
-                    color: Colors.grey),
-                const SizedBox(height: 10),
-                FutureBuilder(
-                    future: SharedPreferences.getInstance(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        final sp = snapshot.data as SharedPreferences;
-                        return Row(
-                          children: [
-                            const Icon(MdiIcons.humanMaleHeightVariant),
-                            const SizedBox(width: 15),
-                            Text(
-                              '${sp.getString('height')} cm',
-                              style: const TextStyle(fontSize: 20),
-                            )
-                          ],
-                        );
-                      } else {
-                        return const Text('No data available');
-                      }
-                    }),
-                const SizedBox(height: 10),
               ],
             ),
           ),

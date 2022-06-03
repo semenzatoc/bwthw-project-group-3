@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:conditional_questions/conditional_questions.dart';
 import 'package:healthcare_for_u/screen/loginpage.dart';
 import 'package:healthcare_for_u/screen/profilepage.dart';
+import 'package:healthcare_for_u/screen/userpage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -42,10 +43,10 @@ class _SignUpFormState extends State<SignUpForm> {
                 final sp = await SharedPreferences.getInstance();
                 sp.setString('imagepath', '');
                 saveAnswers(answer_list);
-                Navigator.pushNamed(context, LoginPage.route);
+                Navigator.pushNamed(context, UserPage.route);
               }
             },
-            child: Text("Submit"),
+            child: Text("Next"),
           )
         ],
       ),
@@ -56,7 +57,7 @@ class _SignUpFormState extends State<SignUpForm> {
 //Future<SharedPreferences>
 void saveAnswers(List<FormElement> answer_list) async {
   final sp = await SharedPreferences.getInstance();
-  final questionList = ['name', 'gender', 'dob', 'weight', 'height'];
+  final questionList = ['name', 'gender', 'dob', 'weight', 'height','goal'];
   for (var i = 0; i < answer_list.length; i++) {
     sp.setString(questionList[i], answer_list[i].answer);
   }
@@ -74,8 +75,8 @@ List<Question> questions() {
       },
     ),
     PolarQuestion(
-        question: "What's your gender?",
-        answers: ["F", "M", 'Unspecified'],
+        question: "What's your sex?",
+        answers: ["F", "M"],
         isMandatory: true),
     Question(
       question: "What's your date of birth (dd/mm/yyyy)",
@@ -96,6 +97,14 @@ List<Question> questions() {
     ),
     Question(
       question: "What's your heigth?",
+      //isMandatory: true,
+      validate: (field) {
+        if (field.isEmpty) return "Field cannot be empty";
+        return null;
+      },
+    ),
+     Question(
+      question: "What's your steps goal?",
       //isMandatory: true,
       validate: (field) {
         if (field.isEmpty) return "Field cannot be empty";
