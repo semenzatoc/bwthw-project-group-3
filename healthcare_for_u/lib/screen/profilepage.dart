@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -274,6 +275,11 @@ class _ProfilePageState extends State<ProfilePage> {
     final sp = await SharedPreferences.getInstance();
     sp.remove('username');
 
+    // unauthorize Fitbit connection
+    await FitbitConnector.unauthorize(
+        clientID: '<OAuth 2.0 Client ID>', clientSecret: '<Client Secret>');
+
+    // return to login page
     Navigator.pushNamedAndRemoveUntil(
         context, LoginPage.route, (Route<dynamic> route) => false);
   }
