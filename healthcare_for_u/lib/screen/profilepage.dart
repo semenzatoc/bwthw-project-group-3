@@ -76,16 +76,22 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           Container(
             color: Color.fromARGB(255, 130, 207, 243),
-            height: 300,
+            height: 200,
             width: 450,
-            child:             
-          ClipOval(
-           
+            child:
+            Row( 
+              children:[  
+                SizedBox(width: 40),
+                Text('Hello Bob!', style: TextStyle(fontSize: 30, ),),
+                SizedBox(width: 80,),        
+         ClipRRect(
+            borderRadius: BorderRadius.circular(100),
             child: const Image(
                 image: AssetImage('assets/trying.jpg'),
-                width: 50,
-                height: 50,),
-          ),),
+                width: 100,
+                height: 100,
+                fit: BoxFit.none,
+          ),),],)),
           const SizedBox(
             height: 20,
           ),
