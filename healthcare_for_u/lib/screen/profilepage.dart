@@ -70,7 +70,34 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       body: Column(
         children: [
-          imageProfile(),
+          //imageProfile(),
+          Container(
+              color: Color.fromARGB(255, 130, 207, 243),
+              height: 200,
+              width: 450,
+              child: Row(
+                children: [
+                  SizedBox(width: 40),
+                  Text(
+                    'Hello Bob!',
+                    style: TextStyle(
+                      fontSize: 30,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 50,
+                  ),
+                  imageProfile(),
+                  /*ClipRRect(
+            borderRadius: BorderRadius.circular(100),
+            child: const Image(
+                image: AssetImage('assets/trying.jpg'),
+                width: 100,
+                height: 100,
+                fit: BoxFit.none,
+          ),),*/
+                ],
+              )),
           const SizedBox(
             height: 20,
           ),
@@ -258,28 +285,26 @@ class _ProfilePageState extends State<ProfilePage> {
           if (snapshot.hasData) {
             var sp = snapshot.data as SharedPreferences;
             String? path = sp.getString('imagepath');
-            return Center(
-              child: Stack(children: <Widget>[
-                CircleAvatar(
-                    radius: 80,
-                    backgroundImage: path == ''
-                        ? const AssetImage("assets/trying.jpg")
-                        : FileImage(File(path!)) as ImageProvider),
-                Positioned(
-                  bottom: 20,
-                  right: 20,
-                  child: InkWell(
-                    onTap: () {
-                      showModalBottomSheet(
-                        context: context,
-                        builder: ((BuildContext context) => bottomSheet()),
-                      );
-                    },
-                    child: Icon(Icons.camera_alt, color: Colors.teal, size: 28),
-                  ),
+            return Stack(children: <Widget>[
+              CircleAvatar(
+                  radius: 80,
+                  backgroundImage: path == ''
+                      ? const AssetImage("assets/trying.jpg")
+                      : FileImage(File(path!)) as ImageProvider),
+              Positioned(
+                bottom: 20,
+                right: 20,
+                child: InkWell(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: ((BuildContext context) => bottomSheet()),
+                    );
+                  },
+                  child: Icon(Icons.camera_alt, color: Colors.teal, size: 28),
                 ),
-              ]),
-            );
+              ),
+            ]);
           } else {
             return const Text(
                 'Not enough data available'); // se non ho fatto il sign up form
