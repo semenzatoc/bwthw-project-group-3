@@ -27,6 +27,7 @@ class _LoginPageState extends State<LoginPage> {
   String _password = '';
   String _confirmPassword = '';
   int _user_id = 0;
+  bool incorrectUsername = false;
 
   @override
   void initState() {
@@ -91,12 +92,18 @@ class _LoginPageState extends State<LoginPage> {
                                                     const InputDecoration(
                                                         labelText: 'Username'),
                                                 validator: (value) {
-                                                  _userName = userList
-                                                      .firstWhere((user) =>
-                                                          user.username ==
-                                                          value)
-                                                      .username;
-                                                  if (value == null ||
+                                                  try {
+                                                    _userName = userList
+                                                        .firstWhere((user) =>
+                                                            user.username ==
+                                                            value)
+                                                        .username;
+                                                  } on StateError catch (exception) {
+                                                    setState(() {
+                                                      incorrectUsername = true;
+                                                    });
+                                                  }
+                                                  /*if (value == null ||
                                                       value.trim().isEmpty) {
                                                     return 'Please enter your username';
                                                   } else {
@@ -105,6 +112,11 @@ class _LoginPageState extends State<LoginPage> {
                                                     } else {
                                                       return 'Wrong username';
                                                     }
+                                                  }*/
+                                                  if (incorrectUsername) {
+                                                    return 'Username does not exist';
+                                                  } else {
+                                                    return null;
                                                   }
                                                 },
                                                 onChanged: (value) {
@@ -117,11 +129,15 @@ class _LoginPageState extends State<LoginPage> {
                                                   labelText: 'Password'),
                                               obscureText: true,
                                               validator: (value) {
-                                                _password = userList
-                                                    .firstWhere((user) =>
-                                                        user.username ==
-                                                        _userName)
-                                                    .password;
+                                                try {
+                                                  _password = userList
+                                                      .firstWhere((user) =>
+                                                          user.username ==
+                                                          _userName)
+                                                      .password;
+                                                } on StateError catch (e) {
+                                                  return 'Wrong password';
+                                                }
                                                 if (value == null ||
                                                     value.trim().isEmpty) {
                                                   return 'This field is required';

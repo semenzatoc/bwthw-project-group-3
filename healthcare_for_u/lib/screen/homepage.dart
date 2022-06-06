@@ -278,11 +278,6 @@ class _HomePageState extends State<HomePage> {
         print('Added $dateTest entry');
       }
     }
-
-    //RIMUOVERE DOPO DEBUG
-    //var whatActivities =
-    // await Provider.of<DatabaseRepository>(context, listen: false)
-    //   .findAllActivities();
     return latestActivity;
   }
 

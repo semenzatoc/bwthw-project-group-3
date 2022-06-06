@@ -73,7 +73,7 @@ class DataFetcher {
     List<Activity> activeMinuteDays =
         await Provider.of<DatabaseRepository>(context, listen: false)
             .findActiivtyInPeriod(days);
-    print('Hello');
+
     return activeMinuteDays;
   }
 }
