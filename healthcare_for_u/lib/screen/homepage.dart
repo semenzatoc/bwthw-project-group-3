@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:healthcare_for_u/utils/dataFetcher.dart';
 
 import '../utils/appcredentials.dart';
 import 'calendarpage.dart';
@@ -279,6 +280,25 @@ class _HomePageState extends State<HomePage> {
       }
     }
     return latestActivity;
+  }
+
+// fetches the last week or month of activities
+  Future<List<Activity>> _fetchActivityFromDB(String time) async {
+    final sp = await SharedPreferences.getInstance();
+    DateTime now = DateTime.now();
+    DateTime today = DateTime.utc(now.year, now.month, now.day);
+    DataFetcher fetcher = DataFetcher();
+    List<Activity> data = await fetcher.fetchRangeActivity(context, time);
+    Activity todayActivity = Activity(
+        null,
+        sp.getInt('usercode')!,
+        today,
+        sp.getInt('lastSteps')!,
+        sp.getInt('lastCalories')!,
+        sp.getInt('lastFloors')!,
+        0);
+    data.add(todayActivity);
+    return data;
   }
 
   Future<List<FitbitActivityTimeseriesData>> _fetchActivity(
