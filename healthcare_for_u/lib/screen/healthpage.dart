@@ -109,7 +109,8 @@ class _HealthPageState extends State<HealthPage> {
                                               children: [
                                                 FutureBuilder(
                                                     future: fetcher
-                                                        .calcMonthActivity(),
+                                                        .calcMonthActivity(
+                                                            context),
                                                     builder:
                                                         (context, snapshot) {
                                                       if (snapshot.hasData) {

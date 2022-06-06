@@ -60,6 +60,11 @@ class DatabaseRepository extends ChangeNotifier {
     return results;
   } //findActivity
 
+  Future<List<Activity>> findActiivtyInPeriod(List<DateTime> days) async {
+    final results = await database.activityDao.findActivityInPeriod(days);
+    return results;
+  }
+
   Future<int> getDaySteps(DateTime day) async {
     final results = await database.activityDao.getDayActivity(day);
     return results[0].steps;
