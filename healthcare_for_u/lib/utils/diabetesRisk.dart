@@ -1,3 +1,4 @@
+import 'package:healthcare_for_u/utils/BMI.dart';
 import 'package:healthcare_for_u/utils/calculateAge.dart';
 
 int diabetesRisk(sp, gender, physicalActivity) {
@@ -17,15 +18,12 @@ int diabetesRisk(sp, gender, physicalActivity) {
   }
 
   //BMI
-  /*double height = double.parse(sp.getString('height'));
-  double weight = double.parse(sp.getString('weight'));
-  double bmi = calculateBMI(height, weight);
-  sp.setDouble('bmi', bmi);
+  double bmi = BMI(sp);
   if (bmi >= 25 && bmi <= 30) {
-  risk = risk + 1;
-  } else if (bmi >30) {
-  risk = risk + 3;
-  }*/
+    risk = risk + 1;
+  } else if (bmi > 30) {
+    risk = risk + 3;
+  }
 
   //Waist circumference
   String waist = sp.getString('waist');
