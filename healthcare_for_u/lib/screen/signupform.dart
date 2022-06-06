@@ -42,7 +42,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 answer_list = _key.currentState!.getElementList();
                 final sp = await SharedPreferences.getInstance();
                 sp.setString('imagepath', '');
-                sp.setString('lastUpdate', '2022-05-01');
+                sp.setString('lastUpdate', '2022-03-01');
                 saveAnswers(answer_list);
                 Navigator.pushNamed(context, UserPage.route);
               }

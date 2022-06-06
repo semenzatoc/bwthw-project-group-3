@@ -3,12 +3,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'appcredentials.dart';
 
 class DataFetcher {
+  // calculate month activity for DiabetesRisk function
+  // returns TRUE if user has had at least an average of 30mins of physical
+  // activity every day for the last month
   Future<bool> calcMonthActivity() async {
     //Minutes very active in the past month
-    final durationVeryActive = await _fetchMonthActivity('minutesVeryActive');
+    final durationVeryActive = await fetchMonthActivity('minutesVeryActive');
     //Minutes fairly active in the past month
     final durationFairlyActive =
-        await _fetchMonthActivity('minutesFairlyActive');
+        await fetchMonthActivity('minutesFairlyActive');
     //Classified as active if minimum of 30 minutes activity in more than 50% of
     //days in the past month
     double minDailyActive = 0;
@@ -31,7 +34,7 @@ class DataFetcher {
     // fetchActivity
   }
 
-  Future<List<FitbitActivityTimeseriesData>> _fetchMonthActivity(
+  Future<List<FitbitActivityTimeseriesData>> fetchMonthActivity(
       String dataType) async {
     FitbitActivityTimeseriesDataManager fitbitVeryActiveTimeseriesDataManager =
         FitbitActivityTimeseriesDataManager(

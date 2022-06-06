@@ -45,7 +45,7 @@ class _AuthPageState extends State<AuthPage> {
                 final sp = await SharedPreferences.getInstance();
                 sp.setString('userId', userId!);
                 // REMOVE AFTER DEBUGGING
-                sp.setString('lastUpdate', '2022-05-01');
+                sp.setString('lastUpdate', '2022-03-01');
                 Navigator.pushReplacementNamed(context, HomePage.route);
               },
               child: const Text('Tap to authorize'),

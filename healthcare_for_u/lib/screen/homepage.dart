@@ -8,6 +8,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 import '../utils/appcredentials.dart';
 import 'calendarpage.dart';
@@ -28,7 +29,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _getLastUpdate();
-    //_updateDB();
   } //initState
 
   void _getLastUpdate() async {
@@ -39,8 +39,8 @@ class _HomePageState extends State<HomePage> {
       sp.setInt('lastSteps', 0);
       sp.setInt('lastFloors', 0);
       sp.setInt('lastCalories', 0);
-      _updateData();
     }
+    _updateData();
   }
 
   @override
@@ -236,12 +236,13 @@ class _HomePageState extends State<HomePage> {
     DateTime yesterday = DateTime.now().subtract(const Duration(days: 1));
     // get yesterday at midnight
     yesterday = DateTime(yesterday.year, yesterday.month, yesterday.day);
-    final difference = yesterday.difference(lastUpdate);
+    //final difference = yesterday.difference(lastUpdate);
 
     Activity? latestActivity;
     // if last update was before yesterday, fill missing database entries up
     //until yesterday and update lastUpdate in shared preferences
-    if (difference.inDays > 1) {
+    //if (difference.inDays > 1) {
+    if (!isSameDay(yesterday, lastUpdate)) {
       sp.setString(
           'lastUpdate', DateFormat("yyyy-MM-dd HH:mm:ss").format(yesterday));
 
@@ -256,11 +257,11 @@ class _HomePageState extends State<HomePage> {
       int N = newSteps.length;
       for (var i = 0; i < N; i++) {
         // list goes from older to latest
-        DateTime date = lastUpdate.add(Duration(days: i + 1));
+        DateTime dateTest = newSteps[i].dateOfMonitoring!.toUtc();
         Activity newActivity = Activity(
             null,
             userId,
-            date,
+            dateTest,
             newSteps[i].value!.toInt(),
             newCalories[i].value!.toInt(),
             newFloors[i].value!.toInt(),
@@ -269,9 +270,19 @@ class _HomePageState extends State<HomePage> {
         await Provider.of<DatabaseRepository>(context, listen: false)
             .insertActivity(newActivity);
         latestActivity = newActivity;
-        print(date);
+        List<Activity> dayActivity =
+            await Provider.of<DatabaseRepository>(context, listen: false)
+                .findActivity(dateTest) as List<Activity>;
+        final daySteps = dayActivity[0].steps;
+
+        print('Added $dateTest entry');
       }
     }
+
+    //RIMUOVERE DOPO DEBUG
+    //var whatActivities =
+    // await Provider.of<DatabaseRepository>(context, listen: false)
+    //   .findAllActivities();
     return latestActivity;
   }
 

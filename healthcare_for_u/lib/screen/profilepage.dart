@@ -278,6 +278,9 @@ class _ProfilePageState extends State<ProfilePage> {
     sp.remove('username');
     sp.setInt('usercode', -1);
 
+// RIMUOVERE A FINE DEBUG
+    await Provider.of<DatabaseRepository>(context, listen: false)
+        .clearActivityTable();
     // unauthorize Fitbit connection
     await FitbitConnector.unauthorize(
         clientID: '<OAuth 2.0 Client ID>', clientSecret: '<Client Secret>');
