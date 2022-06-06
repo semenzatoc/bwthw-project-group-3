@@ -19,7 +19,7 @@ class DataFetcher {
     //Classified as active if minimum of 30 minutes activity in more than 50% of
     //days in the past month
 
-    final allDayMinutes = await fetchMonthActivity(context);
+    final allDayMinutes = await fetchRangeActivity(context, 'month');
     double minDailyActive = 0;
     int countActiveDays = 0;
 
@@ -62,11 +62,19 @@ class DataFetcher {
       resource: fitbitVeryActiveTimeseriesDataManager.type,
     )) as List<FitbitActivityTimeseriesData>;
     return durationActivity;}*/
-  Future<List<Activity>> fetchMonthActivity(BuildContext context) async {
+  Future<List<Activity>> fetchRangeActivity(
+      BuildContext context, String time) async {
+    int N = 0;
+    if (time == 'week') {
+      N = 7;
+    }
+    if (time == 'month') {
+      N = 31;
+    }
     DateTime now = DateTime.now();
     DateTime today = DateTime.utc(now.year, now.month, now.day);
     List<DateTime> days = [];
-    for (var i = 1; i <= 31; i++) {
+    for (var i = 1; i <= N; i++) {
       days.add(today.subtract(Duration(days: i, hours: 2)));
     }
 
