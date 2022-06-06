@@ -78,11 +78,9 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       body: RefreshIndicator(
-        onRefresh: () {
-          setState(() {
-            _updateData();
-          });
-          return Future<void>.delayed(const Duration(seconds: 2));
+        onRefresh: () async {
+          await _updateData();
+          setState(() {});
         },
         child: ListView(children: [
           SizedBox(
@@ -110,19 +108,10 @@ class _HomePageState extends State<HomePage> {
           ),
         ]),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            _updateData();
-          });
-        },
-        child: Icon(MdiIcons.reload),
-        tooltip: 'Press to synch data',
-      ),
     );
   } // build
 
-  void _updateData() async {
+  _updateData() async {
     final sp = await SharedPreferences.getInstance();
     int steps = await _fetchData('steps');
     int floors = await _fetchData('floors');
