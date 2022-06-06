@@ -26,6 +26,7 @@ class _LoginPageState extends State<LoginPage> {
   String _userName = '';
   String _password = '';
   String _confirmPassword = '';
+  int _user_id = 0;
 
   @override
   void initState() {
@@ -86,28 +87,29 @@ class _LoginPageState extends State<LoginPage> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             TextFormField(
-                                              decoration: const InputDecoration(
-                                                  labelText: 'Username'),
-                                              validator: (value) {
-                                                _userName = userList
-                                                    .firstWhere((user) =>
-                                                        user.username == value)
-                                                    .username;
-                                                print(_userName);
-                                                if (value == null ||
-                                                    value.trim().isEmpty) {
-                                                  return 'Please enter your username';
-                                                } else {
-                                                  if (value == _userName) {
-                                                    return null;
+                                                decoration:
+                                                    const InputDecoration(
+                                                        labelText: 'Username'),
+                                                validator: (value) {
+                                                  _userName = userList
+                                                      .firstWhere((user) =>
+                                                          user.username ==
+                                                          value)
+                                                      .username;
+                                                  if (value == null ||
+                                                      value.trim().isEmpty) {
+                                                    return 'Please enter your username';
                                                   } else {
-                                                    return 'Wrong username';
+                                                    if (value == _userName) {
+                                                      return null;
+                                                    } else {
+                                                      return 'Wrong username';
+                                                    }
                                                   }
-                                                }
-                                              },
-                                              /* onChanged: (value) =>
-                                                  _userName = value,*/
-                                            ),
+                                                },
+                                                onChanged: (value) {
+                                                  _userName = value;
+                                                }),
 
                                             /// Password
                                             TextFormField(
@@ -120,7 +122,6 @@ class _LoginPageState extends State<LoginPage> {
                                                         user.username ==
                                                         _userName)
                                                     .password;
-                                                print(_password);
                                                 if (value == null ||
                                                     value.trim().isEmpty) {
                                                   return 'This field is required';
@@ -138,8 +139,6 @@ class _LoginPageState extends State<LoginPage> {
                                             const SizedBox(height: 20),
                                             OutlinedButton(
                                                 onPressed: () {
-                                                  /*logData = LoginCouples(
-                                    username: _userName, password: _password);*/
                                                   _trySubmitForm(_userName);
                                                 },
                                                 child: const Text('Sign In')),

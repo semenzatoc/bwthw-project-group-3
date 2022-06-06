@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../repository/databaseRepository.dart';
 import 'calendarpage.dart';
 import 'healthpage.dart';
 import 'homepage.dart';
 import 'loginpage.dart';
-import 'package:healthcare_for_u/utils/appcredentials.dart';
 import 'package:healthcare_for_u/utils/BMI.dart';
+import 'package:provider/provider.dart';
+import 'package:healthcare_for_u/database/database.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key}) : super(key: key);
@@ -30,7 +32,9 @@ class _ProfilePageState extends State<ProfilePage> {
           centerTitle: true,
           actions: [
             IconButton(
-                onPressed: () {
+                onPressed: () async {
+                  // await Provider.of<DatabaseRepository>(context, listen: false)
+                  //   .clearActivityTable();
                   _toLoginPage(context);
                 },
                 icon: const Icon(Icons.logout))
@@ -73,19 +77,17 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           //imageProfile(),
           Container(
-              color: Color.fromARGB(255, 130, 207, 243),
+              color: const Color.fromARGB(255, 130, 207, 243),
               height: 200,
               width: 450,
               child: Row(
                 children: [
-                  SizedBox(width: 40),
-                  Text(
+                  const SizedBox(width: 40),
+                  const Text(
                     'Hello Bob!',
-                    style: TextStyle(
-                      fontSize: 30,
-                    ),
+                    style: TextStyle(fontSize: 30),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 50,
                   ),
                   imageProfile(),
@@ -113,14 +115,14 @@ class _ProfilePageState extends State<ProfilePage> {
                         final sp = snapshot.data as SharedPreferences;
                         return Row(
                           children: [
-                            SizedBox(
+                            const SizedBox(
                               width: 15,
                             ),
-                            Icon(
+                            const Icon(
                               MdiIcons.account,
                               size: 30,
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 50,
                             ),
                             TextButton(
@@ -141,16 +143,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                             child: ListBody(
                                               children: <Widget>[
                                                 Row(children: [
-                                                  Icon(MdiIcons.account),
+                                                  const Icon(MdiIcons.account),
                                                   Text(
                                                       'Name: ${sp.getString('name')}'),
                                                 ]),
-                                                SizedBox(
+                                                const SizedBox(
                                                   height: 15,
                                                 ),
                                                 Row(
                                                   children: [
-                                                    Icon(MdiIcons
+                                                    const Icon(MdiIcons
                                                         .cakeVariantOutline),
                                                     Text(
                                                         'Date of Birth: ${sp.getString('dob')}'),
@@ -191,14 +193,14 @@ class _ProfilePageState extends State<ProfilePage> {
                         var bmi = BMI(sp);
                         return Row(
                           children: [
-                            SizedBox(
+                            const SizedBox(
                               width: 15,
                             ),
-                            Icon(
+                            const Icon(
                               MdiIcons.heart,
                               size: 30,
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 50,
                             ),
                             TextButton(
@@ -219,27 +221,27 @@ class _ProfilePageState extends State<ProfilePage> {
                                             child: ListBody(
                                               children: <Widget>[
                                                 Row(children: [
-                                                  Icon(MdiIcons.weight),
+                                                  const Icon(MdiIcons.weight),
                                                   Text(
                                                       'Weight: ${sp.getString('weight')} kg'),
                                                 ]),
-                                                SizedBox(
+                                                const SizedBox(
                                                   height: 15,
                                                 ),
                                                 Row(
                                                   children: [
-                                                    Icon(MdiIcons
+                                                    const Icon(MdiIcons
                                                         .humanMaleHeightVariant),
                                                     Text(
                                                         'Height: ${sp.getString('height')} cm'),
                                                   ],
                                                 ),
-                                                SizedBox(
+                                                const SizedBox(
                                                   height: 15,
                                                 ),
                                                 Row(
                                                   children: [
-                                                    Icon(MdiIcons.heart),
+                                                    const Icon(MdiIcons.heart),
                                                     Text('BMI $bmi'),
                                                   ],
                                                 )
@@ -274,6 +276,7 @@ class _ProfilePageState extends State<ProfilePage> {
     //Unset the 'username' filed in SharedPreference
     final sp = await SharedPreferences.getInstance();
     sp.remove('username');
+    sp.setInt('usercode', -1);
 
     // unauthorize Fitbit connection
     await FitbitConnector.unauthorize(
@@ -307,7 +310,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       builder: ((BuildContext context) => bottomSheet()),
                     );
                   },
-                  child: Icon(Icons.camera_alt, color: Colors.teal, size: 28),
+                  child: const Icon(Icons.camera_alt,
+                      color: Colors.teal, size: 28),
                 ),
               ),
             ]);
@@ -322,25 +326,25 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
         height: 100,
         width: MediaQuery.of(context).size.width,
-        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: Column(children: <Widget>[
-          Text(
+          const Text(
             "Choose profile photo",
             style: TextStyle(fontSize: 20),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
             IconButton(
                 onPressed: () {
                   takePhoto(ImageSource.camera);
                 },
-                icon: Icon(Icons.camera),
+                icon: const Icon(Icons.camera),
                 tooltip: "Camera"),
             IconButton(
                 onPressed: () {
                   takePhoto(ImageSource.gallery);
                 },
-                icon: Icon(Icons.image),
+                icon: const Icon(Icons.image),
                 tooltip: "Gallery")
           ])
         ]));

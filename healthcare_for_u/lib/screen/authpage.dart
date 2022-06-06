@@ -31,10 +31,8 @@ class _AuthPageState extends State<AuthPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text('Are you connected to FitBit?'),
-            SizedBox(
-              height: 20,
-            ),
+            const Text('Are you connected to FitBit?'),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
                 // Authorize the app
@@ -46,6 +44,8 @@ class _AuthPageState extends State<AuthPage> {
                     callbackUrlScheme: AppCredentials.fitbitCallbackScheme);
                 final sp = await SharedPreferences.getInstance();
                 sp.setString('userId', userId!);
+                // REMOVE AFTER DEBUGGING
+                sp.setString('lastUpdate', '2022-05-01');
                 Navigator.pushReplacementNamed(context, HomePage.route);
               },
               child: const Text('Tap to authorize'),

@@ -16,6 +16,7 @@ class User {
   //final double height;
   //final DateTime dob;
   //final String profilepicture;
+  //final DateTime lastfetch;
 
   //final bool isAuthorized;
 

@@ -58,7 +58,7 @@ class DatabaseRepository extends ChangeNotifier {
   Future<List<Activity?>> findActivity(DateTime day) async {
     final results = await database.activityDao.getDayActivity(day);
     return results;
-  } //findUser
+  } //findActivity
 
   Future<int> getDaySteps(DateTime day) async {
     final results = await database.activityDao.getDayActivity(day);
@@ -74,4 +74,24 @@ class DatabaseRepository extends ChangeNotifier {
     final results = await database.activityDao.getDayActivity(day);
     return results.first.calories;
   } //getDayCalories
+
+  Future<void> insertActivity(Activity activity) async {
+    await database.activityDao.insertActivity(activity);
+    notifyListeners();
+  } //insertUser
+
+  Future<bool> checkLastDate() async {
+    final list = await database.activityDao
+        .getDayActivity(DateTime.now().subtract(const Duration(days: 1)));
+    if (list.isEmpty) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  Future<void> clearActivityTable() async {
+    await database.activityDao.deleteAllActivities();
+    notifyListeners();
+  }
 } //DatabaseRepository
