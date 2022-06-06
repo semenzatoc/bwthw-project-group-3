@@ -66,7 +66,7 @@ class DataFetcher {
     DateTime now = DateTime.now();
     DateTime today = DateTime.utc(now.year, now.month, now.day);
     List<DateTime> days = [];
-    for (var i = 0; i <= 31; i++) {
+    for (var i = 1; i <= 31; i++) {
       days.add(today.subtract(Duration(days: i, hours: 2)));
     }
 
