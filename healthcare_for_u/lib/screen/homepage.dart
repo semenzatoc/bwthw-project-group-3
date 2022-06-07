@@ -4,6 +4,7 @@ import 'package:healthcare_for_u/database/entities/activity.dart';
 import 'package:healthcare_for_u/database/entities/user.dart';
 import 'package:healthcare_for_u/repository/databaseRepository.dart';
 import 'package:healthcare_for_u/screen/profilepage.dart';
+import 'package:healthcare_for_u/screen/steppage.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,8 @@ import 'package:healthcare_for_u/utils/dataFetcher.dart';
 
 import '../utils/appcredentials.dart';
 import 'calendarpage.dart';
+import 'caloriespage.dart';
+import 'floorspage.dart';
 import 'healthpage.dart';
 
 class HomePage extends StatefulWidget {
@@ -105,18 +108,34 @@ class _HomePageState extends State<HomePage> {
                         : const CircularProgressIndicator();
                   }),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                InkWell(
+                  child:
                 _dataCircle('steps', MdiIcons.footPrint,
-                    Color.fromARGB(255, 242, 85, 28))
+                    Color.fromARGB(255, 242, 85, 28)),
+                  onTap: () {
+                   Navigator.pushNamed(context, StepPage.route);
+                  },
+                    )
               ]),
               const SizedBox(height: 25),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  InkWell(
+                    child:
                   _dataCircle('calories', MdiIcons.fire,
                       Color.fromARGB(255, 237, 80, 132)),
+                    onTap: () {
+                      Navigator.pushNamed(context, CaloriesPage.route);
+                    }),
                   const SizedBox(width: 20),
+                  InkWell(
+                    child:
                   _dataCircle('floors', MdiIcons.stairs,
-                      Color.fromARGB(255, 61, 239, 159))
+                      Color.fromARGB(255, 61, 239, 159)),
+                      onTap: (){
+                        Navigator.pushNamed(context, FloorsPage.route);
+                      },),
                 ],
               ),
             ],
@@ -283,7 +302,7 @@ class _HomePageState extends State<HomePage> {
   }
 
 // fetches the last week or month of activities
-  Future<List<Activity>> _fetchActivityFromDB(String time) async {
+  Future<List<Activity>> fetchActivityFromDB(String time) async {
     final sp = await SharedPreferences.getInstance();
     DateTime now = DateTime.now();
     DateTime today = DateTime.utc(now.year, now.month, now.day);
