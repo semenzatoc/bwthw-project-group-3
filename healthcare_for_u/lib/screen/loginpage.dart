@@ -56,132 +56,126 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
-            color: Color.fromARGB(255, 92, 171, 235),
-            alignment: Alignment.center,
-            child: FutureBuilder(
-                future: Provider.of<DatabaseRepository>(context, listen: false)
-                    .findAllUsers(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final userList = snapshot.data as List<User>;
-                    return Column(children: [
-                      const Text(
-                        'Login',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            height: 5,
-                            fontSize: 35,
-                            color: Colors.white),
-                      ),
-                      Center(
-                          child: Card(
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 35),
-                              child: Padding(
-                                  padding: const EdgeInsets.all(20),
-                                  child: Form(
-                                      key: _formKey,
-                                      child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            TextFormField(
-                                              decoration: const InputDecoration(
-                                                  labelText: 'Username'),
-                                              validator: (value) {
-                                                _userName = userList
-                                                    .firstWhere((user) =>
-                                                        user.username == value)
-                                                    .username;
-                                                print(_userName);
-                                                if (value == null ||
-                                                    value.trim().isEmpty) {
-                                                  return 'Please enter your username';
-                                                } else {
-                                                  if (value == _userName) {
-                                                    return null;
-                                                  } else {
-                                                    return 'Wrong username';
-                                                  }
-                                                }
-                                              },
-                                              /* onChanged: (value) =>
-                                                  _userName = value,*/
-                                            ),
+        backgroundColor: Color.fromARGB(255, 92, 171, 235),
+        body: SingleChildScrollView(
+          child: FutureBuilder(
+              future: Provider.of<DatabaseRepository>(context, listen: false)
+                  .findAllUsers(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final userList = snapshot.data as List<User>;
+                  return Column(children: [
+                    const Text(
+                      'Login',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          height: 5,
+                          fontSize: 35,
+                          color: Colors.white),
+                    ),
+                    Card(
+                        margin: const EdgeInsets.symmetric(horizontal: 35),
+                        child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Form(
+                                key: _formKey,
+                                child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      TextFormField(
+                                        decoration: const InputDecoration(
+                                            labelText: 'Username'),
+                                        validator: (value) {
+                                          _userName = userList
+                                              .firstWhere((user) =>
+                                                  user.username == value)
+                                              .username;
+                                          print(_userName);
+                                          if (value == null ||
+                                              value.trim().isEmpty) {
+                                            return 'Please enter your username';
+                                          } else {
+                                            if (value == _userName) {
+                                              return null;
+                                            } else {
+                                              return 'Wrong username';
+                                            }
+                                          }
+                                        },
+                                        /* onChanged: (value) =>
+                                            _userName = value,*/
+                                      ),
 
-                                            /// Password
-                                            TextFormField(
-                                              decoration: const InputDecoration(
-                                                  labelText: 'Password'),
-                                              obscureText: true,
-                                              validator: (value) {
-                                                _password = userList
-                                                    .firstWhere((user) =>
-                                                        user.username ==
-                                                        _userName)
-                                                    .password;
-                                                print(_password);
-                                                if (value == null ||
-                                                    value.trim().isEmpty) {
-                                                  return 'This field is required';
-                                                } else {
-                                                  if (value == _password) {
-                                                    return null;
-                                                  } else {
-                                                    return 'Wrong password';
-                                                  }
-                                                }
-                                              },
-                                              onChanged: (value) =>
-                                                  _password = value,
-                                            ),
-                                            const SizedBox(height: 20),
-                                            OutlinedButton(
-                                                onPressed: () {
-                                                  /*logData = LoginCouples(
-                                    username: _userName, password: _password);*/
-                                                  _trySubmitForm(_userName);
-                                                },
-                                                child: const Text('Sign In')),
-                                            const SizedBox(height: 20),
+                                      /// Password
+                                      TextFormField(
+                                        decoration: const InputDecoration(
+                                            labelText: 'Password'),
+                                        obscureText: true,
+                                        validator: (value) {
+                                          _password = userList
+                                              .firstWhere((user) =>
+                                                  user.username == _userName)
+                                              .password;
+                                          print(_password);
+                                          if (value == null ||
+                                              value.trim().isEmpty) {
+                                            return 'This field is required';
+                                          } else {
+                                            if (value == _password) {
+                                              return null;
+                                            } else {
+                                              return 'Wrong password';
+                                            }
+                                          }
+                                        },
+                                        onChanged: (value) => _password = value,
+                                      ),
+                                      const SizedBox(height: 20),
+                                      OutlinedButton(
+                                          onPressed: () {
+                                            /*logData = LoginCouples(
+                              username: _userName, password: _password);*/
+                                            _trySubmitForm(_userName);
+                                          },
+                                          child: const Text('Sign In')),
+                                      const SizedBox(height: 20),
 
-                                            RichText(
-                                                text: TextSpan(
-                                              text: "Don't have an account?",
-                                              style: const TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 14,
-                                              ),
-                                              children: [
-                                                TextSpan(
-                                                  text: " Sign up",
-                                                  style: const TextStyle(
-                                                    color: Colors.purple,
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                  recognizer:
-                                                      TapGestureRecognizer()
-                                                        ..onTap = () {
-                                                          Navigator.pushNamed(
-                                                              context,
-                                                              SignUpForm.route);
-                                                        },
-                                                ),
-                                                const TextSpan(
-                                                  text: " today!",
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                              ],
-                                            )),
-                                          ])))))
-                    ]);
-                  } else {
-                    return LinearProgressIndicator();
-                  }
-                })));
+                                      RichText(
+                                          text: TextSpan(
+                                        text: "Don't have an account?",
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 14,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: " Sign up",
+                                            style: const TextStyle(
+                                              color: Colors.purple,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            recognizer: TapGestureRecognizer()
+                                              ..onTap = () {
+                                                Navigator.pushNamed(
+                                                    context, SignUpForm.route);
+                                              },
+                                          ),
+                                          const TextSpan(
+                                            text: " today!",
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ],
+                                      )),
+                                    ]))))
+                  ]);
+                } else {
+                  return LinearProgressIndicator();
+                }
+              }),
+        ));
   }
 }//Login Page
