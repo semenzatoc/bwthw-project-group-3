@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
 import 'package:healthcare_for_u/screen/profilepage.dart';
+import 'package:healthcare_for_u/utils/getAchievement.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -102,20 +103,34 @@ class _CalendarPageState extends State<CalendarPage> {
                             future: _fetchSteps(selectedDay),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
-                                final steps = snapshot.data as double;
+                                final steps = snapshot.data as int;
                                 if (steps > 0) {
-                                  final achievement = _getAchievement(steps);
-                                  return Column(
-                                    children: [
-                                      _textSteps(steps, 10000),
-                                      SizedBox(height: 10),
-                                      Text('You were a ${achievement.title}!'),
-                                      SizedBox(height: 10),
-                                      Image(
-                                          image: AssetImage(
-                                              achievement.assetPicture!))
-                                    ],
-                                  );
+                                  return FutureBuilder(
+                                      future: SharedPreferences.getInstance(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData) {
+                                          var sp = snapshot.data
+                                              as SharedPreferences;
+                                          final achievement =
+                                              getAchievement(steps, sp);
+                                          String? goal_s = sp.getString('goal');
+                                          var goal = double.parse(goal_s!);
+                                          return Column(
+                                            children: [
+                                              _textSteps(steps, goal),
+                                              SizedBox(height: 10),
+                                              Text(
+                                                  'You were a ${achievement.title}!'),
+                                              SizedBox(height: 10),
+                                              Image(
+                                                  image: AssetImage(achievement
+                                                      .assetPicture!))
+                                            ],
+                                          );
+                                        } else {
+                                          return CircularProgressIndicator();
+                                        }
+                                      });
                                 } else {
                                   return const Text(
                                     'No data available for today',
@@ -156,7 +171,7 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   } // build
 
-  Future<double?> _fetchSteps(DateTime day) async {
+  Future<int?> _fetchSteps(DateTime day) async {
     FitbitActivityTimeseriesDataManager fitbitActivityTimeseriesDataManager =
         FitbitActivityTimeseriesDataManager(
       clientID: AppCredentials.fitbitClientID,
@@ -172,10 +187,10 @@ class _CalendarPageState extends State<CalendarPage> {
       userID: sp.getString('userId'),
       resource: fitbitActivityTimeseriesDataManager.type,
     )) as List<FitbitActivityTimeseriesData>;
-    return steps[0].value as double;
+    return steps[0].value!.toInt();
   } // _fetchSteps
 
-  Widget _textSteps(double steps, double goal) {
+  Widget _textSteps(int steps, double goal) {
     return RichText(
         textAlign: TextAlign.center,
         text: TextSpan(
@@ -207,20 +222,5 @@ class _CalendarPageState extends State<CalendarPage> {
             ),
           ],
         ));
-  }
-
-  Achievement _getAchievement(double steps) {
-    Achievement achievement = Achievement();
-    if (steps < 5500) {
-      achievement.setTitle('Amoeba');
-      achievement.setPicture('assets/trying.jpg');
-    } else if (steps >= 5500 && steps < 10000) {
-      achievement.setTitle('Fighter');
-      achievement.setPicture('assets/fighter.jpg');
-    } else {
-      achievement.setTitle('Champion');
-      achievement.setPicture('assets/champion.jpg');
-    }
-    return achievement;
   }
 } //_CalendarPageState

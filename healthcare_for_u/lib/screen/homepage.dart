@@ -1,6 +1,7 @@
 import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
 import 'package:healthcare_for_u/screen/profilepage.dart';
+import 'package:healthcare_for_u/utils/getAchievement.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -83,6 +84,7 @@ class _HomePageState extends State<HomePage> {
           setState(() {});
         },
         child: ListView(children: [
+          currentLevel(),
           SizedBox(
             height: 50,
           ),
@@ -200,4 +202,34 @@ class _HomePageState extends State<HomePage> {
           }
         });
   } // _dataCircle
+
+  Widget currentLevel() {
+    return FutureBuilder(
+        future: SharedPreferences.getInstance(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            var sp = snapshot.data as SharedPreferences;
+            int data = sp.getInt('lastSteps') as int;
+            final achievement = getAchievement(data, sp);
+            return Container(
+              color: Color.fromARGB(255, 130, 207, 243),
+              height: 100,
+              width: 450,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Right now you are a ${achievement.title}!',
+                      style: TextStyle(fontSize: 20)),
+                  SizedBox(width: 20),
+                  CircleAvatar(
+                      radius: 40,
+                      backgroundImage: AssetImage(achievement.assetPicture!))
+                ],
+              ),
+            );
+          } else {
+            return CircularProgressIndicator();
+          }
+        });
+  }
 }
