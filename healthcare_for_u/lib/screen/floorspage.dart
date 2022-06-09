@@ -20,8 +20,8 @@ class FloorsPage extends StatefulWidget {
 }
 
 class _FloorsPageState extends State<FloorsPage> {
-   List<LineSeries> weekFloors = [];
-   List<LineSeries> monthFloors = [];
+  List<LineSeries> weekFloors = [];
+  List<LineSeries> monthFloors = [];
 
   @override
   Widget build(BuildContext context) {
@@ -30,61 +30,71 @@ class _FloorsPageState extends State<FloorsPage> {
       appBar: AppBar(
         title: Text(FloorsPage.routename),
       ),
-      body: Column(
-        children: [
-          //FutureBuilder to fetch weekly data of floors
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            //FutureBuilder to fetch weekly data of floors
             FutureBuilder(
-              future: _fetchActivityFromDB('week'),
-              builder: (context,snapshot){
-                if (snapshot.hasData) {
-                  var weekActivity = snapshot.data as List<Activity>;
-                  for (var i = 0; i < weekActivity.length; i++) {
-                    int element = weekActivity[i].floors;
-                    //create the weekFloors List<LineSeries> that is necessary for defining and displaying the LineChart
-                    weekFloors.add(LineSeries(day: i, steps: element)); 
+                future: _fetchActivityFromDB('week'),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    var weekActivity = snapshot.data as List<Activity>;
+                    for (var i = 0; i < weekActivity.length; i++) {
+                      int element = weekActivity[i].floors;
+                      //create the weekFloors List<LineSeries> that is necessary for defining and displaying the LineChart
+                      weekFloors.add(LineSeries(day: i, steps: element));
+                    }
+                    return Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            'Weekly Floors',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold),
+                          ),
+                          LineChartWeek(data: weekFloors),
+                        ]);
+                  } else {
+                    return const CircularProgressIndicator();
                   }
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 10,),
-                      Text('Weekly Floors', style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
-                      LineChartWeek(data: weekFloors),]
-                  );
-                } else{
-                  return const CircularProgressIndicator();
-                }
-              }),
-              //FutureBuilder for fetch monthly data of floors
-              FutureBuilder(
-              future: _fetchActivityFromDB('month'),
-              builder: (context,snapshot){
-                if (snapshot.hasData) {
-                  var monthActivity = snapshot.data as List<Activity>;
-                  for (var i = 0; i < monthActivity.length; i++) {
-                    int element = monthActivity[i].floors;
-                    //create the monthFloors List<LineSeries> that is necessary for defining and displaying the LineChart
-                    monthFloors.add(LineSeries(day: i, steps: element)); 
+                }),
+            //FutureBuilder for fetch monthly data of floors
+            FutureBuilder(
+                future: _fetchActivityFromDB('month'),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    var monthActivity = snapshot.data as List<Activity>;
+                    for (var i = 0; i < monthActivity.length; i++) {
+                      int element = monthActivity[i].floors;
+                      //create the monthFloors List<LineSeries> that is necessary for defining and displaying the LineChart
+                      monthFloors.add(LineSeries(day: i, steps: element));
+                    }
+                    return Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            'Monthly Floors',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold),
+                          ),
+                          LineChartMonth(data: monthFloors),
+                        ]);
+                  } else {
+                    return const CircularProgressIndicator();
                   }
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 10,),
-                      Text('Monthly Floors', style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
-                      LineChartMonth(data: monthFloors),]
-                  );
-                } else{
-                  return const CircularProgressIndicator();
-                }
-              }),
-
-        ],
+                }),
+          ],
+        ),
       ),
+    );
+  }
 
-
-      );
-
-  } 
-  
   Future<List<Activity>> _fetchActivityFromDB(String time) async {
     final sp = await SharedPreferences.getInstance();
     DateTime now = DateTime.now();

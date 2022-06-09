@@ -20,8 +20,8 @@ class StepPage extends StatefulWidget {
 }
 
 class _StepPageState extends State<StepPage> {
-   List<LineSeries> weekSteps = [];
-   List<LineSeries> monthSteps = [];
+  List<LineSeries> weekSteps = [];
+  List<LineSeries> monthSteps = [];
 
   @override
   Widget build(BuildContext context) {
@@ -30,61 +30,71 @@ class _StepPageState extends State<StepPage> {
       appBar: AppBar(
         title: Text(StepPage.routename),
       ),
-      body: Column(
-        children: [
-          //FutureBuilder to fetch weekly data of steps
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            //FutureBuilder to fetch weekly data of steps
             FutureBuilder(
-              future: _fetchActivityFromDB('week'),
-              builder: (context,snapshot){
-                if (snapshot.hasData) {
-                  var weekActivity = snapshot.data as List<Activity>;
-                  for (var i = 0; i < weekActivity.length; i++) {
-                    int element = weekActivity[i].steps;
-                    //create the weekSteps List<LineSeries> that is necessary for defining and displaying the LineChart
-                    weekSteps.add(LineSeries(day: i, steps: element)); 
+                future: _fetchActivityFromDB('week'),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    var weekActivity = snapshot.data as List<Activity>;
+                    for (var i = 0; i < weekActivity.length; i++) {
+                      int element = weekActivity[i].steps;
+                      //create the weekSteps List<LineSeries> that is necessary for defining and displaying the LineChart
+                      weekSteps.add(LineSeries(day: i, steps: element));
+                    }
+                    return Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            'Weekly Steps',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold),
+                          ),
+                          LineChartWeek(data: weekSteps),
+                        ]);
+                  } else {
+                    return const CircularProgressIndicator();
                   }
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 10,),
-                      Text('Weekly Steps', style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
-                      LineChartWeek(data: weekSteps),]
-                  );
-                } else{
-                  return const CircularProgressIndicator();
-                }
-              }),
-              //FutureBuilder for fetch monthly data of steps
-              FutureBuilder(
-              future: _fetchActivityFromDB('month'),
-              builder: (context,snapshot){
-                if (snapshot.hasData) {
-                  var monthActivity = snapshot.data as List<Activity>;
-                  for (var i = 0; i < monthActivity.length; i++) {
-                    int element = monthActivity[i].steps;
-                    //create the monthSteps List<LineSeries> that is necessary for defining and displaying the LineChart
-                    monthSteps.add(LineSeries(day: i, steps: element)); 
+                }),
+            //FutureBuilder for fetch monthly data of steps
+            FutureBuilder(
+                future: _fetchActivityFromDB('month'),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    var monthActivity = snapshot.data as List<Activity>;
+                    for (var i = 0; i < monthActivity.length; i++) {
+                      int element = monthActivity[i].steps;
+                      //create the monthSteps List<LineSeries> that is necessary for defining and displaying the LineChart
+                      monthSteps.add(LineSeries(day: i, steps: element));
+                    }
+                    return Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            'Monthly Steps',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold),
+                          ),
+                          LineChartMonth(data: monthSteps),
+                        ]);
+                  } else {
+                    return const CircularProgressIndicator();
                   }
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 10,),
-                      Text('Monthly Steps', style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
-                      LineChartMonth(data: monthSteps),]
-                  );
-                } else{
-                  return const CircularProgressIndicator();
-                }
-              }),
-
-        ],
+                }),
+          ],
+        ),
       ),
+    );
+  }
 
-
-      );
-
-  } 
-  
   Future<List<Activity>> _fetchActivityFromDB(String time) async {
     final sp = await SharedPreferences.getInstance();
     DateTime now = DateTime.now();
