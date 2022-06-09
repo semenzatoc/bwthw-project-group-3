@@ -353,7 +353,7 @@ class _HomePageState extends State<HomePage> {
     final activityList = await fitbitActivityTimeseriesDataManager
         .fetch(FitbitActivityTimeseriesAPIURL.dateRangeWithResource(
       userID: sp.getString('userId'),
-      startDate: lastUpdate.add(const Duration(days: 1)),
+      startDate: lastUpdate.add(const Duration(days: 1, hours: 2)),
       endDate: DateTime.now()
           .subtract(const Duration(days: 1)), //fetching until yesterday
       resource: fitbitActivityTimeseriesDataManager.type,
