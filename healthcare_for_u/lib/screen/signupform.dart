@@ -42,6 +42,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 answer_list = _key.currentState!.getElementList();
                 final sp = await SharedPreferences.getInstance();
                 sp.setString('imagepath', '');
+                sp.setString('lastUpdate', '2022-03-01');
                 saveAnswers(answer_list);
                 Navigator.pushNamed(context, UserPage.route);
               }
@@ -57,7 +58,7 @@ class _SignUpFormState extends State<SignUpForm> {
 //Future<SharedPreferences>
 void saveAnswers(List<FormElement> answer_list) async {
   final sp = await SharedPreferences.getInstance();
-  final questionList = ['name', 'gender', 'dob', 'weight', 'height','goal'];
+  final questionList = ['name', 'gender', 'dob', 'weight', 'height', 'goal'];
   for (var i = 0; i < answer_list.length; i++) {
     sp.setString(questionList[i], answer_list[i].answer);
   }
@@ -75,9 +76,7 @@ List<Question> questions() {
       },
     ),
     PolarQuestion(
-        question: "What's your sex?",
-        answers: ["F", "M"],
-        isMandatory: true),
+        question: "What's your sex?", answers: ["F", "M"], isMandatory: true),
     Question(
       question: "What's your date of birth (dd/mm/yyyy)",
 
@@ -103,7 +102,7 @@ List<Question> questions() {
         return null;
       },
     ),
-     Question(
+    Question(
       question: "What's your steps goal?",
       //isMandatory: true,
       validate: (field) {

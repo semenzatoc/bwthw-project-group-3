@@ -1,7 +1,10 @@
 import 'dart:collection';
 
+import 'package:healthcare_for_u/database/entities/activity.dart';
+import 'package:provider/provider.dart';
 import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
+import 'package:healthcare_for_u/repository/databaseRepository.dart';
 import 'package:healthcare_for_u/screen/profilepage.dart';
 import 'package:healthcare_for_u/utils/getAchievement.dart';
 import 'package:intl/intl.dart';
@@ -100,11 +103,11 @@ class _CalendarPageState extends State<CalendarPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         FutureBuilder(
-                            future: _fetchSteps(selectedDay),
+                            future: _fetchStepsFromDB(selectedDay),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 final steps = snapshot.data as int;
-                                if (steps > 0) {
+                                if (!_selectedDay!.isAfter(DateTime.now())) {
                                   return FutureBuilder(
                                       future: SharedPreferences.getInstance(),
                                       builder: (context, snapshot) {
@@ -114,7 +117,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                           final achievement =
                                               getAchievement(steps, sp);
                                           String? goal_s = sp.getString('goal');
-                                          var goal = double.parse(goal_s!);
+                                          var goal = int.parse(goal_s!);
                                           return Column(
                                             children: [
                                               _textSteps(steps, goal),
@@ -171,26 +174,28 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   } // build
 
-  Future<int?> _fetchSteps(DateTime day) async {
-    FitbitActivityTimeseriesDataManager fitbitActivityTimeseriesDataManager =
-        FitbitActivityTimeseriesDataManager(
-      clientID: AppCredentials.fitbitClientID,
-      clientSecret: AppCredentials.fitbitClientSecret,
-      type: 'steps',
-    );
+  Future<int> _fetchStepsFromDB(DateTime day) async {
+    if (isSameDay(day, DateTime.now())) {
+      final sp = await SharedPreferences.getInstance();
+      return sp.getInt('lastSteps')!;
+    }
 
-    final sp = await SharedPreferences.getInstance();
+    List<Activity> allActivities =
+        await Provider.of<DatabaseRepository>(context, listen: false)
+            .findAllActivities() as List<Activity>;
+    /*List<Activity> dayActivity =
+        await Provider.of<DatabaseRepository>(context, listen: false)
+                .findActivity(day) //.subtract(const Duration(hours: 2)))
+            as List<Activity>;
+    final daySteps = dayActivity[0].steps;
+    print('hello');*/
+    final daySteps = Provider.of<DatabaseRepository>(context, listen: false)
+        .getDaySteps(day); //.subtract(const Duration(hours: 2)));
+    // remove two hours to account for timezone
+    return daySteps;
+  }
 
-    final steps = await fitbitActivityTimeseriesDataManager
-        .fetch(FitbitActivityTimeseriesAPIURL.dayWithResource(
-      date: day,
-      userID: sp.getString('userId'),
-      resource: fitbitActivityTimeseriesDataManager.type,
-    )) as List<FitbitActivityTimeseriesData>;
-    return steps[0].value!.toInt();
-  } // _fetchSteps
-
-  Widget _textSteps(int steps, double goal) {
+  Widget _textSteps(int steps, int goal) {
     return RichText(
         textAlign: TextAlign.center,
         text: TextSpan(
@@ -201,7 +206,7 @@ class _CalendarPageState extends State<CalendarPage> {
           ),
           children: [
             TextSpan(
-              text: "${steps.toInt()}",
+              text: "$steps",
               style: const TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
@@ -214,7 +219,7 @@ class _CalendarPageState extends State<CalendarPage> {
               ),
             ),
             TextSpan(
-              text: "${goal.toInt()}!",
+              text: "$goal!",
               style: const TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,

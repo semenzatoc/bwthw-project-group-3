@@ -1,12 +1,22 @@
 import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
+import 'package:healthcare_for_u/database/entities/activity.dart';
+import 'package:healthcare_for_u/database/entities/user.dart';
+import 'package:healthcare_for_u/repository/databaseRepository.dart';
 import 'package:healthcare_for_u/screen/profilepage.dart';
 import 'package:healthcare_for_u/utils/getAchievement.dart';
+import 'package:healthcare_for_u/screen/steppage.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:healthcare_for_u/utils/dataFetcher.dart';
 
 import '../utils/appcredentials.dart';
 import 'calendarpage.dart';
+import 'caloriespage.dart';
+import 'floorspage.dart';
 import 'healthpage.dart';
 
 class HomePage extends StatefulWidget {
@@ -24,10 +34,9 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _getLastUpdate();
-    //_updateDB();
   } //initState
 
-  _getLastUpdate() async {
+  void _getLastUpdate() async {
     final sp = await SharedPreferences.getInstance();
     if (sp.getInt('lastSteps') == null ||
         sp.getInt('lastFloors') == null ||
@@ -35,8 +44,8 @@ class _HomePageState extends State<HomePage> {
       sp.setInt('lastSteps', 0);
       sp.setInt('lastFloors', 0);
       sp.setInt('lastCalories', 0);
-      _updateData();
     }
+    //_updateData();
   }
 
   @override
@@ -85,25 +94,44 @@ class _HomePageState extends State<HomePage> {
         },
         child: ListView(children: [
           currentLevel(),
-          SizedBox(
-            height: 50,
-          ),
+          const SizedBox(height: 50),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              FutureBuilder(
+                  future: _updateDB(),
+                  builder: (context, snapshot) {
+                    return snapshot.connectionState == ConnectionState.done
+                        ? const SizedBox()
+                        : const CircularProgressIndicator();
+                  }),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                _dataCircle('steps', MdiIcons.footPrint,
-                    Color.fromARGB(255, 242, 85, 28))
+                InkWell(
+                  child: _dataCircle('steps', MdiIcons.footPrint,
+                      Color.fromARGB(255, 242, 85, 28)),
+                  onTap: () {
+                    Navigator.pushNamed(context, StepPage.route);
+                  },
+                )
               ]),
               const SizedBox(height: 25),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _dataCircle('calories', MdiIcons.fire,
-                      Color.fromARGB(255, 237, 80, 132)),
+                  InkWell(
+                      child: _dataCircle('calories', MdiIcons.fire,
+                          Color.fromARGB(255, 237, 80, 132)),
+                      onTap: () {
+                        Navigator.pushNamed(context, CaloriesPage.route);
+                      }),
                   const SizedBox(width: 20),
-                  _dataCircle('floors', MdiIcons.stairs,
-                      Color.fromARGB(255, 61, 239, 159))
+                  InkWell(
+                    child: _dataCircle('floors', MdiIcons.stairs,
+                        Color.fromARGB(255, 61, 239, 159)),
+                    onTap: () {
+                      Navigator.pushNamed(context, FloorsPage.route);
+                    },
+                  ),
                 ],
               ),
             ],
@@ -198,7 +226,7 @@ class _HomePageState extends State<HomePage> {
               return _dataStack(0, dataType, dataIcon, dataColor);
             }
           } else {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }
         });
   } // _dataCircle
@@ -209,7 +237,7 @@ class _HomePageState extends State<HomePage> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             var sp = snapshot.data as SharedPreferences;
-            int data = sp.getInt('lastSteps') as int;
+            int data = sp.getInt('lastSteps')!;
             final achievement = getAchievement(data, sp);
             return Container(
               color: Color.fromARGB(255, 130, 207, 243),
@@ -231,5 +259,105 @@ class _HomePageState extends State<HomePage> {
             return CircularProgressIndicator();
           }
         });
+  }
+
+// if isSameDay(DateTime.parse(sp.getString('lastAccess),DateTime.now())){
+// // do nothing}{
+// else
+// // set lastSteps etc to 0};
+
+  Future<Activity?> _updateDB() async {
+    final sp = await SharedPreferences.getInstance();
+    String username = sp.getString('username')!;
+    List<User> users =
+        await Provider.of<DatabaseRepository>(context, listen: false)
+            .findAllUsers();
+    int userId = users.firstWhere((user) => user.username == username).id!;
+
+    DateTime lastUpdate = DateTime.parse(sp.getString('lastUpdate')!);
+    DateTime yesterday = DateTime.now().subtract(const Duration(days: 1));
+    // get yesterday at midnight
+    yesterday = DateTime(yesterday.year, yesterday.month, yesterday.day);
+    //final difference = yesterday.difference(lastUpdate);
+    bool what = isSameDay(yesterday, lastUpdate);
+    Activity? latestActivity;
+    // if last update was before yesterday, fill missing database entries up
+    //until yesterday and update lastUpdate in shared preferences
+    //if (difference.inDays > 1) {
+    if (!isSameDay(yesterday, lastUpdate)) {
+      sp.setString(
+          'lastUpdate', DateFormat("yyyy-MM-dd HH:mm:ss").format(yesterday));
+
+      var newSteps = await _fetchActivity('steps', lastUpdate, sp);
+      var newFloors = await _fetchActivity('floors', lastUpdate, sp);
+      var newCalories = await _fetchActivity('calories', lastUpdate, sp);
+      var newVeryActiveMinutes =
+          await _fetchActivity('minutesVeryActive', lastUpdate, sp);
+      var newFairlyActiveMinutes =
+          await _fetchActivity('minutesFairlyActive', lastUpdate, sp);
+
+      int N = newSteps.length;
+      for (var i = 0; i < N; i++) {
+        // list goes from older to latest
+        DateTime dateTest = newSteps[i].dateOfMonitoring!.toUtc();
+        Activity newActivity = Activity(
+            null,
+            userId,
+            dateTest,
+            newSteps[i].value!.toInt(),
+            newCalories[i].value!.toInt(),
+            newFloors[i].value!.toInt(),
+            (newFairlyActiveMinutes[i].value! +
+                newVeryActiveMinutes[i].value!));
+        await Provider.of<DatabaseRepository>(context, listen: false)
+            .insertActivity(newActivity);
+        latestActivity = newActivity;
+        List<Activity> dayActivity =
+            await Provider.of<DatabaseRepository>(context, listen: false)
+                .findActivity(dateTest) as List<Activity>;
+        final daySteps = dayActivity[0].steps;
+
+        print('Added $dateTest entry');
+      }
+    }
+    return latestActivity;
+  }
+
+// fetches the last week or month of activities
+  Future<List<Activity>> fetchActivityFromDB(String time) async {
+    final sp = await SharedPreferences.getInstance();
+    DateTime now = DateTime.now();
+    DateTime today = DateTime.utc(now.year, now.month, now.day);
+    DataFetcher fetcher = DataFetcher();
+    List<Activity> data = await fetcher.fetchRangeActivity(context, time);
+    Activity todayActivity = Activity(
+        null,
+        sp.getInt('usercode')!,
+        today,
+        sp.getInt('lastSteps')!,
+        sp.getInt('lastCalories')!,
+        sp.getInt('lastFloors')!,
+        0);
+    data.add(todayActivity);
+    return data;
+  }
+
+  Future<List<FitbitActivityTimeseriesData>> _fetchActivity(
+      String dataType, DateTime lastUpdate, SharedPreferences sp) async {
+    FitbitActivityTimeseriesDataManager fitbitActivityTimeseriesDataManager =
+        FitbitActivityTimeseriesDataManager(
+            clientID: AppCredentials.fitbitClientID,
+            clientSecret: AppCredentials.fitbitClientSecret,
+            type: dataType);
+
+    final activityList = await fitbitActivityTimeseriesDataManager
+        .fetch(FitbitActivityTimeseriesAPIURL.dateRangeWithResource(
+      userID: sp.getString('userId'),
+      startDate: lastUpdate.add(const Duration(days: 1)),
+      endDate: DateTime.now()
+          .subtract(const Duration(days: 1)), //fetching until yesterday
+      resource: fitbitActivityTimeseriesDataManager.type,
+    )) as List<FitbitActivityTimeseriesData>;
+    return activityList;
   }
 }

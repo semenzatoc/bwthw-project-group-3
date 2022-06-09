@@ -48,21 +48,33 @@ class DatabaseRepository extends ChangeNotifier {
     notifyListeners();
   } //removeUser
 
+  Future<void> updatePicture(String username, String imagePath) async {
+    final userInList = await database.userDao.findUser(username);
+    User user = userInList[0]!;
+    //user.profilepicture = imagePath;
+
+    await database.userDao.insertUser(user);
+  }
+
 //// Activity methods
   Future<List<Activity?>> findAllActivities() async {
     final results = await database.activityDao.findAllActivities();
     return results;
-  } //findAllUsers
+  }
 
-  //This method wraps the findUser() method of the DAO
   Future<List<Activity?>> findActivity(DateTime day) async {
     final results = await database.activityDao.getDayActivity(day);
     return results;
-  } //findUser
+  } //findActivity
+
+  Future<List<Activity>> findActivityInPeriod(List<DateTime> days) async {
+    final results = await database.activityDao.findActivityInPeriod(days);
+    return results;
+  }
 
   Future<int> getDaySteps(DateTime day) async {
     final results = await database.activityDao.getDayActivity(day);
-    return results.first.steps;
+    return results[0].steps;
   } //getDaySteps
 
   Future<int> getDayFloors(DateTime day) async {
@@ -74,4 +86,24 @@ class DatabaseRepository extends ChangeNotifier {
     final results = await database.activityDao.getDayActivity(day);
     return results.first.calories;
   } //getDayCalories
+
+  Future<void> insertActivity(Activity activity) async {
+    await database.activityDao.insertActivity(activity);
+    notifyListeners();
+  } //insertUser
+
+  Future<bool> checkLastDate() async {
+    final list = await database.activityDao
+        .getDayActivity(DateTime.now().subtract(const Duration(days: 1)));
+    if (list.isEmpty) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  Future<void> clearActivityTable() async {
+    await database.activityDao.deleteAllActivities();
+    notifyListeners();
+  }
 } //DatabaseRepository

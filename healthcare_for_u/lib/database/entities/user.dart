@@ -9,16 +9,18 @@ class User {
   final int? id;
 
   final String username;
+  //String username;
 
   final String password;
+  //String password;
 
-  //final double weight;
-  //final double height;
-  //final DateTime dob;
-  //final String profilepicture;
-
-  //final bool isAuthorized;
+  //double weight;
+  //double height;
+  //String dob;
+  //String profilepicture;
+  //DateTime lastfetch;
 
   //Default constructor
-  User(this.id, this.username, this.password); //, this.isAuthorized);
+  User(this.id, this.username,
+      this.password); //, this.weight, this.height, this.dob, this.profilepicture, this.lastfetch);
 }//Todo

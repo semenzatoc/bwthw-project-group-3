@@ -86,7 +86,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `User` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` TEXT NOT NULL, `password` TEXT NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Activity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `user` TEXT NOT NULL, `date` INTEGER NOT NULL, `steps` INTEGER NOT NULL, `floors` INTEGER NOT NULL, `calories` INTEGER NOT NULL, `minutes` REAL NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `Activity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `userId` INTEGER NOT NULL, `date` INTEGER NOT NULL, `steps` INTEGER NOT NULL, `floors` INTEGER NOT NULL, `calories` INTEGER NOT NULL, `minutes` REAL NOT NULL, FOREIGN KEY (`userId`) REFERENCES `User` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -191,7 +191,7 @@ class _$ActivityDao extends ActivityDao {
             'Activity',
             (Activity item) => <String, Object?>{
                   'id': item.id,
-                  'user': item.user,
+                  'userId': item.userId,
                   'date': _dateTimeConverter.encode(item.date),
                   'steps': item.steps,
                   'floors': item.floors,
@@ -204,7 +204,7 @@ class _$ActivityDao extends ActivityDao {
             ['id'],
             (Activity item) => <String, Object?>{
                   'id': item.id,
-                  'user': item.user,
+                  'userId': item.userId,
                   'date': _dateTimeConverter.encode(item.date),
                   'steps': item.steps,
                   'floors': item.floors,
@@ -217,7 +217,7 @@ class _$ActivityDao extends ActivityDao {
             ['id'],
             (Activity item) => <String, Object?>{
                   'id': item.id,
-                  'user': item.user,
+                  'userId': item.userId,
                   'date': _dateTimeConverter.encode(item.date),
                   'steps': item.steps,
                   'floors': item.floors,
@@ -242,7 +242,7 @@ class _$ActivityDao extends ActivityDao {
     return _queryAdapter.queryList('SELECT * FROM Activity',
         mapper: (Map<String, Object?> row) => Activity(
             row['id'] as int?,
-            row['user'] as String,
+            row['userId'] as int,
             _dateTimeConverter.decode(row['date'] as int),
             row['steps'] as int,
             row['calories'] as int,
@@ -255,7 +255,7 @@ class _$ActivityDao extends ActivityDao {
     return _queryAdapter.queryList('SELECT * FROM Activity WHERE date = ?1',
         mapper: (Map<String, Object?> row) => Activity(
             row['id'] as int?,
-            row['user'] as String,
+            row['userId'] as int,
             _dateTimeConverter.decode(row['date'] as int),
             row['steps'] as int,
             row['calories'] as int,
@@ -276,7 +276,7 @@ class _$ActivityDao extends ActivityDao {
             ')',
         mapper: (Map<String, Object?> row) => Activity(
             row['id'] as int?,
-            row['user'] as String,
+            row['userId'] as int,
             _dateTimeConverter.decode(row['date'] as int),
             row['steps'] as int,
             row['calories'] as int,
@@ -288,8 +288,14 @@ class _$ActivityDao extends ActivityDao {
   }
 
   @override
+  Future<void> deleteAllActivities() async {
+    await _queryAdapter.queryNoReturn('DELETE FROM Activity');
+  }
+
+  @override
   Future<void> insertActivity(Activity activity) async {
-    await _activityInsertionAdapter.insert(activity, OnConflictStrategy.abort);
+    await _activityInsertionAdapter.insert(
+        activity, OnConflictStrategy.replace);
   }
 
   @override

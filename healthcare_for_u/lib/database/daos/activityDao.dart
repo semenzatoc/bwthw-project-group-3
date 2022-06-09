@@ -16,6 +16,9 @@ abstract class ActivityDao {
   @Query('SELECT * FROM Activity WHERE date IN (:days)')
   Future<List<Activity>> findActivityInPeriod(List<DateTime> days);
 
+  @Query('DELETE FROM Activity')
+  Future<void> deleteAllActivities();
+
   /*//Query #2: SELECT -> this allows to obtain the steps of selected day
   @Query('SELECT steps FROM Activity WHERE date = :day')
   Future<List<Activity>> getDaySteps(DateTime day);
@@ -33,7 +36,7 @@ abstract class ActivityDao {
   Future<List<Activity>> getDayMinutes(DateTime day);*/
 
   //Query #2: INSERT -> this allows to add a Activity in the table
-  @Insert(onConflict: OnConflictStrategy.abort)
+  @Insert(onConflict: OnConflictStrategy.replace)
   Future<void> insertActivity(Activity activity);
 
   //Query #3: DELETE -> this allows to delete a Activity from the table

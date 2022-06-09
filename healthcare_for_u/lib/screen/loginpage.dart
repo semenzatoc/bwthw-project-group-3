@@ -26,6 +26,8 @@ class _LoginPageState extends State<LoginPage> {
   String _userName = '';
   String _password = '';
   String _confirmPassword = '';
+  int _user_id = 0;
+  bool incorrectUsername = false;
 
   @override
   void initState() {
@@ -73,104 +75,111 @@ class _LoginPageState extends State<LoginPage> {
                           fontSize: 35,
                           color: Colors.white),
                     ),
-                    Card(
-                        margin: const EdgeInsets.symmetric(horizontal: 35),
-                        child: Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Form(
-                                key: _formKey,
-                                child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      TextFormField(
-                                        decoration: const InputDecoration(
-                                            labelText: 'Username'),
-                                        validator: (value) {
-                                          _userName = userList
-                                              .firstWhere((user) =>
-                                                  user.username == value)
-                                              .username;
-                                          print(_userName);
-                                          if (value == null ||
-                                              value.trim().isEmpty) {
-                                            return 'Please enter your username';
-                                          } else {
-                                            if (value == _userName) {
-                                              return null;
-                                            } else {
-                                              return 'Wrong username';
-                                            }
-                                          }
-                                        },
-                                        /* onChanged: (value) =>
-                                            _userName = value,*/
-                                      ),
-
-                                      /// Password
-                                      TextFormField(
-                                        decoration: const InputDecoration(
-                                            labelText: 'Password'),
-                                        obscureText: true,
-                                        validator: (value) {
-                                          _password = userList
-                                              .firstWhere((user) =>
-                                                  user.username == _userName)
-                                              .password;
-                                          print(_password);
-                                          if (value == null ||
-                                              value.trim().isEmpty) {
-                                            return 'This field is required';
-                                          } else {
-                                            if (value == _password) {
-                                              return null;
-                                            } else {
-                                              return 'Wrong password';
-                                            }
-                                          }
-                                        },
-                                        onChanged: (value) => _password = value,
-                                      ),
-                                      const SizedBox(height: 20),
-                                      OutlinedButton(
-                                          onPressed: () {
-                                            /*logData = LoginCouples(
-                              username: _userName, password: _password);*/
-                                            _trySubmitForm(_userName);
-                                          },
-                                          child: const Text('Sign In')),
-                                      const SizedBox(height: 20),
-
-                                      RichText(
-                                          text: TextSpan(
-                                        text: "Don't have an account?",
-                                        style: const TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 14,
-                                        ),
+                    Center(
+                        child: Card(
+                            margin: const EdgeInsets.symmetric(horizontal: 35),
+                            child: Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Form(
+                                    key: _formKey,
+                                    child: Column(
+                                        mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          TextSpan(
-                                            text: " Sign up",
-                                            style: const TextStyle(
-                                              color: Colors.purple,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            recognizer: TapGestureRecognizer()
-                                              ..onTap = () {
-                                                Navigator.pushNamed(
-                                                    context, SignUpForm.route);
+                                          TextFormField(
+                                              decoration: const InputDecoration(
+                                                  labelText: 'Username'),
+                                              validator: (value) {
+                                                try {
+                                                  _userName = userList
+                                                      .firstWhere((user) =>
+                                                          user.username ==
+                                                          value)
+                                                      .username;
+                                                } on StateError catch (exception) {
+                                                  setState(() {
+                                                    incorrectUsername = true;
+                                                  });
+                                                }
+                                                if (incorrectUsername) {
+                                                  return 'Username does not exist';
+                                                } else {
+                                                  return null;
+                                                }
                                               },
+                                              onChanged: (value) {
+                                                _userName = value;
+                                              }),
+
+                                          /// Password
+                                          TextFormField(
+                                            decoration: const InputDecoration(
+                                                labelText: 'Password'),
+                                            obscureText: true,
+                                            validator: (value) {
+                                              try {
+                                                _password = userList
+                                                    .firstWhere((user) =>
+                                                        user.username ==
+                                                        _userName)
+                                                    .password;
+                                              } on StateError catch (e) {
+                                                return 'Wrong password';
+                                              }
+                                              if (value == null ||
+                                                  value.trim().isEmpty) {
+                                                return 'This field is required';
+                                              } else {
+                                                if (value == _password) {
+                                                  return null;
+                                                } else {
+                                                  return 'Wrong password';
+                                                }
+                                              }
+                                            },
+                                            onChanged: (value) =>
+                                                _password = value,
                                           ),
-                                          const TextSpan(
-                                            text: " today!",
-                                            style: TextStyle(
+                                          const SizedBox(height: 20),
+                                          OutlinedButton(
+                                              onPressed: () {
+                                                _trySubmitForm(_userName);
+                                              },
+                                              child: const Text('Sign In')),
+                                          const SizedBox(height: 20),
+
+                                          RichText(
+                                              text: TextSpan(
+                                            text: "Don't have an account?",
+                                            style: const TextStyle(
                                               color: Colors.black,
                                               fontSize: 14,
                                             ),
-                                          ),
-                                        ],
-                                      )),
-                                    ]))))
+                                            children: [
+                                              TextSpan(
+                                                text: " Sign up",
+                                                style: const TextStyle(
+                                                  color: Colors.purple,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                                recognizer:
+                                                    TapGestureRecognizer()
+                                                      ..onTap = () {
+                                                        Navigator.pushNamed(
+                                                            context,
+                                                            SignUpForm.route);
+                                                      },
+                                              ),
+                                              const TextSpan(
+                                                text: " today!",
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ],
+                                          )),
+                                        ])))))
                   ]);
                 } else {
                   return LinearProgressIndicator();
