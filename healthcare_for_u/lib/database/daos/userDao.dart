@@ -22,7 +22,7 @@ abstract class UserDao {
   Future<void> deleteAllUser();
 
   //Query #2: INSERT -> this allows to add a User in the table
-  @Insert(onConflict: OnConflictStrategy.fail)
+  @Insert(onConflict: OnConflictStrategy.replace)
   Future<void> insertUser(User user);
 
   //Query #3: DELETE -> this allows to delete a User from the table

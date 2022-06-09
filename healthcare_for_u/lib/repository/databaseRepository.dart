@@ -48,12 +48,28 @@ class DatabaseRepository extends ChangeNotifier {
     notifyListeners();
   } //removeUser
 
-  Future<void> updatePicture(String username, String imagePath) async {
+  Future<void> updatePicture(String? username, String imagePath) async {
+    final userInList = await database.userDao.findUser(username!);
+    User user = userInList[0]!;
+    user.profilepicture = imagePath;
+    await database.userDao.insertUser(user);
+    notifyListeners();
+  }
+
+  Future<void> updateWeight(String username, String weight) async {
     final userInList = await database.userDao.findUser(username);
     User user = userInList[0]!;
-    //user.profilepicture = imagePath;
-
+    user.weight = weight;
     await database.userDao.insertUser(user);
+    notifyListeners();
+  }
+
+  Future<void> updateHeight(String username, String height) async {
+    final userInList = await database.userDao.findUser(username);
+    User user = userInList[0]!;
+    user.height = height;
+    await database.userDao.insertUser(user);
+    notifyListeners();
   }
 
 //// Activity methods

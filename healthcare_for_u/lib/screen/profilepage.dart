@@ -361,5 +361,7 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       sp.setString('imagepath', pickedFile!.path);
     });
+    await Provider.of<DatabaseRepository>(context, listen: false)
+        .updatePicture(sp.getString('username'), pickedFile!.path);
   }
 } //ProfilePage

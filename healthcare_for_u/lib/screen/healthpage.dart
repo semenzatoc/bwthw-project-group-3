@@ -1,4 +1,5 @@
 import 'package:healthcare_for_u/models/risklevel.dart';
+import 'package:healthcare_for_u/repository/databaseRepository.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:fitbitter/fitbitter.dart';
@@ -87,7 +88,7 @@ class _HealthPageState extends State<HealthPage> {
                               if (_key.currentState!.validate()) {
                                 diabetes_list =
                                     _key.currentState!.getElementList();
-                                _saveDiabetes(diabetes_list);
+                                _saveDiabetes(diabetes_list, context);
                                 sp = await SharedPreferences.getInstance();
                                 DataFetcher fetcher = DataFetcher();
                                 showDialog<String>(
@@ -182,8 +183,8 @@ class _HealthPageState extends State<HealthPage> {
   }
 } //HealthPage
 
-void _saveDiabetes(List<FormElement> diabetes_list) async {
-  final sp = await SharedPreferences.getInstance();
+void _saveDiabetes(List<FormElement> diabetes_list, context) async {
+  var sp = await SharedPreferences.getInstance();
   final questionList2 = [
     'weight',
     'height',
@@ -199,6 +200,10 @@ void _saveDiabetes(List<FormElement> diabetes_list) async {
       sp.setString(questionList2[i], diabetes_list[i].answer);
     }
   }
+  await Provider.of<DatabaseRepository>(context, listen: false)
+      .updateWeight(sp.getString('username')!, sp.getString('weight')!);
+  await Provider.of<DatabaseRepository>(context, listen: false)
+      .updateHeight(sp.getString('username')!, sp.getString('height')!);
 } //_saveDiabetes
 
 Widget GradientProgress(int riskValue) {
