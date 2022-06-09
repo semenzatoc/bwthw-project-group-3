@@ -84,6 +84,7 @@ class _CalendarPageState extends State<CalendarPage> {
           return isSameDay(_selectedDay, day);
         },
         onDaySelected: (selectedDay, focusedDay) {
+          bool isFuture = selectedDay.isAfter(DateTime.now());
           if (!isSameDay(_selectedDay, selectedDay)) {
             // Call `setState()` when updating the selected day
             setState(() {
@@ -102,12 +103,12 @@ class _CalendarPageState extends State<CalendarPage> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        FutureBuilder(
-                            future: _fetchStepsFromDB(selectedDay),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                final steps = snapshot.data as int;
-                                if (!_selectedDay!.isAfter(DateTime.now())) {
+                        if (!isFuture)
+                          FutureBuilder(
+                              future: _fetchStepsFromDB(selectedDay),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  final steps = snapshot.data as int;
                                   return FutureBuilder(
                                       future: SharedPreferences.getInstance(),
                                       builder: (context, snapshot) {
@@ -116,37 +117,36 @@ class _CalendarPageState extends State<CalendarPage> {
                                               as SharedPreferences;
                                           final achievement =
                                               getAchievement(steps, sp);
-                                          String? goal_s = sp.getString('goal');
-                                          var goal = int.parse(goal_s!);
+                                          String? goalS = sp.getString('goal');
+                                          var goal = int.parse(goalS!);
                                           return Column(
                                             children: [
                                               _textSteps(steps, goal),
-                                              SizedBox(height: 10),
+                                              const SizedBox(height: 10),
                                               Text(
                                                   'You were a ${achievement.title}!'),
-                                              SizedBox(height: 10),
+                                              const SizedBox(height: 10),
                                               Image(
                                                   image: AssetImage(achievement
                                                       .assetPicture!))
                                             ],
                                           );
                                         } else {
-                                          return CircularProgressIndicator();
+                                          return const CircularProgressIndicator();
                                         }
                                       });
                                 } else {
-                                  return const Text(
-                                    'No data available for today',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.black,
-                                    ),
-                                  );
+                                  return CircularProgressIndicator();
                                 }
-                              } else {
-                                return CircularProgressIndicator();
-                              }
-                            }),
+                              }),
+                        if (isFuture)
+                          const Text(
+                            'No data available for today',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                            ),
+                          ),
                         SizedBox(height: 20),
                       ],
                     ),
@@ -183,12 +183,7 @@ class _CalendarPageState extends State<CalendarPage> {
     List<Activity> allActivities =
         await Provider.of<DatabaseRepository>(context, listen: false)
             .findAllActivities() as List<Activity>;
-    /*List<Activity> dayActivity =
-        await Provider.of<DatabaseRepository>(context, listen: false)
-                .findActivity(day) //.subtract(const Duration(hours: 2)))
-            as List<Activity>;
-    final daySteps = dayActivity[0].steps;
-    print('hello');*/
+
     final daySteps = Provider.of<DatabaseRepository>(context, listen: false)
         .getDaySteps(day); //.subtract(const Duration(hours: 2)));
     // remove two hours to account for timezone
