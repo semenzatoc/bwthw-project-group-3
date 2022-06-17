@@ -1,9 +1,9 @@
 import 'package:healthcare_for_u/models/risklevel.dart';
-import 'package:intl/intl.dart';
+//import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:fitbitter/fitbitter.dart';
+//import 'package:fitbitter/fitbitter.dart';
 import 'package:healthcare_for_u/screen/profilepage.dart';
-import 'package:healthcare_for_u/utils/appcredentials.dart';
+//import 'package:healthcare_for_u/utils/appcredentials.dart';
 import 'package:healthcare_for_u/utils/diabetesRisk.dart';
 import 'package:healthcare_for_u/utils/dataFetcher.dart';
 import 'package:conditional_questions/conditional_questions.dart';
@@ -136,7 +136,7 @@ class _HealthPageState extends State<HealthPage> {
                                                                 textAlign:
                                                                     TextAlign
                                                                         .center),
-                                                            SizedBox(
+                                                            const SizedBox(
                                                                 height: 20),
                                                             GradientProgress(
                                                                 riskValue),

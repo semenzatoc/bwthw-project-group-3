@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
+import 'package:healthcare_for_u/screen/utilitypage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,8 +34,11 @@ class _ProfilePageState extends State<ProfilePage> {
           actions: [
             IconButton(
                 onPressed: () async {
-                  // await Provider.of<DatabaseRepository>(context, listen: false)
-                  //   .clearActivityTable();
+                  Navigator.pushNamed(context, UtilPage.route);
+                },
+                icon: Icon(MdiIcons.hammerWrench)),
+            IconButton(
+                onPressed: () async {
                   _toLoginPage(context);
                 },
                 icon: const Icon(Icons.logout))
@@ -279,9 +283,10 @@ class _ProfilePageState extends State<ProfilePage> {
     sp.setInt('usercode', -1);
 
 // RIMUOVERE A FINE DEBUG
-    await Provider.of<DatabaseRepository>(context, listen: false)
-        .clearActivityTable();
+    // await Provider.of<DatabaseRepository>(context, listen: false)
+    //   .clearActivityTable();
     // unauthorize Fitbit connection
+
     await FitbitConnector.unauthorize(
         clientID: '<OAuth 2.0 Client ID>', clientSecret: '<Client Secret>');
 

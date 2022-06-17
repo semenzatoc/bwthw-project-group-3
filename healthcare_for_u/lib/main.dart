@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:healthcare_for_u/screen/caloriespage.dart';
 import 'package:healthcare_for_u/screen/floorspage.dart';
 import 'package:healthcare_for_u/screen/steppage.dart';
+import 'package:healthcare_for_u/screen/utilitypage.dart';
 import 'package:provider/provider.dart';
 import 'package:healthcare_for_u/screen/healthpage.dart';
 import 'package:healthcare_for_u/screen/userpage.dart';
@@ -51,9 +52,10 @@ class MyApp extends StatelessWidget {
         UserPage.route: (context) => UserPage(),
         CalendarPage.route: (context) => CalendarPage(),
         HealthPage.route: (context) => HealthPage(),
-        StepPage.route:(context) => StepPage(),
+        StepPage.route: (context) => StepPage(),
         CaloriesPage.route: (context) => CaloriesPage(),
-        FloorsPage.route:(context) => FloorsPage()
+        FloorsPage.route: (context) => FloorsPage(),
+        UtilPage.route: (context) => UtilPage()
       },
     );
   } //build

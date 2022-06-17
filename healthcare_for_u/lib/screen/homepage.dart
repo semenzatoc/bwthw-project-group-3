@@ -33,11 +33,14 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+
     _getLastUpdate();
   } //initState
 
   void _getLastUpdate() async {
     final sp = await SharedPreferences.getInstance();
+
+// first access, set to 0
     if (sp.getInt('lastSteps') == null ||
         sp.getInt('lastFloors') == null ||
         sp.getInt('lastCalories') == null) {
@@ -45,7 +48,18 @@ class _HomePageState extends State<HomePage> {
       sp.setInt('lastFloors', 0);
       sp.setInt('lastCalories', 0);
     }
-    //_updateData();
+
+    // if lastFetch isn't today, do the first fetch of the day.
+    // We can use the shared preference "lastUpdate" and check that it's yesterday.
+    //If not, today there hasn't been any access yet and we need to fetch.
+    DateTime lastFetch = DateTime.parse(sp.getString('lastUpdate')!)
+        .add(const Duration(days: 1));
+    DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+    if (!isSameDay(today, lastFetch)) {
+      await _updateData();
+      print('First data fetch of the day completed');
+    }
   }
 
   @override
@@ -90,7 +104,7 @@ class _HomePageState extends State<HomePage> {
       body: RefreshIndicator(
         onRefresh: () async {
           await _updateData();
-          setState(() {});
+          print('Data fetched');
         },
         child: ListView(children: [
           currentLevel(),
@@ -278,16 +292,12 @@ class _HomePageState extends State<HomePage> {
     DateTime yesterday = DateTime.now().subtract(const Duration(days: 1));
     // get yesterday at midnight
     yesterday = DateTime(yesterday.year, yesterday.month, yesterday.day);
-    //final difference = yesterday.difference(lastUpdate);
-    bool what = isSameDay(yesterday, lastUpdate);
+
     Activity? latestActivity;
     // if last update was before yesterday, fill missing database entries up
     //until yesterday and update lastUpdate in shared preferences
     //if (difference.inDays > 1) {
     if (!isSameDay(yesterday, lastUpdate)) {
-      sp.setString(
-          'lastUpdate', DateFormat("yyyy-MM-dd HH:mm:ss").format(yesterday));
-
       var newSteps = await _fetchActivity('steps', lastUpdate, sp);
       var newFloors = await _fetchActivity('floors', lastUpdate, sp);
       var newCalories = await _fetchActivity('calories', lastUpdate, sp);
@@ -297,9 +307,10 @@ class _HomePageState extends State<HomePage> {
           await _fetchActivity('minutesFairlyActive', lastUpdate, sp);
 
       int N = newSteps.length;
+
       for (var i = 0; i < N; i++) {
-        // list goes from older to latest
         DateTime dateTest = newSteps[i].dateOfMonitoring!.toUtc();
+
         Activity newActivity = Activity(
             null,
             userId,
@@ -311,14 +322,20 @@ class _HomePageState extends State<HomePage> {
                 newVeryActiveMinutes[i].value!));
         await Provider.of<DatabaseRepository>(context, listen: false)
             .insertActivity(newActivity);
+
         latestActivity = newActivity;
+
         List<Activity> dayActivity =
             await Provider.of<DatabaseRepository>(context, listen: false)
                 .findActivity(dateTest) as List<Activity>;
-        final daySteps = dayActivity[0].steps;
 
         print('Added $dateTest entry');
       }
+
+      // update last db update date
+      // has to be done after everything to ensure that authorization goes through
+      sp.setString(
+          'lastUpdate', DateFormat("yyyy-MM-dd HH:mm:ss").format(yesterday));
     }
     return latestActivity;
   }
