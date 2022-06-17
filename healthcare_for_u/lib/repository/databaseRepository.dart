@@ -77,9 +77,9 @@ class DatabaseRepository extends ChangeNotifier {
     return results[0].steps;
   } //getDaySteps
 
-  Future<int> getDayFloors(DateTime day) async {
+  Future<double> getDayDistance(DateTime day) async {
     final results = await database.activityDao.getDayActivity(day);
-    return results.first.floors;
+    return results.first.distance;
   } //getDayFloors
 
   Future<int> getDayCalories(DateTime day) async {

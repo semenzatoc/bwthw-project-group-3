@@ -16,7 +16,7 @@ import 'package:healthcare_for_u/utils/dataFetcher.dart';
 import '../utils/appcredentials.dart';
 import 'calendarpage.dart';
 import 'caloriespage.dart';
-import 'floorspage.dart';
+import 'distancepage.dart';
 import 'healthpage.dart';
 
 class HomePage extends StatefulWidget {
@@ -42,10 +42,10 @@ class _HomePageState extends State<HomePage> {
 
 // first access, set to 0
     if (sp.getInt('lastSteps') == null ||
-        sp.getInt('lastFloors') == null ||
+        sp.getDouble('lastDistance') == null ||
         sp.getInt('lastCalories') == null) {
       sp.setInt('lastSteps', 0);
-      sp.setInt('lastFloors', 0);
+      sp.setDouble('lastDistance', 0);
       sp.setInt('lastCalories', 0);
     }
 
@@ -54,8 +54,7 @@ class _HomePageState extends State<HomePage> {
     //If not, today there hasn't been any access yet and we need to fetch.
     DateTime lastFetch = DateTime.parse(sp.getString('lastUpdate')!)
         .add(const Duration(days: 1));
-    DateTime now = DateTime.now();
-    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime today = DateTime.now();
     if (!isSameDay(today, lastFetch)) {
       await _updateData();
       print('First data fetch of the day completed');
@@ -140,10 +139,10 @@ class _HomePageState extends State<HomePage> {
                       }),
                   const SizedBox(width: 20),
                   InkWell(
-                    child: _dataCircle('floors', MdiIcons.stairs,
+                    child: _dataCircle('distance', MdiIcons.stairs,
                         Color.fromARGB(255, 61, 239, 159)),
                     onTap: () {
-                      Navigator.pushNamed(context, FloorsPage.route);
+                      Navigator.pushNamed(context, DistancePage.route);
                     },
                   ),
                 ],
@@ -157,15 +156,15 @@ class _HomePageState extends State<HomePage> {
 
   _updateData() async {
     final sp = await SharedPreferences.getInstance();
-    int steps = await _fetchData('steps');
-    int floors = await _fetchData('floors');
-    int calories = await _fetchData('calories');
+    int steps = await _fetchData('steps') as int;
+    double distance = await _fetchData('distance') as double;
+    int calories = await _fetchData('calories') as int;
     sp.setInt('lastSteps', steps);
-    sp.setInt('lastFloors', floors);
+    sp.setDouble('lastDistance', distance);
     sp.setInt('lastCalories', calories);
   }
 
-  Future<int> _fetchData(String dataType) async {
+  Future<num> _fetchData(String dataType) async {
     FitbitActivityTimeseriesDataManager fitbitActivityTimeseriesDataManager =
         FitbitActivityTimeseriesDataManager(
       clientID: AppCredentials.fitbitClientID,
@@ -181,10 +180,16 @@ class _HomePageState extends State<HomePage> {
       userID: sp.getString('userId'),
       resource: fitbitActivityTimeseriesDataManager.type,
     )) as List<FitbitActivityTimeseriesData>;
-    return data[0].value!.toInt();
+    var result;
+    if (dataType == 'steps' || dataType == 'calories') {
+      result = data[0].value!.toInt();
+    } else {
+      result = data[0].value!.toDouble();
+    }
+    return result;
   } // fetchData
 
-  double getPercentage(String dataType, int n) {
+  double getPercentage(String dataType, num n) {
     double goal;
     if (dataType == 'calories') {
       goal = 2000;
@@ -197,7 +202,7 @@ class _HomePageState extends State<HomePage> {
   } // getPercentage
 
   Widget _dataStack(
-      int data, String dataType, IconData dataIcon, Color dataColor) {
+      num data, String dataType, IconData dataIcon, Color dataColor) {
     return Stack(alignment: Alignment.center, children: [
       SizedBox(
         height: 150,
@@ -225,13 +230,13 @@ class _HomePageState extends State<HomePage> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             var sp = snapshot.data as SharedPreferences;
-            int data;
+            var data;
             if (dataType == 'steps') {
-              data = sp.getInt('lastSteps') as int;
-            } else if (dataType == 'floors') {
-              data = sp.getInt('lastFloors') as int;
+              data = sp.getInt('lastSteps');
+            } else if (dataType == 'distance') {
+              data = sp.getDouble('lastDistance');
             } else {
-              data = sp.getInt('lastCalories') as int;
+              data = sp.getInt('lastCalories');
             }
 
             if (data > 0) {
@@ -299,7 +304,7 @@ class _HomePageState extends State<HomePage> {
     //if (difference.inDays > 1) {
     if (!isSameDay(yesterday, lastUpdate)) {
       var newSteps = await _fetchActivity('steps', lastUpdate, sp);
-      var newFloors = await _fetchActivity('floors', lastUpdate, sp);
+      var newDistance = await _fetchActivity('distance', lastUpdate, sp);
       var newCalories = await _fetchActivity('calories', lastUpdate, sp);
       var newVeryActiveMinutes =
           await _fetchActivity('minutesVeryActive', lastUpdate, sp);
@@ -317,7 +322,7 @@ class _HomePageState extends State<HomePage> {
             dateTest,
             newSteps[i].value!.toInt(),
             newCalories[i].value!.toInt(),
-            newFloors[i].value!.toInt(),
+            newDistance[i].value!.toDouble(),
             (newFairlyActiveMinutes[i].value! +
                 newVeryActiveMinutes[i].value!));
         await Provider.of<DatabaseRepository>(context, listen: false)
@@ -325,9 +330,9 @@ class _HomePageState extends State<HomePage> {
 
         latestActivity = newActivity;
 
-        List<Activity> dayActivity =
+        /*List<Activity> dayActivity =
             await Provider.of<DatabaseRepository>(context, listen: false)
-                .findActivity(dateTest) as List<Activity>;
+                .findActivity(dateTest) as List<Activity>;*/
 
         print('Added $dateTest entry');
       }
@@ -341,7 +346,7 @@ class _HomePageState extends State<HomePage> {
   }
 
 // fetches the last week or month of activities
-  Future<List<Activity>> fetchActivityFromDB(String time) async {
+  /* Future<List<Activity>> fetchActivityFromDB(String time) async {
     final sp = await SharedPreferences.getInstance();
     DateTime now = DateTime.now();
     DateTime today = DateTime.utc(now.year, now.month, now.day);
@@ -353,11 +358,11 @@ class _HomePageState extends State<HomePage> {
         today,
         sp.getInt('lastSteps')!,
         sp.getInt('lastCalories')!,
-        sp.getInt('lastFloors')!,
+        sp.getInt('lastDistance')!,
         0);
     data.add(todayActivity);
     return data;
-  }
+  }*/
 
   Future<List<FitbitActivityTimeseriesData>> _fetchActivity(
       String dataType, DateTime lastUpdate, SharedPreferences sp) async {

@@ -50,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
     if (isValid == true) {
       final sp = await SharedPreferences.getInstance();
       sp.setString('username', _username);
-
+      sp.setInt('usercode', _user_id);
       Navigator.pushReplacementNamed(context, AuthPage.route);
     }
   }
@@ -130,6 +130,11 @@ class _LoginPageState extends State<LoginPage> {
                                                 return 'This field is required';
                                               } else {
                                                 if (value == _password) {
+                                                  _user_id = userList
+                                                      .firstWhere((user) =>
+                                                          user.username ==
+                                                          _userName)
+                                                      .id!;
                                                   return null;
                                                 } else {
                                                   return 'Wrong password';

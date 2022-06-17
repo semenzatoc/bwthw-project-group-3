@@ -34,7 +34,7 @@ class _ProfilePageState extends State<ProfilePage> {
           actions: [
             IconButton(
                 onPressed: () async {
-                  Navigator.pushNamed(context, UtilPage.route);
+                  Navigator.pushNamed(context, UtilityPage.route);
                 },
                 icon: Icon(MdiIcons.hammerWrench)),
             IconButton(

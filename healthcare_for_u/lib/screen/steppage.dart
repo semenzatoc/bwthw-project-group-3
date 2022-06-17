@@ -20,8 +20,9 @@ class StepPage extends StatefulWidget {
 }
 
 class _StepPageState extends State<StepPage> {
-   List<LineSeries> weekSteps = [];
-   List<LineSeries> monthSteps = [];
+  List<LineSeries> weekSteps = [];
+  List<LineSeries> monthSteps = [];
+  DataFetcher fetcher = DataFetcher();
 
   @override
   Widget build(BuildContext context) {
@@ -33,59 +34,59 @@ class _StepPageState extends State<StepPage> {
       body: Column(
         children: [
           //FutureBuilder to fetch weekly data of steps
-            FutureBuilder(
-              future: _fetchActivityFromDB('week'),
-              builder: (context,snapshot){
+          FutureBuilder(
+              future: fetcher.fetchActivityFromDB('week', context),
+              builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   var weekActivity = snapshot.data as List<Activity>;
                   for (var i = 0; i < weekActivity.length; i++) {
                     int element = weekActivity[i].steps;
                     //create the weekSteps List<LineSeries> that is necessary for defining and displaying the LineChart
-                    weekSteps.add(LineSeries(day: i, steps: element)); 
+                    weekSteps.add(LineSeries(day: i, steps: element));
                   }
                   return Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 10,),
-                      Text('Weekly Steps', style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
-                      LineChartWeek(data: weekSteps),]
-                  );
-                } else{
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 10),
+                        const Text('Weekly Steps',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold)),
+                        LineChartWeek(data: weekSteps),
+                      ]);
+                } else {
                   return const CircularProgressIndicator();
                 }
               }),
-              //FutureBuilder for fetch monthly data of steps
-              FutureBuilder(
-              future: _fetchActivityFromDB('month'),
-              builder: (context,snapshot){
+          //FutureBuilder for fetch monthly data of steps
+          FutureBuilder(
+              future: fetcher.fetchActivityFromDB('month', context),
+              builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   var monthActivity = snapshot.data as List<Activity>;
                   for (var i = 0; i < monthActivity.length; i++) {
                     int element = monthActivity[i].steps;
                     //create the monthSteps List<LineSeries> that is necessary for defining and displaying the LineChart
-                    monthSteps.add(LineSeries(day: i, steps: element)); 
+                    monthSteps.add(LineSeries(day: i, steps: element));
                   }
                   return Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 10,),
-                      Text('Monthly Steps', style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
-                      LineChartMonth(data: monthSteps),]
-                  );
-                } else{
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 10),
+                        Text('Monthly Steps',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold)),
+                        LineChartMonth(data: monthSteps),
+                      ]);
+                } else {
                   return const CircularProgressIndicator();
                 }
               }),
-
         ],
       ),
+    );
+  }
 
-
-      );
-
-  } 
-  
-  Future<List<Activity>> _fetchActivityFromDB(String time) async {
+  /* Future<List<Activity>> _fetchActivityFromDB(String time) async {
     final sp = await SharedPreferences.getInstance();
     DateTime now = DateTime.now();
     DateTime today = DateTime.utc(now.year, now.month, now.day);
@@ -97,7 +98,7 @@ class _StepPageState extends State<StepPage> {
         today,
         sp.getInt('lastSteps')!,
         sp.getInt('lastCalories')!,
-        sp.getInt('lastFloors')!,
+        sp.getInt('lastDistance')!,
         0);
     data.add(todayActivity);
     return data;
@@ -121,7 +122,6 @@ class _StepPageState extends State<StepPage> {
     )) as List<FitbitActivityTimeseriesData>;
     return activityList;
   }
-}
+}*/
 
-  
- //Page
+}//Page

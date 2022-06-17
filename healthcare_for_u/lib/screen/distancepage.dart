@@ -9,82 +9,83 @@ import '../database/entities/activity.dart';
 import '../utils/appcredentials.dart';
 import '../utils/dataFetcher.dart';
 
-class FloorsPage extends StatefulWidget {
-  FloorsPage({Key? key}) : super(key: key);
+class DistancePage extends StatefulWidget {
+  DistancePage({Key? key}) : super(key: key);
 
-  static const route = '/floors';
-  static const routename = 'FloorsPage';
+  static const route = '/distance';
+  static const routename = 'DistancePage';
 
   @override
-  State<FloorsPage> createState() => _FloorsPageState();
+  State<DistancePage> createState() => _DistancePageState();
 }
 
-class _FloorsPageState extends State<FloorsPage> {
-   List<LineSeries> weekFloors = [];
-   List<LineSeries> monthFloors = [];
+class _DistancePageState extends State<DistancePage> {
+  List<LineSeries> weekDistance = [];
+  List<LineSeries> monthDistance = [];
+  DataFetcher fetcher = DataFetcher();
 
   @override
   Widget build(BuildContext context) {
-    print('${FloorsPage.routename} built');
+    print('${DistancePage.routename} built');
     return Scaffold(
       appBar: AppBar(
-        title: Text(FloorsPage.routename),
+        title: Text(DistancePage.routename),
       ),
       body: Column(
         children: [
-          //FutureBuilder to fetch weekly data of floors
-            FutureBuilder(
-              future: _fetchActivityFromDB('week'),
-              builder: (context,snapshot){
+          //FutureBuilder to fetch weekly data of distance
+          FutureBuilder(
+              future: fetcher.fetchActivityFromDB('week', context),
+              builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   var weekActivity = snapshot.data as List<Activity>;
                   for (var i = 0; i < weekActivity.length; i++) {
-                    int element = weekActivity[i].floors;
-                    //create the weekFloors List<LineSeries> that is necessary for defining and displaying the LineChart
-                    weekFloors.add(LineSeries(day: i, steps: element)); 
+                    int element = weekActivity[i].distance.toInt();
+                    //create the weekDistance List<LineSeries> that is necessary for defining and displaying the LineChart
+                    weekDistance.add(LineSeries(day: i, steps: element));
                   }
                   return Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 10,),
-                      Text('Weekly Floors', style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
-                      LineChartWeek(data: weekFloors),]
-                  );
-                } else{
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 10),
+                        Text('Weekly Distance',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold)),
+                        LineChartWeek(data: weekDistance),
+                      ]);
+                } else {
                   return const CircularProgressIndicator();
                 }
               }),
-              //FutureBuilder for fetch monthly data of floors
-              FutureBuilder(
-              future: _fetchActivityFromDB('month'),
-              builder: (context,snapshot){
+          //FutureBuilder for fetch monthly data of distance
+          FutureBuilder(
+              future: fetcher.fetchActivityFromDB('month', context),
+              builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   var monthActivity = snapshot.data as List<Activity>;
                   for (var i = 0; i < monthActivity.length; i++) {
-                    int element = monthActivity[i].floors;
-                    //create the monthFloors List<LineSeries> that is necessary for defining and displaying the LineChart
-                    monthFloors.add(LineSeries(day: i, steps: element)); 
+                    int element = monthActivity[i].distance.toInt();
+                    //create the monthDistance List<LineSeries> that is necessary for defining and displaying the LineChart
+                    monthDistance.add(LineSeries(day: i, steps: element));
                   }
                   return Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 10,),
-                      Text('Monthly Floors', style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
-                      LineChartMonth(data: monthFloors),]
-                  );
-                } else{
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 10),
+                        Text('Monthly Distance',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold)),
+                        LineChartMonth(data: monthDistance),
+                      ]);
+                } else {
                   return const CircularProgressIndicator();
                 }
               }),
-
         ],
       ),
+    );
+  }
 
-
-      );
-
-  } 
-  
   Future<List<Activity>> _fetchActivityFromDB(String time) async {
     final sp = await SharedPreferences.getInstance();
     DateTime now = DateTime.now();
@@ -97,7 +98,7 @@ class _FloorsPageState extends State<FloorsPage> {
         today,
         sp.getInt('lastSteps')!,
         sp.getInt('lastCalories')!,
-        sp.getInt('lastFloors')!,
+        sp.getDouble('lastDistance')!,
         0);
     data.add(todayActivity);
     return data;

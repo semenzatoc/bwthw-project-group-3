@@ -20,8 +20,9 @@ class CaloriesPage extends StatefulWidget {
 }
 
 class _CaloriesPageState extends State<CaloriesPage> {
-   List<LineSeries> weekCalories = [];
-   List<LineSeries> monthCalories = [];
+  List<LineSeries> weekCalories = [];
+  List<LineSeries> monthCalories = [];
+  DataFetcher fetcher = DataFetcher();
 
   @override
   Widget build(BuildContext context) {
@@ -33,58 +34,60 @@ class _CaloriesPageState extends State<CaloriesPage> {
       body: Column(
         children: [
           //FutureBuilder to fetch weekly data of calories
-            FutureBuilder(
-              future: _fetchActivityFromDB('week'),
-              builder: (context,snapshot){
+          FutureBuilder(
+              future: fetcher.fetchActivityFromDB('week', context),
+              builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   var weekActivity = snapshot.data as List<Activity>;
                   for (var i = 0; i < weekActivity.length; i++) {
                     int element = weekActivity[i].calories;
                     //create the weekCalories List<LineSeries> that is necessary for defining and displaying the LineChart
-                    weekCalories.add(LineSeries(day: i, steps: element)); 
+                    weekCalories.add(LineSeries(day: i, steps: element));
                   }
                   return Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 10,),
-                      Text('Weekly Calories', style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
-                      LineChartWeek(data: weekCalories),]
-                  );
-                } else{
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 10),
+                        Text('Weekly Calories',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold)),
+                        LineChartWeek(data: weekCalories),
+                      ]);
+                } else {
                   return const CircularProgressIndicator();
                 }
               }),
-              //FutureBuilder for fetch monthly data of calories
-              FutureBuilder(
-              future: _fetchActivityFromDB('month'),
-              builder: (context,snapshot){
+          //FutureBuilder for fetch monthly data of calories
+          FutureBuilder(
+              future: fetcher.fetchActivityFromDB('month', context),
+              builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   var monthActivity = snapshot.data as List<Activity>;
                   for (var i = 0; i < monthActivity.length; i++) {
                     int element = monthActivity[i].calories;
                     //create the monthCalories List<LineSeries> that is necessary for defining and displaying the LineChart
-                    monthCalories.add(LineSeries(day: i, steps: element)); 
+                    monthCalories.add(LineSeries(day: i, steps: element));
                   }
                   return Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 10,),
-                      Text('Monthly Calories', style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
-                      LineChartMonth(data: monthCalories),]
-                  );
-                } else{
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text('Monthly Calories',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold)),
+                        LineChartMonth(data: monthCalories),
+                      ]);
+                } else {
                   return const CircularProgressIndicator();
                 }
               }),
-
         ],
       ),
+    );
+  }
 
-
-      );
-
-  } 
-  
   Future<List<Activity>> _fetchActivityFromDB(String time) async {
     final sp = await SharedPreferences.getInstance();
     DateTime now = DateTime.now();
@@ -97,7 +100,7 @@ class _CaloriesPageState extends State<CaloriesPage> {
         today,
         sp.getInt('lastSteps')!,
         sp.getInt('lastCalories')!,
-        sp.getInt('lastFloors')!,
+        sp.getDouble('lastDistance')!,
         0);
     data.add(todayActivity);
     return data;

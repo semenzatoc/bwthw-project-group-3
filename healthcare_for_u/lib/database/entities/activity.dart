@@ -29,7 +29,7 @@ class Activity {
   final int steps;
 
   // floors
-  final int floors;
+  final double distance;
 
 // calories
   final int calories;
@@ -39,5 +39,5 @@ class Activity {
 
   //Default constructor
   Activity(this.id, this.userId, this.date, this.steps, this.calories,
-      this.floors, this.minutes);
+      this.distance, this.minutes);
 }//Todo

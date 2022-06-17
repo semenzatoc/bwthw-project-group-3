@@ -84,4 +84,23 @@ class DataFetcher {
 
     return activeMinuteDays;
   }
+
+  Future<List<Activity>> fetchActivityFromDB(
+      String time, BuildContext context) async {
+    final sp = await SharedPreferences.getInstance();
+    DateTime now = DateTime.now();
+    DateTime today = DateTime.utc(now.year, now.month, now.day);
+    DataFetcher fetcher = DataFetcher();
+    List<Activity> data = await fetcher.fetchRangeActivity(context, time);
+    Activity todayActivity = Activity(
+        null,
+        sp.getInt('usercode')!,
+        today,
+        sp.getInt('lastSteps')!,
+        sp.getInt('lastCalories')!,
+        sp.getDouble('lastDistance')!,
+        0);
+    data.add(todayActivity);
+    return data;
+  }
 }

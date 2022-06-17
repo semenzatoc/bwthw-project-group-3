@@ -86,7 +86,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `User` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` TEXT NOT NULL, `password` TEXT NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Activity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `userId` INTEGER NOT NULL, `date` INTEGER NOT NULL, `steps` INTEGER NOT NULL, `floors` INTEGER NOT NULL, `calories` INTEGER NOT NULL, `minutes` REAL NOT NULL, FOREIGN KEY (`userId`) REFERENCES `User` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
+            'CREATE TABLE IF NOT EXISTS `Activity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `userId` INTEGER NOT NULL, `date` INTEGER NOT NULL, `steps` INTEGER NOT NULL, `distance` REAL NOT NULL, `calories` INTEGER NOT NULL, `minutes` REAL NOT NULL, FOREIGN KEY (`userId`) REFERENCES `User` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -194,7 +194,7 @@ class _$ActivityDao extends ActivityDao {
                   'userId': item.userId,
                   'date': _dateTimeConverter.encode(item.date),
                   'steps': item.steps,
-                  'floors': item.floors,
+                  'distance': item.distance,
                   'calories': item.calories,
                   'minutes': item.minutes
                 }),
@@ -207,7 +207,7 @@ class _$ActivityDao extends ActivityDao {
                   'userId': item.userId,
                   'date': _dateTimeConverter.encode(item.date),
                   'steps': item.steps,
-                  'floors': item.floors,
+                  'distance': item.distance,
                   'calories': item.calories,
                   'minutes': item.minutes
                 }),
@@ -220,7 +220,7 @@ class _$ActivityDao extends ActivityDao {
                   'userId': item.userId,
                   'date': _dateTimeConverter.encode(item.date),
                   'steps': item.steps,
-                  'floors': item.floors,
+                  'distance': item.distance,
                   'calories': item.calories,
                   'minutes': item.minutes
                 });
@@ -246,7 +246,7 @@ class _$ActivityDao extends ActivityDao {
             _dateTimeConverter.decode(row['date'] as int),
             row['steps'] as int,
             row['calories'] as int,
-            row['floors'] as int,
+            row['distance'] as double,
             row['minutes'] as double));
   }
 
@@ -259,7 +259,7 @@ class _$ActivityDao extends ActivityDao {
             _dateTimeConverter.decode(row['date'] as int),
             row['steps'] as int,
             row['calories'] as int,
-            row['floors'] as int,
+            row['distance'] as double,
             row['minutes'] as double),
         arguments: [_dateTimeConverter.encode(day)]);
   }
@@ -280,7 +280,7 @@ class _$ActivityDao extends ActivityDao {
             _dateTimeConverter.decode(row['date'] as int),
             row['steps'] as int,
             row['calories'] as int,
-            row['floors'] as int,
+            row['distance'] as double,
             row['minutes'] as double),
         arguments: [
           ...days.map((element) => _dateTimeConverter.encode(element))
