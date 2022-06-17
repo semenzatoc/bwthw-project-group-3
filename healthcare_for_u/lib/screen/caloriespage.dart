@@ -29,7 +29,7 @@ class _CaloriesPageState extends State<CaloriesPage> {
     print('${CaloriesPage.routename} built');
     return Scaffold(
       appBar: AppBar(
-        title: Text(CaloriesPage.routename),
+        title: const Text(CaloriesPage.routename),
       ),
       body: Column(
         children: [
@@ -47,8 +47,8 @@ class _CaloriesPageState extends State<CaloriesPage> {
                   return Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        SizedBox(height: 10),
-                        Text('Weekly Calories',
+                        const SizedBox(height: 10),
+                        const Text('Weekly Calories',
                             style: TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.bold)),
                         LineChartWeek(data: weekCalories),
@@ -71,10 +71,8 @@ class _CaloriesPageState extends State<CaloriesPage> {
                   return Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text('Monthly Calories',
+                        const SizedBox(height: 10),
+                        const Text('Monthly Calories',
                             style: TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.bold)),
                         LineChartMonth(data: monthCalories),
@@ -86,43 +84,6 @@ class _CaloriesPageState extends State<CaloriesPage> {
         ],
       ),
     );
-  }
-
-  Future<List<Activity>> _fetchActivityFromDB(String time) async {
-    final sp = await SharedPreferences.getInstance();
-    DateTime now = DateTime.now();
-    DateTime today = DateTime.utc(now.year, now.month, now.day);
-    DataFetcher fetcher = DataFetcher();
-    List<Activity> data = await fetcher.fetchRangeActivity(context, time);
-    Activity todayActivity = Activity(
-        null,
-        sp.getInt('usercode')!,
-        today,
-        sp.getInt('lastSteps')!,
-        sp.getInt('lastCalories')!,
-        sp.getDouble('lastDistance')!,
-        0);
-    data.add(todayActivity);
-    return data;
-  }
-
-  Future<List<FitbitActivityTimeseriesData>> _fetchActivity(
-      String dataType, DateTime lastUpdate, SharedPreferences sp) async {
-    FitbitActivityTimeseriesDataManager fitbitActivityTimeseriesDataManager =
-        FitbitActivityTimeseriesDataManager(
-            clientID: AppCredentials.fitbitClientID,
-            clientSecret: AppCredentials.fitbitClientSecret,
-            type: dataType);
-
-    final activityList = await fitbitActivityTimeseriesDataManager
-        .fetch(FitbitActivityTimeseriesAPIURL.dateRangeWithResource(
-      userID: sp.getString('userId'),
-      startDate: lastUpdate.add(const Duration(days: 1)),
-      endDate: DateTime.now()
-          .subtract(const Duration(days: 1)), //fetching until yesterday
-      resource: fitbitActivityTimeseriesDataManager.type,
-    )) as List<FitbitActivityTimeseriesData>;
-    return activityList;
   }
 }
 

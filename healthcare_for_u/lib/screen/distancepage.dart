@@ -29,7 +29,7 @@ class _DistancePageState extends State<DistancePage> {
     print('${DistancePage.routename} built');
     return Scaffold(
       appBar: AppBar(
-        title: Text(DistancePage.routename),
+        title: const Text(DistancePage.routename),
       ),
       body: Column(
         children: [
@@ -47,8 +47,8 @@ class _DistancePageState extends State<DistancePage> {
                   return Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        SizedBox(height: 10),
-                        Text('Weekly Distance',
+                        const SizedBox(height: 10),
+                        const Text('Weekly Distance',
                             style: TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.bold)),
                         LineChartWeek(data: weekDistance),
@@ -71,8 +71,8 @@ class _DistancePageState extends State<DistancePage> {
                   return Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        SizedBox(height: 10),
-                        Text('Monthly Distance',
+                        const SizedBox(height: 10),
+                        const Text('Monthly Distance',
                             style: TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.bold)),
                         LineChartMonth(data: monthDistance),
@@ -84,43 +84,6 @@ class _DistancePageState extends State<DistancePage> {
         ],
       ),
     );
-  }
-
-  Future<List<Activity>> _fetchActivityFromDB(String time) async {
-    final sp = await SharedPreferences.getInstance();
-    DateTime now = DateTime.now();
-    DateTime today = DateTime.utc(now.year, now.month, now.day);
-    DataFetcher fetcher = DataFetcher();
-    List<Activity> data = await fetcher.fetchRangeActivity(context, time);
-    Activity todayActivity = Activity(
-        null,
-        sp.getInt('usercode')!,
-        today,
-        sp.getInt('lastSteps')!,
-        sp.getInt('lastCalories')!,
-        sp.getDouble('lastDistance')!,
-        0);
-    data.add(todayActivity);
-    return data;
-  }
-
-  Future<List<FitbitActivityTimeseriesData>> _fetchActivity(
-      String dataType, DateTime lastUpdate, SharedPreferences sp) async {
-    FitbitActivityTimeseriesDataManager fitbitActivityTimeseriesDataManager =
-        FitbitActivityTimeseriesDataManager(
-            clientID: AppCredentials.fitbitClientID,
-            clientSecret: AppCredentials.fitbitClientSecret,
-            type: dataType);
-
-    final activityList = await fitbitActivityTimeseriesDataManager
-        .fetch(FitbitActivityTimeseriesAPIURL.dateRangeWithResource(
-      userID: sp.getString('userId'),
-      startDate: lastUpdate.add(const Duration(days: 1)),
-      endDate: DateTime.now()
-          .subtract(const Duration(days: 1)), //fetching until yesterday
-      resource: fitbitActivityTimeseriesDataManager.type,
-    )) as List<FitbitActivityTimeseriesData>;
-    return activityList;
   }
 }
 

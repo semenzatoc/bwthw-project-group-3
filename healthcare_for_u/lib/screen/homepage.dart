@@ -139,7 +139,7 @@ class _HomePageState extends State<HomePage> {
                       }),
                   const SizedBox(width: 20),
                   InkWell(
-                    child: _dataCircle('distance', MdiIcons.stairs,
+                    child: _dataCircle('distance', MdiIcons.walk,
                         Color.fromARGB(255, 61, 239, 159)),
                     onTap: () {
                       Navigator.pushNamed(context, DistancePage.route);
@@ -344,25 +344,6 @@ class _HomePageState extends State<HomePage> {
     }
     return latestActivity;
   }
-
-// fetches the last week or month of activities
-  /* Future<List<Activity>> fetchActivityFromDB(String time) async {
-    final sp = await SharedPreferences.getInstance();
-    DateTime now = DateTime.now();
-    DateTime today = DateTime.utc(now.year, now.month, now.day);
-    DataFetcher fetcher = DataFetcher();
-    List<Activity> data = await fetcher.fetchRangeActivity(context, time);
-    Activity todayActivity = Activity(
-        null,
-        sp.getInt('usercode')!,
-        today,
-        sp.getInt('lastSteps')!,
-        sp.getInt('lastCalories')!,
-        sp.getInt('lastDistance')!,
-        0);
-    data.add(todayActivity);
-    return data;
-  }*/
 
   Future<List<FitbitActivityTimeseriesData>> _fetchActivity(
       String dataType, DateTime lastUpdate, SharedPreferences sp) async {
