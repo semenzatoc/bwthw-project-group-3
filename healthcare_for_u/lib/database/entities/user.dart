@@ -8,19 +8,17 @@ class User {
   @PrimaryKey(autoGenerate: true)
   final int? id;
 
-  final String username;
-  //String username;
+  String username;
 
-  final String password;
-  //String password;
+  String password;
 
-  //double weight;
-  //double height;
-  //String dob;
-  //String profilepicture;
+  String weight;
+  String height;
+  String dob;
+  String profilepicture;
   //DateTime lastfetch;
 
   //Default constructor
-  User(this.id, this.username,
-      this.password); //, this.weight, this.height, this.dob, this.profilepicture, this.lastfetch);
+  User(this.id, this.username, this.password, this.weight, this.height,
+      this.dob, this.profilepicture); //, this.lastfetch);
 }//Todo

@@ -99,12 +99,22 @@ class _UserPageState extends State<UserPage> {
 
                             OutlinedButton(
                                 onPressed: () async {
-                                  // getInstance della sp
-                                  // salvati a parte le singole variabili
+                                  var sp =
+                                      await SharedPreferences.getInstance();
+                                  String? weight = sp.getString('weight');
+                                  String? height = sp.getString('height');
+                                  String? dob = sp.getString('dob');
+                                  String? picture = sp.getString('imagepath');
                                   await Provider.of<DatabaseRepository>(context,
                                           listen: false)
-                                      .insertUser(
-                                          User(null, _username, _password));
+                                      .insertUser(User(
+                                          null,
+                                          _username,
+                                          _password,
+                                          weight!,
+                                          height!,
+                                          dob!,
+                                          picture!));
                                   Navigator.pushNamed(context, LoginPage.route);
                                 },
                                 child: const Text('Submit')),

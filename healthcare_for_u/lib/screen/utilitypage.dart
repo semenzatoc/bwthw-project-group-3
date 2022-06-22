@@ -1,6 +1,7 @@
 import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
 import 'package:healthcare_for_u/database/entities/activity.dart';
+import 'package:healthcare_for_u/database/entities/user.dart';
 import 'package:healthcare_for_u/repository/databaseRepository.dart';
 import 'package:healthcare_for_u/screen/homepage.dart';
 import 'package:healthcare_for_u/utils/appcredentials.dart';
@@ -98,7 +99,20 @@ class UtilityPage extends StatelessWidget {
                             .findAllActivities() as List<Activity>;
                     print('Activities loaded');
                   },
-                  child: const Text('Load activity DB'))
+                  child: const Text('Load activity DB')),
+              const SizedBox(height: 20),
+
+              // Check list activities
+              // Put a breakpoint on the print to visualize DB in debug
+              ElevatedButton(
+                  onPressed: () async {
+                    List<User> allUsers = await Provider.of<DatabaseRepository>(
+                            context,
+                            listen: false)
+                        .findAllUsers() as List<User>;
+                    print('Users loaded');
+                  },
+                  child: const Text('Load user DB')),
             ]),
       ),
     );

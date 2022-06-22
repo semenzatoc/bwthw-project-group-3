@@ -84,7 +84,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `User` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` TEXT NOT NULL, `password` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `User` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` TEXT NOT NULL, `password` TEXT NOT NULL, `weight` TEXT NOT NULL, `height` TEXT NOT NULL, `dob` TEXT NOT NULL, `profilepicture` TEXT NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Activity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `userId` INTEGER NOT NULL, `date` INTEGER NOT NULL, `steps` INTEGER NOT NULL, `distance` REAL NOT NULL, `calories` INTEGER NOT NULL, `minutes` REAL NOT NULL, FOREIGN KEY (`userId`) REFERENCES `User` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
 
@@ -114,7 +114,11 @@ class _$UserDao extends UserDao {
             (User item) => <String, Object?>{
                   'id': item.id,
                   'username': item.username,
-                  'password': item.password
+                  'password': item.password,
+                  'weight': item.weight,
+                  'height': item.height,
+                  'dob': item.dob,
+                  'profilepicture': item.profilepicture
                 }),
         _userUpdateAdapter = UpdateAdapter(
             database,
@@ -123,7 +127,11 @@ class _$UserDao extends UserDao {
             (User item) => <String, Object?>{
                   'id': item.id,
                   'username': item.username,
-                  'password': item.password
+                  'password': item.password,
+                  'weight': item.weight,
+                  'height': item.height,
+                  'dob': item.dob,
+                  'profilepicture': item.profilepicture
                 }),
         _userDeletionAdapter = DeletionAdapter(
             database,
@@ -132,7 +140,11 @@ class _$UserDao extends UserDao {
             (User item) => <String, Object?>{
                   'id': item.id,
                   'username': item.username,
-                  'password': item.password
+                  'password': item.password,
+                  'weight': item.weight,
+                  'height': item.height,
+                  'dob': item.dob,
+                  'profilepicture': item.profilepicture
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -150,15 +162,27 @@ class _$UserDao extends UserDao {
   @override
   Future<List<User>> findAllUsers() async {
     return _queryAdapter.queryList('SELECT * FROM User',
-        mapper: (Map<String, Object?> row) => User(row['id'] as int?,
-            row['username'] as String, row['password'] as String));
+        mapper: (Map<String, Object?> row) => User(
+            row['id'] as int?,
+            row['username'] as String,
+            row['password'] as String,
+            row['weight'] as String,
+            row['height'] as String,
+            row['dob'] as String,
+            row['profilepicture'] as String));
   }
 
   @override
   Future<List<User?>> findUser(String username) async {
     return _queryAdapter.queryList('SELECT * FROM User WHERE username = ?1',
-        mapper: (Map<String, Object?> row) => User(row['id'] as int?,
-            row['username'] as String, row['password'] as String),
+        mapper: (Map<String, Object?> row) => User(
+            row['id'] as int?,
+            row['username'] as String,
+            row['password'] as String,
+            row['weight'] as String,
+            row['height'] as String,
+            row['dob'] as String,
+            row['profilepicture'] as String),
         arguments: [username]);
   }
 
@@ -169,7 +193,7 @@ class _$UserDao extends UserDao {
 
   @override
   Future<void> insertUser(User user) async {
-    await _userInsertionAdapter.insert(user, OnConflictStrategy.fail);
+    await _userInsertionAdapter.insert(user, OnConflictStrategy.replace);
   }
 
   @override
