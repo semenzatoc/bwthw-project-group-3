@@ -32,6 +32,8 @@ class _ProfilePageState extends State<ProfilePage> {
           title: const Text(ProfilePage.routename),
           centerTitle: true,
           actions: [
+            IconButton(onPressed: () {},
+                 icon: const Icon(Icons.delete)),
             IconButton(
                 onPressed: () async {
                   Navigator.pushNamed(context, UtilityPage.route);
@@ -42,6 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   _toLoginPage(context);
                 },
                 icon: const Icon(Icons.logout))
+                
           ]),
       bottomNavigationBar: BottomAppBar(
         color: Colors.white,
@@ -87,10 +90,18 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Row(
                 children: [
                   const SizedBox(width: 40),
-                  const Text(
-                    'Hello Bob!',
-                    style: TextStyle(fontSize: 30),
-                  ),
+                  FutureBuilder(
+                    future: SharedPreferences.getInstance(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        var sp = snapshot.data as SharedPreferences;
+                        var user = sp.getString('username');
+                        return Text('Hello, $user!',
+                           style: TextStyle(fontSize: 30),);
+                        }else{
+                          return CircularProgressIndicator();
+                        }}),
+                   
                   const SizedBox(
                     width: 50,
                   ),
@@ -148,18 +159,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                               children: <Widget>[
                                                 Row(children: [
                                                   const Icon(MdiIcons.account),
+                                                  const SizedBox(width:5),
                                                   Text(
                                                       'Name: ${sp.getString('name')}'),
                                                 ]),
-                                                const SizedBox(
-                                                  height: 15,
-                                                ),
+                                                const SizedBox(height: 15,),
                                                 Row(
                                                   children: [
                                                     const Icon(MdiIcons
                                                         .cakeVariantOutline),
-                                                    Text(
-                                                        'Date of Birth: ${sp.getString('dob')}'),
+                                                    Text('Date of Birth: ${sp.getString('dob')}'),
                                                   ],
                                                 )
                                               ],
@@ -172,11 +181,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                               child: const Text('Cancel'),
                                             ),
                                           ])),
-                                );
-                              },
-                            ),
-                          ],
-                        );
+                                );},),],);
                       } else {
                         return const Text('No data available');
                       }
@@ -188,7 +193,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     indent: 10,
                     endIndent: 0,
                     color: Colors.grey),
-                const SizedBox(height: 10),
+                const SizedBox(height: 15),
                 FutureBuilder(
                     future: SharedPreferences.getInstance(),
                     builder: (context, snapshot) {
@@ -197,19 +202,15 @@ class _ProfilePageState extends State<ProfilePage> {
                         var bmi = BMI(sp);
                         return Row(
                           children: [
-                            const SizedBox(
-                              width: 15,
-                            ),
+                            const SizedBox(width: 15,),
                             const Icon(
                               MdiIcons.heart,
                               size: 30,
                             ),
-                            const SizedBox(
-                              width: 50,
-                            ),
+                            const SizedBox(width: 50,),
                             TextButton(
                               child: const Text(
-                                'Health Status',
+                                'My measurement',
                                 style: TextStyle(
                                     fontSize: 20, color: Colors.black),
                               ),
@@ -220,24 +221,22 @@ class _ProfilePageState extends State<ProfilePage> {
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 80),
                                       child: AlertDialog(
-                                          title: const Text('Health Status'),
+                                          title: const Text('My measurement'),
                                           content: SingleChildScrollView(
                                             child: ListBody(
                                               children: <Widget>[
                                                 Row(children: [
                                                   const Icon(MdiIcons.weight),
-                                                  Text(
-                                                      'Weight: ${sp.getString('weight')} kg'),
+                                                  const SizedBox(width:5),
+                                                  Text('Weight: ${sp.getString('weight')} kg'),
                                                 ]),
-                                                const SizedBox(
-                                                  height: 15,
-                                                ),
+                                                const SizedBox(height: 15,),
                                                 Row(
                                                   children: [
                                                     const Icon(MdiIcons
                                                         .humanMaleHeightVariant),
-                                                    Text(
-                                                        'Height: ${sp.getString('height')} cm'),
+                                                        const SizedBox(width:5),
+                                                    Text('Height: ${sp.getString('height')} cm'),
                                                   ],
                                                 ),
                                                 const SizedBox(
@@ -246,6 +245,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 Row(
                                                   children: [
                                                     const Icon(MdiIcons.heart),
+                                                    const SizedBox(width:5),
                                                     Text('BMI $bmi'),
                                                   ],
                                                 )
@@ -279,8 +279,14 @@ class _ProfilePageState extends State<ProfilePage> {
   void _toLoginPage(BuildContext context) async {
     //Unset the 'username' filed in SharedPreference
     final sp = await SharedPreferences.getInstance();
+    final spToRemove = ['name','gender','dob','weight','height','goal'];
+    for (var i = 0; i < spToRemove.length; i++) {
+      sp.remove(spToRemove[i]);
+      
+    }
     sp.remove('username');
     sp.setInt('usercode', -1);
+
 
 // RIMUOVERE A FINE DEBUG
     // await Provider.of<DatabaseRepository>(context, listen: false)

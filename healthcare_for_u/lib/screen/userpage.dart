@@ -50,7 +50,7 @@ class _UserPageState extends State<UserPage> {
                             // User
                             TextFormField(
                               decoration:
-                                  const InputDecoration(labelText: 'User'),
+                                  const InputDecoration(labelText: 'Select your Username'),
                               validator: (value) {
                                 _username = userList
                                     .firstWhere(
@@ -70,7 +70,7 @@ class _UserPageState extends State<UserPage> {
                             // Password
                             TextFormField(
                               decoration:
-                                  const InputDecoration(labelText: 'Password'),
+                                  const InputDecoration(labelText: 'Select your Password'),
                               obscureText: true,
                               validator: (value) {
                                 if (value == null || value.trim().isEmpty) {

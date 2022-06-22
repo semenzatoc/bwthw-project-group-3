@@ -87,7 +87,7 @@ List<Question> questions() {
       },
     ),
     Question(
-      question: "What's your weight?",
+      question: "What's your weight in kg?",
       //isMandatory: true,
       validate: (field) {
         if (field.isEmpty) return "Field cannot be empty";
@@ -95,7 +95,7 @@ List<Question> questions() {
       },
     ),
     Question(
-      question: "What's your heigth?",
+      question: "What's your heigth in cm?",
       //isMandatory: true,
       validate: (field) {
         if (field.isEmpty) return "Field cannot be empty";
