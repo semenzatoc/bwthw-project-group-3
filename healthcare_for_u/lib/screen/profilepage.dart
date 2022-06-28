@@ -33,14 +33,37 @@ class _ProfilePageState extends State<ProfilePage> {
           centerTitle: true,
           actions: [
             IconButton(
-                onPressed: () async {
-                  SharedPreferences sp = await SharedPreferences.getInstance();
-                  // delete all data of a user from the DB
-                  await Provider.of<DatabaseRepository>(context, listen: false)
-                      .deleteUserActivty(sp.getInt('usercode')!);
-                  await Provider.of<DatabaseRepository>(context, listen: false)
-                      .removeUser(sp.getInt('usercode')!);
-                  _toLoginPage(context);
+                onPressed: () {
+                  showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 80),
+                      child: AlertDialog(
+                          content: Text('Are you sure you want to delete your account?'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text('Delete my account'),
+                              onPressed: () async {
+                                SharedPreferences sp =
+                                    await SharedPreferences.getInstance();
+                                // delete all data of a user from the DB
+                                await Provider.of<DatabaseRepository>(context,
+                                        listen: false)
+                                    .deleteUserActivty(sp.getInt('usercode')!);
+                                await Provider.of<DatabaseRepository>(context,
+                                        listen: false)
+                                    .removeUser(sp.getInt('usercode')!);
+                                _toLoginPage(context);
+                              },
+                            ),
+                            TextButton(
+                              child: const Text('Cancel'),
+                              onPressed: () {
+                                Navigator.pop(context, 'Cancel');
+                              },)
+                          ]),
+                    ),
+                  );
                 },
                 icon: const Icon(Icons.delete)),
             IconButton(
