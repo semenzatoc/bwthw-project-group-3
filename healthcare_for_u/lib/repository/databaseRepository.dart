@@ -131,4 +131,13 @@ class DatabaseRepository extends ChangeNotifier {
       await database.activityDao.deleteActivity(activity);
     }
   }
+
+  Future<void> updateGoal(int userId, int newGoal) async {
+    var user = await database.userDao.findUserByID(userId) as User;
+
+    user.goal = newGoal;
+    await database.userDao.deleteUser(user);
+    await database.userDao.insertUser(user);
+    notifyListeners();
+  }
 } //DatabaseRepository
