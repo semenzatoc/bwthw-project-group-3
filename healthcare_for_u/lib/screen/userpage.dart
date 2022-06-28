@@ -49,8 +49,8 @@ class _UserPageState extends State<UserPage> {
                           children: [
                             // User
                             TextFormField(
-                              decoration:
-                                  const InputDecoration(labelText: 'Select your Username'),
+                              decoration: const InputDecoration(
+                                  labelText: 'Select your Username'),
                               validator: (value) {
                                 _username = userList
                                     .firstWhere(
@@ -69,8 +69,8 @@ class _UserPageState extends State<UserPage> {
                             const SizedBox(height: 20),
                             // Password
                             TextFormField(
-                              decoration:
-                                  const InputDecoration(labelText: 'Select your Password'),
+                              decoration: const InputDecoration(
+                                  labelText: 'Select your Password'),
                               obscureText: true,
                               validator: (value) {
                                 if (value == null || value.trim().isEmpty) {
@@ -115,7 +115,8 @@ class _UserPageState extends State<UserPage> {
                                           height!,
                                           dob!,
                                           picture!));
-                                  Navigator.pushNamed(context, LoginPage.route);
+                                  Navigator.pushReplacementNamed(
+                                      context, LoginPage.route);
                                 },
                                 child: const Text('Submit')),
                           ],

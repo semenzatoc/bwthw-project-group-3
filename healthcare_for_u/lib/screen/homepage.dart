@@ -1,3 +1,5 @@
+//import 'dart:html';
+
 import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
 import 'package:healthcare_for_u/database/entities/activity.dart';
@@ -106,7 +108,7 @@ class _HomePageState extends State<HomePage> {
           print('Data fetched');
         },
         child: ListView(children: [
-          currentLevel(),
+          _currentBadge(),
           const SizedBox(height: 50),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -159,9 +161,11 @@ class _HomePageState extends State<HomePage> {
     int steps = await _fetchData('steps') as int;
     double distance = await _fetchData('distance') as double;
     int calories = await _fetchData('calories') as int;
-    sp.setInt('lastSteps', steps);
-    sp.setDouble('lastDistance', distance);
-    sp.setInt('lastCalories', calories);
+    setState(() {
+      sp.setInt('lastSteps', steps);
+      sp.setDouble('lastDistance', distance);
+      sp.setInt('lastCalories', calories);
+    });
   }
 
   Future<num> _fetchData(String dataType) async {
@@ -218,8 +222,11 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(height: 5),
         Text('$data', style: const TextStyle(fontSize: 20)),
         const SizedBox(height: 5),
-        Text('${dataType[0].toUpperCase()}${dataType.substring(1)}',
-            style: const TextStyle(fontSize: 20))
+        if (dataType == 'steps' || dataType == 'calories')
+          Text('${dataType[0].toUpperCase()}${dataType.substring(1)}',
+              style: const TextStyle(fontSize: 20))
+        else
+          const Text('km', style: TextStyle(fontSize: 20))
       ])
     ]);
   } //_dataStack
@@ -234,7 +241,9 @@ class _HomePageState extends State<HomePage> {
             if (dataType == 'steps') {
               data = sp.getInt('lastSteps');
             } else if (dataType == 'distance') {
-              data = sp.getDouble('lastDistance');
+              // round distance to second decimal
+              num dist = sp.getDouble('lastDistance')!;
+              data = num.parse(dist.toStringAsFixed(2));
             } else {
               data = sp.getInt('lastCalories');
             }
@@ -250,7 +259,7 @@ class _HomePageState extends State<HomePage> {
         });
   } // _dataCircle
 
-  Widget currentLevel() {
+  Widget _currentBadge() {
     return FutureBuilder(
         future: SharedPreferences.getInstance(),
         builder: (context, snapshot) {
@@ -265,9 +274,25 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Right now you are a ${achievement.title}!',
-                      style: TextStyle(fontSize: 20)),
-                  SizedBox(width: 20),
+                  SizedBox(width: 10),
+                  RichText(
+                    text: TextSpan(
+                        text: "Right now, you are a ",
+                        style: const TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: "${achievement.title}",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const TextSpan(text: "!"),
+                        ]),
+                  ),
+                  SizedBox(width: 10),
                   CircleAvatar(
                       radius: 40,
                       backgroundImage: AssetImage(achievement.assetPicture!))
