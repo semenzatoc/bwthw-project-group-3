@@ -316,7 +316,8 @@ class _HomePageState extends State<HomePage> {
     List<User> users =
         await Provider.of<DatabaseRepository>(context, listen: false)
             .findAllUsers();
-    int userId = users.firstWhere((user) => user.username == username).id!;
+    //int userId = users.firstWhere((user) => user.username == username).id!;
+    int userId = sp.getInt('usercode')!;
 
     DateTime lastUpdate = DateTime.parse(sp.getString('lastUpdate')!);
     DateTime yesterday = DateTime.now().subtract(const Duration(days: 1));
@@ -364,8 +365,10 @@ class _HomePageState extends State<HomePage> {
 
       // update last db update date
       // has to be done after everything to ensure that authorization goes through
-      sp.setString(
-          'lastUpdate', DateFormat("yyyy-MM-dd HH:mm:ss").format(yesterday));
+      String newDate = DateFormat("yyyy-MM-dd").format(yesterday);
+      sp.setString('lastUpdate', newDate);
+      await Provider.of<DatabaseRepository>(context, listen: false)
+          .updateDate(userId, newDate);
     }
     return latestActivity;
   }

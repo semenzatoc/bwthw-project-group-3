@@ -84,9 +84,9 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `User` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` TEXT NOT NULL, `password` TEXT NOT NULL, `name` TEXT NOT NULL, `gender` TEXT NOT NULL, `weight` TEXT NOT NULL, `height` TEXT NOT NULL, `dob` TEXT NOT NULL, `profilepicture` TEXT NOT NULL, `goal` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `User` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` TEXT NOT NULL, `password` TEXT NOT NULL, `name` TEXT NOT NULL, `gender` TEXT NOT NULL, `weight` TEXT NOT NULL, `height` TEXT NOT NULL, `dob` TEXT NOT NULL, `profilepicture` TEXT NOT NULL, `goal` INTEGER NOT NULL, `lastUpdate` TEXT NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Activity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `userId` INTEGER NOT NULL, `date` INTEGER NOT NULL, `steps` INTEGER NOT NULL, `distance` REAL NOT NULL, `calories` INTEGER NOT NULL, `minutes` REAL NOT NULL, FOREIGN KEY (`userId`) REFERENCES `User` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
+            'CREATE TABLE IF NOT EXISTS `Activity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `userId` INTEGER NOT NULL, `date` INTEGER NOT NULL, `steps` INTEGER NOT NULL, `distance` REAL NOT NULL, `calories` INTEGER NOT NULL, `minutes` REAL NOT NULL, FOREIGN KEY (`userId`) REFERENCES `User` (`id`) ON UPDATE CASCADE ON DELETE NO ACTION)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -121,7 +121,8 @@ class _$UserDao extends UserDao {
                   'height': item.height,
                   'dob': item.dob,
                   'profilepicture': item.profilepicture,
-                  'goal': item.goal
+                  'goal': item.goal,
+                  'lastUpdate': item.lastUpdate
                 }),
         _userUpdateAdapter = UpdateAdapter(
             database,
@@ -137,7 +138,8 @@ class _$UserDao extends UserDao {
                   'height': item.height,
                   'dob': item.dob,
                   'profilepicture': item.profilepicture,
-                  'goal': item.goal
+                  'goal': item.goal,
+                  'lastUpdate': item.lastUpdate
                 }),
         _userDeletionAdapter = DeletionAdapter(
             database,
@@ -153,7 +155,8 @@ class _$UserDao extends UserDao {
                   'height': item.height,
                   'dob': item.dob,
                   'profilepicture': item.profilepicture,
-                  'goal': item.goal
+                  'goal': item.goal,
+                  'lastUpdate': item.lastUpdate
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -181,7 +184,8 @@ class _$UserDao extends UserDao {
             row['height'] as String,
             row['dob'] as String,
             row['goal'] as int,
-            row['profilepicture'] as String));
+            row['profilepicture'] as String,
+            row['lastUpdate'] as String));
   }
 
   @override
@@ -197,7 +201,8 @@ class _$UserDao extends UserDao {
             row['height'] as String,
             row['dob'] as String,
             row['goal'] as int,
-            row['profilepicture'] as String),
+            row['profilepicture'] as String,
+            row['lastUpdate'] as String),
         arguments: [username]);
   }
 
@@ -214,7 +219,8 @@ class _$UserDao extends UserDao {
             row['height'] as String,
             row['dob'] as String,
             row['goal'] as int,
-            row['profilepicture'] as String),
+            row['profilepicture'] as String,
+            row['lastUpdate'] as String),
         arguments: [userId]);
   }
 

@@ -9,6 +9,8 @@ import 'package:healthcare_for_u/database/entities/user.dart';
       childColumns: ['userId'],
       parentColumns: ['id'],
       entity: User,
+      onDelete: ForeignKeyAction.noAction,
+      onUpdate: ForeignKeyAction.cascade,
     )
   ],
 )

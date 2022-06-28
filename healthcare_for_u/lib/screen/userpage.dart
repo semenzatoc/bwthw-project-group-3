@@ -135,9 +135,10 @@ class _UserPageState extends State<UserPage> {
       String? dob = sp.getString('dob');
       int? goal = int.parse(sp.getString('goal')!);
       String? picture = sp.getString('imagepath');
+      String? lastUpdate = sp.getString('lastUpdate');
       await Provider.of<DatabaseRepository>(context, listen: false).insertUser(
           User(null, _username!, _password!, name!, gender!, weight!, height!,
-              dob!, goal, picture!));
+              dob!, goal, picture!, lastUpdate!));
       Navigator.pushNamedAndRemoveUntil(
           context, LoginPage.route, (Route<dynamic> route) => false);
     }

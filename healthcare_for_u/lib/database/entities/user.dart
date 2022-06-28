@@ -19,7 +19,7 @@ class User {
   String dob;
   String profilepicture;
   int goal;
-  //DateTime lastfetch;
+  String lastUpdate;
 
   //Default constructor
   User(
@@ -32,5 +32,6 @@ class User {
       this.height,
       this.dob,
       this.goal,
-      this.profilepicture); //, this.lastfetch);
+      this.profilepicture,
+      this.lastUpdate); //, this.lastfetch);
 }//Todo

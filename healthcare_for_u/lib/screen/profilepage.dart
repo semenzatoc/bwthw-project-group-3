@@ -39,7 +39,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     builder: (BuildContext context) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 80),
                       child: AlertDialog(
-                          content: Text('Are you sure you want to delete your account?'),
+                          content: Text(
+                              'Are you sure you want to delete your account?'),
                           actions: <Widget>[
                             TextButton(
                               child: const Text('Delete my account'),
@@ -60,7 +61,8 @@ class _ProfilePageState extends State<ProfilePage> {
                               child: const Text('Cancel'),
                               onPressed: () {
                                 Navigator.pop(context, 'Cancel');
-                              },)
+                              },
+                            )
                           ]),
                     ),
                   );
@@ -327,7 +329,15 @@ class _ProfilePageState extends State<ProfilePage> {
   void _toLoginPage(BuildContext context) async {
     //Unset the personal information filed in SharedPreference
     final sp = await SharedPreferences.getInstance();
-    final spToRemove = ['name', 'gender', 'dob', 'weight', 'height', 'goal'];
+    final spToRemove = [
+      'name',
+      'gender',
+      'dob',
+      'weight',
+      'height',
+      'goal',
+      'lastUpdate'
+    ];
     for (var i = 0; i < spToRemove.length; i++) {
       sp.remove(spToRemove[i]);
     }

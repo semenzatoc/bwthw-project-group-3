@@ -41,8 +41,7 @@ class _SignUpFormState extends State<SignUpForm> {
               if (_key.currentState!.validate()) {
                 answer_list = _key.currentState!.getElementList();
                 final sp = await SharedPreferences.getInstance();
-                sp.setString('imagepath', '');
-                sp.setString('lastUpdate', '2022-03-01');
+
                 saveAnswers(answer_list);
                 Navigator.pushNamed(context, UserPage.route);
               }
@@ -62,6 +61,8 @@ void saveAnswers(List<FormElement> answer_list) async {
   for (var i = 0; i < answer_list.length; i++) {
     sp.setString(questionList[i], answer_list[i].answer);
   }
+  sp.setString('lastUpdate', '2022-03-01');
+  sp.setString('imagepath', '');
   //return sp;
 }
 

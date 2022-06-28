@@ -63,6 +63,7 @@ class _LoginPageState extends State<LoginPage> {
       sp.setString('height', loggedUser.height);
       sp.setString('goal', loggedUser.goal.toString());
       sp.setString('profilepicture', loggedUser.profilepicture);
+      sp.setString('lastUpdate', loggedUser.lastUpdate);
 
       Navigator.pushReplacementNamed(context, AuthPage.route);
     }

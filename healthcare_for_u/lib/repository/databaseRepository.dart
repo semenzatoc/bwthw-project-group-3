@@ -61,6 +61,7 @@ class DatabaseRepository extends ChangeNotifier {
     notifyListeners();
   }
 
+// function to update user weight in DB
   Future<void> updateWeight(String username, String weight) async {
     final userInList = await database.userDao.findUser(username);
     User user = userInList[0]!;
@@ -69,6 +70,7 @@ class DatabaseRepository extends ChangeNotifier {
     notifyListeners();
   }
 
+// function to update user height in DB
   Future<void> updateHeight(String username, String height) async {
     final userInList = await database.userDao.findUser(username);
     User user = userInList[0]!;
@@ -77,6 +79,27 @@ class DatabaseRepository extends ChangeNotifier {
     notifyListeners();
   }
 
+// function to update steps goal in database
+  Future<void> updateGoal(int userId, int newGoal) async {
+    var user = await database.userDao.findUserByID(userId) as User;
+
+    user.goal = newGoal;
+    await database.userDao.updateUser(user);
+    notifyListeners();
+  }
+
+// function to update lastFetch date in user DB
+  Future<void> updateDate(int userId, String newDate) async {
+    var user = await database.userDao.findUserByID(userId) as User;
+
+    user.lastUpdate = newDate;
+    await database.userDao.updateUser(user);
+    notifyListeners();
+  }
+
+//
+//
+//
 //// Activity methods
   Future<List<Activity?>> findAllActivities() async {
     final results = await database.activityDao.findAllActivities();
@@ -135,14 +158,5 @@ class DatabaseRepository extends ChangeNotifier {
     for (var activity in userActivities) {
       await database.activityDao.deleteActivity(activity);
     }
-  }
-
-  Future<void> updateGoal(int userId, int newGoal) async {
-    var user = await database.userDao.findUserByID(userId) as User;
-
-    user.goal = newGoal;
-    await database.userDao.deleteUser(user);
-    await database.userDao.insertUser(user);
-    notifyListeners();
   }
 } //DatabaseRepository
