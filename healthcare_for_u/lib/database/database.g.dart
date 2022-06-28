@@ -84,7 +84,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `User` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` TEXT NOT NULL, `password` TEXT NOT NULL, `weight` TEXT NOT NULL, `height` TEXT NOT NULL, `dob` TEXT NOT NULL, `profilepicture` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `User` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` TEXT NOT NULL, `password` TEXT NOT NULL, `name` TEXT NOT NULL, `gender` TEXT NOT NULL, `weight` TEXT NOT NULL, `height` TEXT NOT NULL, `dob` TEXT NOT NULL, `profilepicture` TEXT NOT NULL, `goal` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Activity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `userId` INTEGER NOT NULL, `date` INTEGER NOT NULL, `steps` INTEGER NOT NULL, `distance` REAL NOT NULL, `calories` INTEGER NOT NULL, `minutes` REAL NOT NULL, FOREIGN KEY (`userId`) REFERENCES `User` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
 
@@ -115,10 +115,13 @@ class _$UserDao extends UserDao {
                   'id': item.id,
                   'username': item.username,
                   'password': item.password,
+                  'name': item.name,
+                  'gender': item.gender,
                   'weight': item.weight,
                   'height': item.height,
                   'dob': item.dob,
-                  'profilepicture': item.profilepicture
+                  'profilepicture': item.profilepicture,
+                  'goal': item.goal
                 }),
         _userUpdateAdapter = UpdateAdapter(
             database,
@@ -128,10 +131,13 @@ class _$UserDao extends UserDao {
                   'id': item.id,
                   'username': item.username,
                   'password': item.password,
+                  'name': item.name,
+                  'gender': item.gender,
                   'weight': item.weight,
                   'height': item.height,
                   'dob': item.dob,
-                  'profilepicture': item.profilepicture
+                  'profilepicture': item.profilepicture,
+                  'goal': item.goal
                 }),
         _userDeletionAdapter = DeletionAdapter(
             database,
@@ -141,10 +147,13 @@ class _$UserDao extends UserDao {
                   'id': item.id,
                   'username': item.username,
                   'password': item.password,
+                  'name': item.name,
+                  'gender': item.gender,
                   'weight': item.weight,
                   'height': item.height,
                   'dob': item.dob,
-                  'profilepicture': item.profilepicture
+                  'profilepicture': item.profilepicture,
+                  'goal': item.goal
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -166,9 +175,12 @@ class _$UserDao extends UserDao {
             row['id'] as int?,
             row['username'] as String,
             row['password'] as String,
+            row['name'] as String,
+            row['gender'] as String,
             row['weight'] as String,
             row['height'] as String,
             row['dob'] as String,
+            row['goal'] as int,
             row['profilepicture'] as String));
   }
 
@@ -179,11 +191,31 @@ class _$UserDao extends UserDao {
             row['id'] as int?,
             row['username'] as String,
             row['password'] as String,
+            row['name'] as String,
+            row['gender'] as String,
             row['weight'] as String,
             row['height'] as String,
             row['dob'] as String,
+            row['goal'] as int,
             row['profilepicture'] as String),
         arguments: [username]);
+  }
+
+  @override
+  Future<User?> findUserByID(int userId) async {
+    return _queryAdapter.query('SELECT * FROM User WHERE id = ?1',
+        mapper: (Map<String, Object?> row) => User(
+            row['id'] as int?,
+            row['username'] as String,
+            row['password'] as String,
+            row['name'] as String,
+            row['gender'] as String,
+            row['weight'] as String,
+            row['height'] as String,
+            row['dob'] as String,
+            row['goal'] as int,
+            row['profilepicture'] as String),
+        arguments: [userId]);
   }
 
   @override
@@ -309,6 +341,20 @@ class _$ActivityDao extends ActivityDao {
         arguments: [
           ...days.map((element) => _dateTimeConverter.encode(element))
         ]);
+  }
+
+  @override
+  Future<List<Activity>> getUserActivity(int userId) async {
+    return _queryAdapter.queryList('SELECT * FROM Activity WHERE userId = ?1',
+        mapper: (Map<String, Object?> row) => Activity(
+            row['id'] as int?,
+            row['userId'] as int,
+            _dateTimeConverter.decode(row['date'] as int),
+            row['steps'] as int,
+            row['calories'] as int,
+            row['distance'] as double,
+            row['minutes'] as double),
+        arguments: [userId]);
   }
 
   @override

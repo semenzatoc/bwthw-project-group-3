@@ -16,6 +16,9 @@ abstract class ActivityDao {
   @Query('SELECT * FROM Activity WHERE date IN (:days)')
   Future<List<Activity>> findActivityInPeriod(List<DateTime> days);
 
+  @Query('SELECT * FROM Activity WHERE userId = :userId')
+  Future<List<Activity>> getUserActivity(int userId);
+
   @Query('DELETE FROM Activity')
   Future<void> deleteAllActivities();
 

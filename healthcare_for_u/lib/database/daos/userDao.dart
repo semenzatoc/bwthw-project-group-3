@@ -12,11 +12,8 @@ abstract class UserDao {
   @Query('SELECT * FROM User WHERE username = :username')
   Future<List<User?>> findUser(String username);
 
-  /* @Query('SELECT username FROM User WHERE username = :username')
-  Future<List<User>> getUsername(String username);
-
-  @Query('SELECT password FROM User WHERE username = :username')
-  Future<List<User>> getPassword(String username);*/
+  @Query('SELECT * FROM User WHERE id = :userId')
+  Future<User?> findUserByID(int userId);
 
   @Query('DELETE FROM User')
   Future<void> deleteAllUser();

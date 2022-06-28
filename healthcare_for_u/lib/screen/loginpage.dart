@@ -51,6 +51,19 @@ class _LoginPageState extends State<LoginPage> {
       final sp = await SharedPreferences.getInstance();
       sp.setString('username', _username);
       sp.setInt('usercode', _user_id);
+      List<User> allUsers =
+          await Provider.of<DatabaseRepository>(context, listen: false)
+              .findAllUsers();
+      User loggedUser =
+          allUsers.firstWhere((user) => user.username == _userName);
+      sp.setString('name', loggedUser.name);
+      sp.setString('gender', loggedUser.gender);
+      sp.setString('dob', loggedUser.dob);
+      sp.setString('weight', loggedUser.weight);
+      sp.setString('height', loggedUser.height);
+      sp.setString('goal', loggedUser.goal.toString());
+      sp.setString('profilepicture', loggedUser.profilepicture);
+
       Navigator.pushReplacementNamed(context, AuthPage.route);
     }
   }

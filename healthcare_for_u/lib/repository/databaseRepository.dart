@@ -41,9 +41,9 @@ class DatabaseRepository extends ChangeNotifier {
     notifyListeners();
   } //insertUser
 
-  //This method wraps the deleteUser() method of the DAO.
-  //Then, it notifies the listeners that something changed.
-  Future<void> removeUser(User user) async {
+  //TDelete user from database
+  Future<void> removeUser(int userId) async {
+    var user = await database.userDao.findUserByID(userId) as User;
     await database.userDao.deleteUser(user);
     notifyListeners();
   } //removeUser
@@ -121,5 +121,14 @@ class DatabaseRepository extends ChangeNotifier {
   Future<void> clearActivityTable() async {
     await database.activityDao.deleteAllActivities();
     notifyListeners();
+  }
+
+  Future<void> deleteUserActivty(int userId) async {
+    List<Activity> userActivities =
+        await database.activityDao.getUserActivity(userId);
+
+    for (var activity in userActivities) {
+      await database.activityDao.deleteActivity(activity);
+    }
   }
 } //DatabaseRepository

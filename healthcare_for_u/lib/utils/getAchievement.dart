@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Achievement getAchievement(int steps, SharedPreferences sp) {
   String? goal_s = sp.getString('goal');
-  var goal = double.parse(goal_s!);
+  var goal = int.parse(goal_s!);
 
   Achievement achievement = Achievement();
 

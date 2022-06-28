@@ -32,12 +32,22 @@ class _ProfilePageState extends State<ProfilePage> {
           title: const Text(ProfilePage.routename),
           centerTitle: true,
           actions: [
-            IconButton(onPressed: () {}, icon: const Icon(Icons.delete)),
+            IconButton(
+                onPressed: () async {
+                  SharedPreferences sp = await SharedPreferences.getInstance();
+                  // delete all data of a user from the DB
+                  await Provider.of<DatabaseRepository>(context, listen: false)
+                      .deleteUserActivty(sp.getInt('usercode')!);
+                  await Provider.of<DatabaseRepository>(context, listen: false)
+                      .removeUser(sp.getInt('usercode')!);
+                  _toLoginPage(context);
+                },
+                icon: const Icon(Icons.delete)),
             IconButton(
                 onPressed: () async {
                   Navigator.pushNamed(context, UtilityPage.route);
                 },
-                icon: Icon(MdiIcons.hammerWrench)),
+                icon: const Icon(MdiIcons.hammerWrench)),
             IconButton(
                 onPressed: () async {
                   _toLoginPage(context);
@@ -292,7 +302,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _toLoginPage(BuildContext context) async {
-    //Unset the 'username' filed in SharedPreference
+    //Unset the personal information filed in SharedPreference
     final sp = await SharedPreferences.getInstance();
     final spToRemove = ['name', 'gender', 'dob', 'weight', 'height', 'goal'];
     for (var i = 0; i < spToRemove.length; i++) {
@@ -301,11 +311,7 @@ class _ProfilePageState extends State<ProfilePage> {
     sp.remove('username');
     sp.setInt('usercode', -1);
 
-// RIMUOVERE A FINE DEBUG
-    // await Provider.of<DatabaseRepository>(context, listen: false)
-    //   .clearActivityTable();
     // unauthorize Fitbit connection
-
     await FitbitConnector.unauthorize(
         clientID: '<OAuth 2.0 Client ID>', clientSecret: '<Client Secret>');
 

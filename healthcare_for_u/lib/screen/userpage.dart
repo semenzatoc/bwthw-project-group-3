@@ -101,9 +101,12 @@ class _UserPageState extends State<UserPage> {
                                 onPressed: () async {
                                   var sp =
                                       await SharedPreferences.getInstance();
+                                  String? name = sp.getString('name');
+                                  String? gender = sp.getString('gender');
                                   String? weight = sp.getString('weight');
                                   String? height = sp.getString('height');
                                   String? dob = sp.getString('dob');
+                                  int? goal = int.parse(sp.getString('goal')!);
                                   String? picture = sp.getString('imagepath');
                                   await Provider.of<DatabaseRepository>(context,
                                           listen: false)
@@ -111,12 +114,17 @@ class _UserPageState extends State<UserPage> {
                                           null,
                                           _username,
                                           _password,
+                                          name!,
+                                          gender!,
                                           weight!,
                                           height!,
                                           dob!,
+                                          goal,
                                           picture!));
-                                  Navigator.pushReplacementNamed(
-                                      context, LoginPage.route);
+                                  Navigator.pushNamedAndRemoveUntil(
+                                      context,
+                                      LoginPage.route,
+                                      (Route<dynamic> route) => false);
                                 },
                                 child: const Text('Submit')),
                           ],

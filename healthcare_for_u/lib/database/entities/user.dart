@@ -12,13 +12,25 @@ class User {
 
   String password;
 
+  String name;
+  String gender;
   String weight;
   String height;
   String dob;
   String profilepicture;
+  int goal;
   //DateTime lastfetch;
 
   //Default constructor
-  User(this.id, this.username, this.password, this.weight, this.height,
-      this.dob, this.profilepicture); //, this.lastfetch);
+  User(
+      this.id,
+      this.username,
+      this.password,
+      this.name,
+      this.gender,
+      this.weight,
+      this.height,
+      this.dob,
+      this.goal,
+      this.profilepicture); //, this.lastfetch);
 }//Todo
