@@ -23,6 +23,11 @@ class DatabaseRepository extends ChangeNotifier {
     return results;
   } //findUser
 
+  Future<void> clearUserTable() async {
+    await database.userDao.deleteAllUser();
+    notifyListeners();
+  }
+
   //This method searches the database and returns TRUE if username is already
   //there
   Future<bool> isRegistered(String? username) async {

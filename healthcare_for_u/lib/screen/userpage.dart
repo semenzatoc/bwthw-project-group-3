@@ -21,6 +21,8 @@ class UserPage extends StatefulWidget {
 
 class _UserPageState extends State<UserPage> {
   final _key = GlobalKey<QuestionFormState>();
+  final _formKey = GlobalKey<FormState>();
+  bool isRegistered = true;
   String _username = '';
   String _password = '';
 
@@ -36,7 +38,7 @@ class _UserPageState extends State<UserPage> {
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Form(
-                key: _key,
+                key: _formKey,
                 child: FutureBuilder(
                     future:
                         Provider.of<DatabaseRepository>(context, listen: false)
@@ -52,16 +54,23 @@ class _UserPageState extends State<UserPage> {
                               decoration: const InputDecoration(
                                   labelText: 'Select your Username'),
                               validator: (value) {
-                                _username = userList
-                                    .firstWhere(
-                                        (user) => user.username == value)
-                                    .username;
+                                try {
+                                  _username = userList
+                                      .firstWhere(
+                                          (user) => user.username == value)
+                                      .username;
+                                } on StateError catch (e) {
+                                  setState(() {
+                                    isRegistered = false;
+                                  });
+                                }
                                 if (value == null || value.trim().isEmpty) {
                                   return 'Please enter your username';
-                                } else if (value == _username) {
+                                } else if (isRegistered) {
                                   return 'Username already exists. Please choose another';
                                 } else {
                                   _username = value;
+                                  return null;
                                 }
                               },
                               onChanged: (value) => _username = value,
@@ -77,6 +86,7 @@ class _UserPageState extends State<UserPage> {
                                   return 'This field is required';
                                 } else {
                                   _password = value;
+                                  return null;
                                 }
                               },
                               onChanged: (value) => _password = value,
@@ -98,33 +108,8 @@ class _UserPageState extends State<UserPage> {
                             //),
 
                             OutlinedButton(
-                                onPressed: () async {
-                                  var sp =
-                                      await SharedPreferences.getInstance();
-                                  String? name = sp.getString('name');
-                                  String? gender = sp.getString('gender');
-                                  String? weight = sp.getString('weight');
-                                  String? height = sp.getString('height');
-                                  String? dob = sp.getString('dob');
-                                  int? goal = int.parse(sp.getString('goal')!);
-                                  String? picture = sp.getString('imagepath');
-                                  await Provider.of<DatabaseRepository>(context,
-                                          listen: false)
-                                      .insertUser(User(
-                                          null,
-                                          _username,
-                                          _password,
-                                          name!,
-                                          gender!,
-                                          weight!,
-                                          height!,
-                                          dob!,
-                                          goal,
-                                          picture!));
-                                  Navigator.pushNamedAndRemoveUntil(
-                                      context,
-                                      LoginPage.route,
-                                      (Route<dynamic> route) => false);
+                                onPressed: () {
+                                  _trySubmit(_username, _password);
                                 },
                                 child: const Text('Submit')),
                           ],
@@ -137,6 +122,25 @@ class _UserPageState extends State<UserPage> {
             ),
           ),
         ));
+  }
+
+  void _trySubmit(String? _username, String? _password) async {
+    final bool? isValid = _formKey.currentState?.validate();
+    if (isValid == true) {
+      var sp = await SharedPreferences.getInstance();
+      String? name = sp.getString('name');
+      String? gender = sp.getString('gender');
+      String? weight = sp.getString('weight');
+      String? height = sp.getString('height');
+      String? dob = sp.getString('dob');
+      int? goal = int.parse(sp.getString('goal')!);
+      String? picture = sp.getString('imagepath');
+      await Provider.of<DatabaseRepository>(context, listen: false).insertUser(
+          User(null, _username!, _password!, name!, gender!, weight!, height!,
+              dob!, goal, picture!));
+      Navigator.pushNamedAndRemoveUntil(
+          context, LoginPage.route, (Route<dynamic> route) => false);
+    }
   }
 }
 /*

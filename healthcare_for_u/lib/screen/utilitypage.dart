@@ -4,6 +4,7 @@ import 'package:healthcare_for_u/database/entities/activity.dart';
 import 'package:healthcare_for_u/database/entities/user.dart';
 import 'package:healthcare_for_u/repository/databaseRepository.dart';
 import 'package:healthcare_for_u/screen/homepage.dart';
+import 'package:healthcare_for_u/screen/loginpage.dart';
 import 'package:healthcare_for_u/utils/appcredentials.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -63,6 +64,21 @@ class UtilityPage extends StatelessWidget {
                     print('Cleared Activity table');
                   },
                   child: const Text('Clear entire activity DB')),
+              const SizedBox(height: 20),
+
+              ElevatedButton(
+                  onPressed: () async {
+                    await Provider.of<DatabaseRepository>(context,
+                            listen: false)
+                        .clearActivityTable();
+                    await Provider.of<DatabaseRepository>(context,
+                            listen: false)
+                        .clearUserTable();
+                    print('Cleared User table');
+                    Navigator.pushNamedAndRemoveUntil(context, LoginPage.route,
+                        (Route<dynamic> route) => false);
+                  },
+                  child: const Text('Clear entire user DB')),
               const SizedBox(height: 20),
 
               // Set to January
