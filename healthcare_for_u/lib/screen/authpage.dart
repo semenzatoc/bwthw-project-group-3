@@ -1,12 +1,8 @@
 import 'package:fitbitter/fitbitter.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:healthcare_for_u/models/login.dart';
 import 'package:healthcare_for_u/screen/homepage.dart';
-import 'package:healthcare_for_u/screen/signupform.dart';
 import 'package:healthcare_for_u/utils/appcredentials.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-//import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class AuthPage extends StatefulWidget {
   AuthPage({Key? key}) : super(key: key);

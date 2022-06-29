@@ -12,7 +12,6 @@ import 'homepage.dart';
 import 'loginpage.dart';
 import 'package:healthcare_for_u/utils/BMI.dart';
 import 'package:provider/provider.dart';
-import 'package:healthcare_for_u/database/database.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key}) : super(key: key);
@@ -113,215 +112,258 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
       ),
-      body: Column(
-        children: [
-          //imageProfile(),
-          Container(
-              color: const Color.fromARGB(255, 130, 207, 243),
-              height: 200,
-              width: 450,
-              child: Row(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+                color: const Color.fromARGB(255, 130, 207, 243),
+                height: 200,
+                width: 450,
+                child: Row(
+                  children: [
+                    const SizedBox(width: 40),
+                    FutureBuilder(
+                        future: SharedPreferences.getInstance(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            var sp = snapshot.data as SharedPreferences;
+                            var user = sp.getString('username');
+                            return Text(
+                              'Hello, $user!',
+                              style: TextStyle(fontSize: 30),
+                            );
+                          } else {
+                            return CircularProgressIndicator();
+                          }
+                        }),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    imageProfile(),
+                  ],
+                )),
+            const SizedBox(
+              height: 20,
+            ),
+            Card(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(width: 40),
                   FutureBuilder(
                       future: SharedPreferences.getInstance(),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          var sp = snapshot.data as SharedPreferences;
-                          var user = sp.getString('username');
-                          return Text(
-                            'Hello, $user!',
-                            style: TextStyle(fontSize: 30),
+                          final sp = snapshot.data as SharedPreferences;
+                          return Row(
+                            children: [
+                              const SizedBox(
+                                width: 15,
+                              ),
+                              const Icon(
+                                MdiIcons.account,
+                                size: 30,
+                              ),
+                              const SizedBox(
+                                width: 50,
+                              ),
+                              TextButton(
+                                child: const Text(
+                                  'Profile',
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.black),
+                                ),
+                                onPressed: () {
+                                  showDialog<String>(
+                                    context: context,
+                                    builder: (BuildContext context) => Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 80),
+                                        child: AlertDialog(
+                                            title: const Text('Profile'),
+                                            content: SingleChildScrollView(
+                                              child: ListBody(
+                                                children: <Widget>[
+                                                  Row(children: [
+                                                    const Icon(
+                                                        MdiIcons.account),
+                                                    const SizedBox(width: 5),
+                                                    Text(
+                                                        'Name: ${sp.getString('name')}'),
+                                                  ]),
+                                                  const SizedBox(
+                                                    height: 15,
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      const Icon(MdiIcons
+                                                          .cakeVariantOutline),
+                                                      Text(
+                                                          'Date of Birth: ${sp.getString('dob')}'),
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(
+                                                    context, 'Cancel'),
+                                                child: const Text('Cancel'),
+                                              ),
+                                            ])),
+                                  );
+                                },
+                              ),
+                            ],
                           );
                         } else {
-                          return CircularProgressIndicator();
+                          return const Text('No data available');
                         }
                       }),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  imageProfile(),
-                  /*ClipRRect(
-            borderRadius: BorderRadius.circular(100),
-            child: const Image(
-                image: AssetImage('assets/trying.jpg'),
-                width: 100,
-                height: 100,
-                fit: BoxFit.none,
-          ),),*/
+                  const SizedBox(height: 10),
+                  const Divider(
+                      height: 10,
+                      thickness: 1,
+                      indent: 10,
+                      endIndent: 0,
+                      color: Colors.grey),
+                  const SizedBox(height: 15),
+                  FutureBuilder(
+                      future: SharedPreferences.getInstance(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          final sp = snapshot.data as SharedPreferences;
+                          var bmi = BMI(sp);
+                          return Row(
+                            children: [
+                              const SizedBox(
+                                width: 15,
+                              ),
+                              const Icon(
+                                MdiIcons.heart,
+                                size: 30,
+                              ),
+                              const SizedBox(
+                                width: 50,
+                              ),
+                              TextButton(
+                                child: const Text(
+                                  'My measurement',
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.black),
+                                ),
+                                onPressed: () {
+                                  showDialog<String>(
+                                    context: context,
+                                    builder: (BuildContext context) => Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 80),
+                                        child: AlertDialog(
+                                            title: const Text('My measurement'),
+                                            content: SingleChildScrollView(
+                                              child: ListBody(
+                                                children: <Widget>[
+                                                  Row(children: [
+                                                    const Icon(MdiIcons.weight),
+                                                    const SizedBox(width: 5),
+                                                    Text(
+                                                        'Weight: ${sp.getString('weight')} kg'),
+                                                  ]),
+                                                  const SizedBox(
+                                                    height: 15,
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      const Icon(MdiIcons
+                                                          .humanMaleHeightVariant),
+                                                      const SizedBox(width: 5),
+                                                      Text(
+                                                          'Height: ${sp.getString('height')} cm'),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 15,
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      const Icon(
+                                                          MdiIcons.heart),
+                                                      const SizedBox(width: 5),
+                                                      Text('BMI $bmi'),
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(
+                                                    context, 'Cancel'),
+                                                child: const Text('Cancel'),
+                                              ),
+                                            ])),
+                                  );
+                                },
+                              ),
+                            ],
+                          );
+                        } else {
+                          return const Text('No data available');
+                        }
+                      }),
                 ],
-              )),
-          const SizedBox(
-            height: 20,
-          ),
-          Card(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                FutureBuilder(
-                    future: SharedPreferences.getInstance(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        final sp = snapshot.data as SharedPreferences;
-                        return Row(
-                          children: [
-                            const SizedBox(
-                              width: 15,
-                            ),
-                            const Icon(
-                              MdiIcons.account,
-                              size: 30,
-                            ),
-                            const SizedBox(
-                              width: 50,
-                            ),
-                            TextButton(
-                              child: const Text(
-                                'Profile',
-                                style: TextStyle(
-                                    fontSize: 20, color: Colors.black),
-                              ),
-                              onPressed: () {
-                                showDialog<String>(
-                                  context: context,
-                                  builder: (BuildContext context) => Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 80),
-                                      child: AlertDialog(
-                                          title: const Text('Profile'),
-                                          content: SingleChildScrollView(
-                                            child: ListBody(
-                                              children: <Widget>[
-                                                Row(children: [
-                                                  const Icon(MdiIcons.account),
-                                                  const SizedBox(width: 5),
-                                                  Text(
-                                                      'Name: ${sp.getString('name')}'),
-                                                ]),
-                                                const SizedBox(
-                                                  height: 15,
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    const Icon(MdiIcons
-                                                        .cakeVariantOutline),
-                                                    Text(
-                                                        'Date of Birth: ${sp.getString('dob')}'),
-                                                  ],
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                          actions: <Widget>[
-                                            TextButton(
-                                              onPressed: () => Navigator.pop(
-                                                  context, 'Cancel'),
-                                              child: const Text('Cancel'),
-                                            ),
-                                          ])),
-                                );
-                              },
-                            ),
-                          ],
-                        );
-                      } else {
-                        return const Text('No data available');
-                      }
-                    }),
-                const SizedBox(height: 10),
-                const Divider(
-                    height: 10,
-                    thickness: 1,
-                    indent: 10,
-                    endIndent: 0,
-                    color: Colors.grey),
-                const SizedBox(height: 15),
-                FutureBuilder(
-                    future: SharedPreferences.getInstance(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        final sp = snapshot.data as SharedPreferences;
-                        var bmi = BMI(sp);
-                        return Row(
-                          children: [
-                            const SizedBox(
-                              width: 15,
-                            ),
-                            const Icon(
-                              MdiIcons.heart,
-                              size: 30,
-                            ),
-                            const SizedBox(
-                              width: 50,
-                            ),
-                            TextButton(
-                              child: const Text(
-                                'My measurement',
-                                style: TextStyle(
-                                    fontSize: 20, color: Colors.black),
-                              ),
-                              onPressed: () {
-                                showDialog<String>(
-                                  context: context,
-                                  builder: (BuildContext context) => Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 80),
-                                      child: AlertDialog(
-                                          title: const Text('My measurement'),
-                                          content: SingleChildScrollView(
-                                            child: ListBody(
-                                              children: <Widget>[
-                                                Row(children: [
-                                                  const Icon(MdiIcons.weight),
-                                                  const SizedBox(width: 5),
-                                                  Text(
-                                                      'Weight: ${sp.getString('weight')} kg'),
-                                                ]),
-                                                const SizedBox(
-                                                  height: 15,
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    const Icon(MdiIcons
-                                                        .humanMaleHeightVariant),
-                                                    const SizedBox(width: 5),
-                                                    Text(
-                                                        'Height: ${sp.getString('height')} cm'),
-                                                  ],
-                                                ),
-                                                const SizedBox(
-                                                  height: 15,
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    const Icon(MdiIcons.heart),
-                                                    const SizedBox(width: 5),
-                                                    Text('BMI $bmi'),
-                                                  ],
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                          actions: <Widget>[
-                                            TextButton(
-                                              onPressed: () => Navigator.pop(
-                                                  context, 'Cancel'),
-                                              child: const Text('Cancel'),
-                                            ),
-                                          ])),
-                                );
-                              },
-                            ),
-                          ],
-                        );
-                      } else {
-                        return const Text('No data available');
-                      }
-                    }),
-              ],
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 30),
+            MaterialButton(
+                child: const Text("Click here to update your step goal!"),
+                color: Colors.blue,
+                splashColor: Colors.lightBlue,
+                onPressed: () async {
+                  var sp = await SharedPreferences.getInstance();
+                  String? updateGoal = sp.getString('goal');
+                  showDialog<String>(
+                      context: context,
+                      builder: (BuildContext context) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 80),
+                          child: AlertDialog(
+                            content: TextFormField(
+                              decoration: const InputDecoration(
+                                  labelText: 'Insert your new goal'),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return null;
+                                } else {
+                                  updateGoal = value;
+                                  return null;
+                                }
+                              },
+                              onChanged: (value) => updateGoal = value,
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.pop(context, 'Cancel'),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                  child: const Text('Update'),
+                                  onPressed: () async {
+                                    var sp =
+                                        await SharedPreferences.getInstance();
+                                    sp.setString('goal', updateGoal!);
+                                    await Provider.of<DatabaseRepository>(
+                                            context,
+                                            listen: false)
+                                        .updateGoal(sp.getInt('usercode')!,
+                                            int.parse(updateGoal!));
+                                    Navigator.pop(context, 'Update');
+                                  }),
+                            ],
+                          )));
+                })
+          ],
+        ),
       ),
     );
   }
