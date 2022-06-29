@@ -1,11 +1,7 @@
 import 'package:healthcare_for_u/models/risklevel.dart';
-
 import 'package:healthcare_for_u/repository/databaseRepository.dart';
-import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-//import 'package:fitbitter/fitbitter.dart';
 import 'package:healthcare_for_u/screen/profilepage.dart';
-//import 'package:healthcare_for_u/utils/appcredentials.dart';
 import 'package:healthcare_for_u/utils/diabetesRisk.dart';
 import 'package:healthcare_for_u/utils/dataFetcher.dart';
 import 'package:conditional_questions/conditional_questions.dart';
@@ -106,7 +102,6 @@ class _HealthPageState extends State<HealthPage> {
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.bold),
                                             )),
-                                            //gutter: gutter,
                                             body: Column(
                                               children: [
                                                 FutureBuilder(
@@ -177,7 +172,7 @@ class _HealthPageState extends State<HealthPage> {
                       ]);
                 } else {
                   return const Text(
-                      'Not enough data available'); // se non ho fatto il sign up form
+                      'Not enough data available'); // if the user did not take the signup form
                 }
               }),
         ));
@@ -202,9 +197,9 @@ void _saveDiabetes(List<FormElement> diabetes_list, context) async {
     }
   }
   await Provider.of<DatabaseRepository>(context, listen: false)
-      .updateWeight(sp.getString('username')!, sp.getString('weight')!);
+      .updateWeight(sp.getInt('usercode')!, sp.getString('weight')!);
   await Provider.of<DatabaseRepository>(context, listen: false)
-      .updateHeight(sp.getString('username')!, sp.getString('height')!);
+      .updateHeight(sp.getInt('usercode')!, sp.getString('height')!);
 } //_saveDiabetes
 
 Widget GradientProgress(int riskValue) {
@@ -215,14 +210,8 @@ Widget GradientProgress(int riskValue) {
       direction: Axis.horizontal,
       size: 20,
       padding: 0,
-      //selectedColor: Color.fromARGB(255, 59, 213, 255).withOpacity(0.2),
       unselectedColor: Colors.black,
       roundedEdges: Radius.circular(10),
-      /* selectedGradientColor: const LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [Colors.green, Colors.yellow, Colors.red],
-      ),*/
       unselectedGradientColor: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
@@ -235,20 +224,9 @@ Widget GradientProgress(int riskValue) {
       direction: Axis.horizontal,
       size: 21,
       padding: 0,
-      //progressDirection: TextDirection.RTL,
       selectedColor: Color.fromARGB(255, 8, 36, 44).withOpacity(0.0),
       unselectedColor: Colors.white,
       roundedEdges: const Radius.circular(10),
-      /* selectedGradientColor: const LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [Colors.green, Colors.yellow, Colors.red],
-      ),*/
-      /*unselectedGradientColor: const LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [Colors.green, Colors.yellow, Colors.red],
-      ),*/
     ),
   ]);
 }

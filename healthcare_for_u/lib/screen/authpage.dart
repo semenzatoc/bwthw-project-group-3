@@ -35,6 +35,7 @@ class _AuthPageState extends State<AuthPage> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
+                final sp = await SharedPreferences.getInstance();
                 // Authorize the app
                 String? userId = await FitbitConnector.authorize(
                     context: context,
@@ -42,7 +43,6 @@ class _AuthPageState extends State<AuthPage> {
                     clientSecret: AppCredentials.fitbitClientSecret,
                     redirectUri: AppCredentials.fitbitRedirectUri,
                     callbackUrlScheme: AppCredentials.fitbitCallbackScheme);
-                final sp = await SharedPreferences.getInstance();
                 sp.setString('userId', userId!);
                 // REMOVE AFTER DEBUGGING
                 //sp.setString('lastUpdate', '2022-03-01');

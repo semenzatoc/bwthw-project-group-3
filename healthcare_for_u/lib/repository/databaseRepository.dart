@@ -53,45 +53,40 @@ class DatabaseRepository extends ChangeNotifier {
     notifyListeners();
   } //removeUser
 
-  Future<void> updatePicture(String? username, String imagePath) async {
-    final userInList = await database.userDao.findUser(username!);
-    User user = userInList[0]!;
-    user.profilepicture = imagePath;
-    await database.userDao.insertUser(user);
+  Future<void> updatePicture(int usercode, String newImagepath) async {
+    var user = await database.userDao.findUserByID(usercode) as User;
+    user.profilepicture = newImagepath;
+    await database.userDao.updateUser(user);
     notifyListeners();
   }
 
 // function to update user weight in DB
-  Future<void> updateWeight(String username, String weight) async {
-    final userInList = await database.userDao.findUser(username);
-    User user = userInList[0]!;
-    user.weight = weight;
-    await database.userDao.insertUser(user);
+  Future<void> updateWeight(int usercode, String newWeight) async {
+    var user = await database.userDao.findUserByID(usercode) as User;
+    user.weight = newWeight;
+    await database.userDao.updateUser(user);
     notifyListeners();
   }
 
 // function to update user height in DB
-  Future<void> updateHeight(String username, String height) async {
-    final userInList = await database.userDao.findUser(username);
-    User user = userInList[0]!;
-    user.height = height;
-    await database.userDao.insertUser(user);
+  Future<void> updateHeight(int usercode, String newHeight) async {
+    var user = await database.userDao.findUserByID(usercode) as User;
+    user.height = newHeight;
+    await database.userDao.updateUser(user);
     notifyListeners();
   }
 
 // function to update steps goal in database
-  Future<void> updateGoal(int userId, int newGoal) async {
-    var user = await database.userDao.findUserByID(userId) as User;
-
+  Future<void> updateGoal(int usercode, int newGoal) async {
+    var user = await database.userDao.findUserByID(usercode) as User;
     user.goal = newGoal;
     await database.userDao.updateUser(user);
     notifyListeners();
   }
 
 // function to update lastFetch date in user DB
-  Future<void> updateDate(int userId, String newDate) async {
-    var user = await database.userDao.findUserByID(userId) as User;
-
+  Future<void> updateDate(int usercode, String newDate) async {
+    var user = await database.userDao.findUserByID(usercode) as User;
     user.lastUpdate = newDate;
     await database.userDao.updateUser(user);
     notifyListeners();
