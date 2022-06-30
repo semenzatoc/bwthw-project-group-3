@@ -81,7 +81,6 @@ class _CalendarPageState extends State<CalendarPage> {
         },
         onDaySelected: (selectedDay, focusedDay) {
           bool isFuture = selectedDay.isAfter(DateTime.now());
-          bool isToday = isSameDay(selectedDay, DateTime.now());
           if (!isSameDay(_selectedDay, selectedDay)) {
             // Call `setState()` when updating the selected day
             setState(() {
@@ -100,7 +99,7 @@ class _CalendarPageState extends State<CalendarPage> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        if (!isFuture && !isToday)
+                        if (!isFuture)
                           FutureBuilder(
                               future: _fetchStepsFromDB(selectedDay),
                               builder: (context, snapshot) {
@@ -145,15 +144,6 @@ class _CalendarPageState extends State<CalendarPage> {
                             ),
                           ),
                         const SizedBox(height: 20),
-                        if (isToday)
-                          const Text(
-                            'Check current achievement on the homepage!',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                            ),
-                          ),
-                        const SizedBox(height: 20),
                       ],
                     ),
                     actions: [
@@ -191,11 +181,11 @@ class _CalendarPageState extends State<CalendarPage> {
         await Provider.of<DatabaseRepository>(context, listen: false)
             .findAllActivities() as List<Activity>;
 
-    final daySteps = Provider.of<DatabaseRepository>(context, listen: false)
-        .getDaySteps(day);
-    // remove two hours to account for timezone
     //final daySteps = Provider.of<DatabaseRepository>(context, listen: false)
-    //.getDaySteps(day.subtract(const Duration(hours: 2)));
+    //    .getDaySteps(day);
+    // remove two hours to account for timezone
+    final daySteps = Provider.of<DatabaseRepository>(context, listen: false)
+        .getDaySteps(day.subtract(const Duration(hours: 2)));
     return daySteps;
   }
 

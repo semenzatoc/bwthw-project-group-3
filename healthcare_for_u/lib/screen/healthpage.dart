@@ -24,14 +24,12 @@ class HealthPage extends StatefulWidget {
 class _HealthPageState extends State<HealthPage> {
   final _key = GlobalKey<QuestionFormState>();
   List<FormElement> _diabetesAnswers = [];
-  //final gender = "F";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: const Text('FINnish Diabetes RIsk SCore \n (FINDRISC)'),
-          //centerTitle: true
         ),
         bottomNavigationBar: BottomAppBar(
           color: Colors.white,

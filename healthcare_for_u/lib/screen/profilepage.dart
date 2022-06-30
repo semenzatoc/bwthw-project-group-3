@@ -127,10 +127,10 @@ class _ProfilePageState extends State<ProfilePage> {
                             var user = sp.getString('name');
                             return Text(
                               'Hello, $user!',
-                              style: TextStyle(fontSize: 30),
+                              style: const TextStyle(fontSize: 30),
                             );
                           } else {
-                            return CircularProgressIndicator();
+                            return const CircularProgressIndicator();
                           }
                         }),
                     const SizedBox(
@@ -315,7 +315,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-          child: Icon(MdiIcons.pencil),
+          child: const Icon(MdiIcons.pencil),
           onPressed: () async {
             var sp = await SharedPreferences.getInstance();
             String? updateGoal = sp.getString('goal');
@@ -463,8 +463,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ]);
           } else {
-            return const Text(
-                'Not enough data available'); // se non ho fatto il sign up form
+            return const Text('Not enough data available');
           }
         });
   }
@@ -498,7 +497,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void takePhoto(ImageSource source) async {
-    XFile? _imagefile;
     final ImagePicker _picker = ImagePicker();
     final XFile? pickedFile = await _picker.pickImage(source: source);
     final sp = await SharedPreferences.getInstance();

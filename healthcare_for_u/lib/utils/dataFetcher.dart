@@ -11,11 +11,6 @@ class DataFetcher {
   // returns TRUE if user has had at least an average of 30mins of physical
   // activity every day for the last month
   Future<bool> calcMonthActivity(BuildContext context) async {
-    /* //Minutes very active in the past month
-    final durationVeryActive = await fetchMonthActivity('minutesVeryActive');
-    //Minutes fairly active in the past month
-    final durationFairlyActive =
-        await fetchMonthActivity('minutesFairlyActive');*/
     //Classified as active if minimum of 30 minutes activity in more than 50% of
     //days in the past month
 
@@ -24,13 +19,6 @@ class DataFetcher {
     int countActiveDays = 0;
 
     for (var i = 0; i < 31; i++) {
-      /*minDailyActive = minDailyActive +
-          (durationVeryActive[i].value as double) +
-          (durationFairlyActive[i].value as double);
-
-      if (minDailyActive > 30) {
-        countActiveDays = countActiveDays + 1;
-      }*/
       minDailyActive = minDailyActive + allDayMinutes[i].minutes;
       if (minDailyActive > 30) {
         countActiveDays++;
@@ -44,24 +32,6 @@ class DataFetcher {
     // fetchActivity
   }
 
-  /*Future<List<FitbitActivityTimeseriesData>> fetchMonthActivity(
-      String dataType) async {
-     FitbitActivityTimeseriesDataManager fitbitVeryActiveTimeseriesDataManager =
-        FitbitActivityTimeseriesDataManager(
-            clientID: AppCredentials.fitbitClientID,
-            clientSecret: AppCredentials.fitbitClientSecret,
-            type: dataType);
-
-    final sp = await SharedPreferences.getInstance();
-
-    final durationActivity = await fitbitVeryActiveTimeseriesDataManager
-        .fetch(FitbitActivityTimeseriesAPIURL.monthWithResource(
-      userID: sp.getString('userId'),
-      baseDate:
-          DateTime.now().subtract(Duration(days: 1)), //fetching until yesterday
-      resource: fitbitVeryActiveTimeseriesDataManager.type,
-    )) as List<FitbitActivityTimeseriesData>;
-    return durationActivity;}*/
   Future<List<Activity>> fetchRangeActivity(
       BuildContext context, String time) async {
     int N = 0;
@@ -75,10 +45,10 @@ class DataFetcher {
     DateTime today = DateTime.utc(now.year, now.month, now.day);
     List<DateTime> days = [];
     for (var i = 1; i <= N; i++) {
-      days.add(today.subtract(Duration(days: i))); //, hours: 2)));
+      //days.add(today.subtract(Duration(days: i))); //, hours: 2)));
       // if date doesn't work, remove hours:2
-      //days.add(today.subtract(Duration(days: i, hours: 2)));
-    }
+      days.add(today.subtract(Duration(days: i, hours: 2)));
+    } //fetchRangeActivity
 
     List<Activity> activeMinuteDays =
         await Provider.of<DatabaseRepository>(context, listen: false)
@@ -105,5 +75,5 @@ class DataFetcher {
         0);
     data.add(todayActivity);
     return data;
-  }
+  } //fetchActivtyFromDB
 }

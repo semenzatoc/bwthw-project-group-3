@@ -33,5 +33,5 @@ class User {
       this.dob,
       this.goal,
       this.profilepicture,
-      this.lastUpdate); //, this.lastfetch);
-}//Todo
+      this.lastUpdate);
+}//User

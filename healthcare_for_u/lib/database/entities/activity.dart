@@ -42,4 +42,4 @@ class Activity {
   //Default constructor
   Activity(this.id, this.userId, this.date, this.steps, this.calories,
       this.distance, this.minutes);
-}//Todo
+}//Activity
