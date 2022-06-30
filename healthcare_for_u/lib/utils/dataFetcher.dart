@@ -45,7 +45,7 @@ class DataFetcher {
     DateTime today = DateTime.utc(now.year, now.month, now.day);
     List<DateTime> days = [];
     for (var i = 1; i <= N; i++) {
-      //days.add(today.subtract(Duration(days: i))); //, hours: 2)));
+      //days.add(today.subtract(Duration(days: i)));
       // if date doesn't work, remove hours:2
       days.add(today.subtract(Duration(days: i, hours: 2)));
     } //fetchRangeActivity
