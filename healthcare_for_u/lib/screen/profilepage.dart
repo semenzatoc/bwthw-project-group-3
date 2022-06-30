@@ -24,6 +24,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  double? bmi;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -230,7 +232,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           final sp = snapshot.data as SharedPreferences;
-                          var bmi = BMI(sp);
+                          bmi = BMI(sp);
                           return Row(
                             children: [
                               const SizedBox(
@@ -399,6 +401,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                       listen: false)
                                   .updateGoal(sp.getInt('usercode')!,
                                       int.parse(updateGoal!));
+                              setState(() {
+                                bmi = BMI(sp);
+                              });
                               Navigator.pop(context, 'Update');
                             }),
                       ],
