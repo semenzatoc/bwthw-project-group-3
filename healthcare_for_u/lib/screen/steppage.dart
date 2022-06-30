@@ -1,12 +1,8 @@
-import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
 import 'package:healthcare_for_u/utils/LineChartMonth.dart';
 import 'package:healthcare_for_u/utils/LineChartWeek.dart';
 import 'package:healthcare_for_u/utils/LineSeries.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../database/entities/activity.dart';
-import '../utils/appcredentials.dart';
 import '../utils/dataFetcher.dart';
 
 class StepPage extends StatefulWidget {
@@ -29,7 +25,7 @@ class _StepPageState extends State<StepPage> {
     print('${StepPage.routename} built');
     return Scaffold(
         appBar: AppBar(
-          title: Text(StepPage.routename),
+          title: const Text(StepPage.routename),
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -42,7 +38,8 @@ class _StepPageState extends State<StepPage> {
                       var weekActivity = snapshot.data as List<Activity>;
                       for (var i = 0; i < weekActivity.length; i++) {
                         int element = weekActivity[i].steps;
-                        //create the weekSteps List<LineSeries> that is necessary for defining and displaying the LineChart
+                        //create the weekSteps List<LineSeries> that is
+                        //necessary for defining and displaying the LineChart
                         weekSteps.add(LineSeries(day: i, steps: element));
                       }
                       return Column(
@@ -66,7 +63,8 @@ class _StepPageState extends State<StepPage> {
                       var monthActivity = snapshot.data as List<Activity>;
                       for (var i = 0; i < monthActivity.length; i++) {
                         int element = monthActivity[i].steps;
-                        //create the monthSteps List<LineSeries> that is necessary for defining and displaying the LineChart
+                        //create the monthSteps List<LineSeries> that is
+                        //necessary for defining and displaying the LineChart
                         monthSteps.add(LineSeries(day: i, steps: element));
                       }
                       return Column(
@@ -86,4 +84,4 @@ class _StepPageState extends State<StepPage> {
           ),
         ));
   }
-}//Page
+} //StepPage

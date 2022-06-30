@@ -5,8 +5,6 @@ import 'package:healthcare_for_u/repository/databaseRepository.dart';
 import 'package:healthcare_for_u/screen/loginpage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-//import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
 class UserPage extends StatefulWidget {
   UserPage({Key? key}) : super(key: key);
 
@@ -20,7 +18,6 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
-  final _key = GlobalKey<QuestionFormState>();
   final _formKey = GlobalKey<FormState>();
   bool isRegistered = true;
   String _username = '';
@@ -30,7 +27,7 @@ class _UserPageState extends State<UserPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('User'),
+          title: const Text('User Sign Up'),
         ),
         body: Center(
           child: Card(
@@ -49,7 +46,7 @@ class _UserPageState extends State<UserPage> {
                         return Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            // User
+                            // Username
                             TextFormField(
                               decoration: const InputDecoration(
                                   labelText: 'Select your Username'),
@@ -59,7 +56,9 @@ class _UserPageState extends State<UserPage> {
                                       .firstWhere(
                                           (user) => user.username == value)
                                       .username;
-                                } on StateError catch (e) {
+                                } on StateError catch (exception) {
+                                  //If exception is thrown username isn't already
+                                  // used in the DB and can be selected
                                   setState(() {
                                     isRegistered = false;
                                   });
@@ -92,21 +91,6 @@ class _UserPageState extends State<UserPage> {
                               onChanged: (value) => _password = value,
                             ),
                             const SizedBox(height: 20),
-                            // Repeat the password
-                            // TextFormField(
-                            //decoration:
-                            //   const InputDecoration(labelText: 'Repeat Password'),
-                            //obscureText: true,
-                            //validator: (value) {
-                            // if (value == null || value.trim().isEmpty) {
-                            // return 'This field is required';
-                            //};
-                            //var check = _checkPassword(value);
-                            //if (check == 'wrong') {
-                            //return 'Passwords don\'t match';
-                            //}}
-                            //),
-
                             OutlinedButton(
                                 onPressed: () {
                                   _trySubmit(_username, _password);
@@ -122,7 +106,7 @@ class _UserPageState extends State<UserPage> {
             ),
           ),
         ));
-  }
+  } // Userpage
 
   void _trySubmit(String? _username, String? _password) async {
     final bool? isValid = _formKey.currentState?.validate();
@@ -142,27 +126,5 @@ class _UserPageState extends State<UserPage> {
       Navigator.pushNamedAndRemoveUntil(
           context, LoginPage.route, (Route<dynamic> route) => false);
     }
-  }
-}
-/*
-//Future<SharedPreferences>
-void _saveUser(String user) async {
-  final sp = await SharedPreferences.getInstance();
-  sp.setString('user', user);
-  //return sp;
-}
-
-void _savePassword(String password) async {
-  final sp = await SharedPreferences.getInstance();
-  sp.setString('password', password);
-  //return sp;
-}
-
-//Future<String?> _checkPassword(String value) async {
-//  final sp = await SharedPreferences.getInstance();
-// if (sp.getString('password') != value) {
-//   return 'wrong';
-//}
-// return 'wrong';
-//return sp;
-//}*/
+  } //_trySubmitForm
+} // _UserPageState

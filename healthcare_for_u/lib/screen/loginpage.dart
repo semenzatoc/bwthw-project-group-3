@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:healthcare_for_u/database/entities/user.dart';
 import 'package:healthcare_for_u/repository/databaseRepository.dart';
-//import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -25,8 +24,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   String _userName = '';
   String _password = '';
-  String _confirmPassword = '';
-  int _user_id = 0;
+  int _userDBId = 0;
   bool incorrectUsername = false;
 
   @override
@@ -35,39 +33,6 @@ class _LoginPageState extends State<LoginPage> {
     //Check if the user is already logged in before rendering the login page
     _checkLogin();
   } //initState
-
-  void _checkLogin() async {
-    //Get the SharedPreference instance and check if the value of the 'username' filed is set or not
-    final sp = await SharedPreferences.getInstance();
-    if (sp.getString('username') != null) {
-      //If 'username is set, push the HomePage
-      Navigator.pushReplacementNamed(context, HomePage.route);
-    } //if
-  } //_checkLogin
-
-  void _trySubmitForm(String _username) async {
-    final bool? isValid = _formKey.currentState?.validate();
-    if (isValid == true) {
-      final sp = await SharedPreferences.getInstance();
-      sp.setString('username', _username);
-      sp.setInt('usercode', _user_id);
-      List<User> allUsers =
-          await Provider.of<DatabaseRepository>(context, listen: false)
-              .findAllUsers();
-      User loggedUser =
-          allUsers.firstWhere((user) => user.username == _userName);
-      sp.setString('name', loggedUser.name);
-      sp.setString('gender', loggedUser.gender);
-      sp.setString('dob', loggedUser.dob);
-      sp.setString('weight', loggedUser.weight);
-      sp.setString('height', loggedUser.height);
-      sp.setString('goal', loggedUser.goal.toString());
-      sp.setString('profilepicture', loggedUser.profilepicture);
-      sp.setString('lastUpdate', loggedUser.lastUpdate);
-
-      Navigator.pushReplacementNamed(context, AuthPage.route);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +75,8 @@ class _LoginPageState extends State<LoginPage> {
                                                           value)
                                                       .username;
                                                 } on StateError catch (exception) {
+                                                  // if exception is thrown then
+                                                  // username doesn't exist in DB
                                                   setState(() {
                                                     incorrectUsername = true;
                                                   });
@@ -144,7 +111,7 @@ class _LoginPageState extends State<LoginPage> {
                                                 return 'This field is required';
                                               } else {
                                                 if (value == _password) {
-                                                  _user_id = userList
+                                                  _userDBId = userList
                                                       .firstWhere((user) =>
                                                           user.username ==
                                                           _userName)
@@ -201,9 +168,43 @@ class _LoginPageState extends State<LoginPage> {
                                         ])))))
                   ]);
                 } else {
-                  return LinearProgressIndicator();
+                  return const LinearProgressIndicator();
                 }
               }),
         ));
   }
-}//Login Page
+
+  void _checkLogin() async {
+    //Get the SharedPreference instance and check if the value of the 'username'
+    // filed is set or not
+    final sp = await SharedPreferences.getInstance();
+    if (sp.getString('username') != null) {
+      //If 'username' is set, push the HomePage
+      Navigator.pushReplacementNamed(context, HomePage.route);
+    }
+  } //_checkLogin
+
+  void _trySubmitForm(String _username) async {
+    final bool? isValid = _formKey.currentState?.validate();
+    if (isValid == true) {
+      final sp = await SharedPreferences.getInstance();
+      sp.setString('username', _username);
+      sp.setInt('usercode', _userDBId);
+      List<User> allUsers =
+          await Provider.of<DatabaseRepository>(context, listen: false)
+              .findAllUsers();
+      User loggedUser =
+          allUsers.firstWhere((user) => user.username == _userName);
+      sp.setString('name', loggedUser.name);
+      sp.setString('gender', loggedUser.gender);
+      sp.setString('dob', loggedUser.dob);
+      sp.setString('weight', loggedUser.weight);
+      sp.setString('height', loggedUser.height);
+      sp.setString('goal', loggedUser.goal.toString());
+      sp.setString('profilepicture', loggedUser.profilepicture);
+      sp.setString('lastUpdate', loggedUser.lastUpdate);
+
+      Navigator.pushReplacementNamed(context, AuthPage.route);
+    }
+  }
+} //Login Page

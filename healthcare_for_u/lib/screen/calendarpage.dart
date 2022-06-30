@@ -1,8 +1,5 @@
-import 'dart:collection';
-
 import 'package:healthcare_for_u/database/entities/activity.dart';
 import 'package:provider/provider.dart';
-import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
 import 'package:healthcare_for_u/repository/databaseRepository.dart';
 import 'package:healthcare_for_u/screen/profilepage.dart';
@@ -11,7 +8,6 @@ import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
-import '../utils/appcredentials.dart';
 import 'homepage.dart';
 import 'healthpage.dart';
 import 'package:healthcare_for_u/models/achievement.dart';
@@ -85,6 +81,7 @@ class _CalendarPageState extends State<CalendarPage> {
         },
         onDaySelected: (selectedDay, focusedDay) {
           bool isFuture = selectedDay.isAfter(DateTime.now());
+          bool isToday = isSameDay(selectedDay, DateTime.now());
           if (!isSameDay(_selectedDay, selectedDay)) {
             // Call `setState()` when updating the selected day
             setState(() {
@@ -103,7 +100,7 @@ class _CalendarPageState extends State<CalendarPage> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        if (!isFuture)
+                        if (!isFuture && !isToday)
                           FutureBuilder(
                               future: _fetchStepsFromDB(selectedDay),
                               builder: (context, snapshot) {
@@ -136,7 +133,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                         }
                                       });
                                 } else {
-                                  return CircularProgressIndicator();
+                                  return const CircularProgressIndicator();
                                 }
                               }),
                         if (isFuture)
@@ -147,7 +144,16 @@ class _CalendarPageState extends State<CalendarPage> {
                               color: Colors.black,
                             ),
                           ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
+                        if (isToday)
+                          const Text(
+                            'Check current achievement on the homepage!',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                            ),
+                          ),
+                        const SizedBox(height: 20),
                       ],
                     ),
                     actions: [
@@ -174,6 +180,7 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   } // build
 
+// function to fetch a given date's steps
   Future<int> _fetchStepsFromDB(DateTime day) async {
     if (isSameDay(day, DateTime.now())) {
       final sp = await SharedPreferences.getInstance();

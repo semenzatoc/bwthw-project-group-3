@@ -1,5 +1,3 @@
-//import 'dart:html';
-
 import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
 import 'package:healthcare_for_u/database/entities/activity.dart';
@@ -13,8 +11,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:healthcare_for_u/utils/dataFetcher.dart';
-
 import '../utils/appcredentials.dart';
 import 'calendarpage.dart';
 import 'caloriespage.dart';
@@ -41,8 +37,7 @@ class _HomePageState extends State<HomePage> {
 
   void _getLastUpdate() async {
     final sp = await SharedPreferences.getInstance();
-
-// first access, set to 0
+    // first access, set to 0
     if (sp.getInt('lastSteps') == null ||
         sp.getDouble('lastDistance') == null ||
         sp.getInt('lastCalories') == null) {
@@ -58,7 +53,7 @@ class _HomePageState extends State<HomePage> {
         .add(const Duration(days: 1));
     DateTime today = DateTime.now();
     if (!isSameDay(today, lastFetch)) {
-      await _updateData();
+      await _updateCircles();
       print('First data fetch of the day completed');
     }
   }
@@ -104,7 +99,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          await _updateData();
+          await _updateCircles();
           print('Data fetched');
         },
         child: ListView(children: [
@@ -113,6 +108,8 @@ class _HomePageState extends State<HomePage> {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Show circular progress indicator while filling any missing
+              // DB activity entries if last update was before yesterday
               FutureBuilder(
                   future: _updateDB(),
                   builder: (context, snapshot) {
@@ -123,7 +120,7 @@ class _HomePageState extends State<HomePage> {
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 InkWell(
                   child: _dataCircle('steps', MdiIcons.footPrint,
-                      Color.fromARGB(255, 242, 85, 28)),
+                      const Color.fromARGB(255, 242, 85, 28)),
                   onTap: () {
                     Navigator.pushNamed(context, StepPage.route);
                   },
@@ -135,14 +132,14 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   InkWell(
                       child: _dataCircle('calories', MdiIcons.fire,
-                          Color.fromARGB(255, 237, 80, 132)),
+                          const Color.fromARGB(255, 237, 80, 132)),
                       onTap: () {
                         Navigator.pushNamed(context, CaloriesPage.route);
                       }),
                   const SizedBox(width: 20),
                   InkWell(
                     child: _dataCircle('distance', MdiIcons.walk,
-                        Color.fromARGB(255, 61, 239, 159)),
+                        const Color.fromARGB(255, 61, 239, 159)),
                     onTap: () {
                       Navigator.pushNamed(context, DistancePage.route);
                     },
@@ -156,7 +153,9 @@ class _HomePageState extends State<HomePage> {
     );
   } // build
 
-  _updateData() async {
+// function to fetch and update the last known values of today's steps, calories,
+// and distance
+  _updateCircles() async {
     final sp = await SharedPreferences.getInstance();
     int steps = await _fetchData('steps') as int;
     double distance = await _fetchData('distance') as double;
@@ -166,8 +165,9 @@ class _HomePageState extends State<HomePage> {
       sp.setDouble('lastDistance', distance);
       sp.setInt('lastCalories', calories);
     });
-  }
+  } //_updateCircles
 
+// function to fecth today's data knowing only the dataType
   Future<num> _fetchData(String dataType) async {
     FitbitActivityTimeseriesDataManager fitbitActivityTimeseriesDataManager =
         FitbitActivityTimeseriesDataManager(
@@ -179,6 +179,9 @@ class _HomePageState extends State<HomePage> {
     final sp = await SharedPreferences.getInstance();
 
     dynamic data;
+
+    //When login is automatic, but access token is expired we have to force a new
+    // authorization to FitBit. This check is done with a try/catch block
     try {
       data = await fitbitActivityTimeseriesDataManager
           .fetch(FitbitActivityTimeseriesAPIURL.dayWithResource(
@@ -213,20 +216,21 @@ class _HomePageState extends State<HomePage> {
     return result;
   } // fetchData
 
-  double getPercentage(String dataType, num n) {
+  double getPercentage(String dataType, num n, SharedPreferences sp) {
     double goal;
     if (dataType == 'calories') {
       goal = 2000;
     } else if (dataType == 'steps') {
-      goal = 15000;
+      goal = double.parse(sp.getString('goal')!);
     } else {
-      goal = 10;
+      // distance goal is computed considering an average step lenght of 1m
+      goal = double.parse(sp.getString('goal')!) / 1000;
     }
     return n / goal;
   } // getPercentage
 
-  Widget _dataStack(
-      num data, String dataType, IconData dataIcon, Color dataColor) {
+  Widget _dataStack(num data, String dataType, IconData dataIcon,
+      Color dataColor, SharedPreferences sp) {
     return Stack(alignment: Alignment.center, children: [
       SizedBox(
         height: 150,
@@ -234,7 +238,7 @@ class _HomePageState extends State<HomePage> {
         child: CircularProgressIndicator(
           backgroundColor: Colors.grey,
           color: dataColor,
-          value: getPercentage(dataType, data),
+          value: getPercentage(dataType, data, sp),
         ),
       ),
       Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -269,9 +273,9 @@ class _HomePageState extends State<HomePage> {
             }
 
             if (data > 0) {
-              return _dataStack(data, dataType, dataIcon, dataColor);
+              return _dataStack(data, dataType, dataIcon, dataColor, sp);
             } else {
-              return _dataStack(0, dataType, dataIcon, dataColor);
+              return _dataStack(0, dataType, dataIcon, dataColor, sp);
             }
           } else {
             return const CircularProgressIndicator();
@@ -288,13 +292,13 @@ class _HomePageState extends State<HomePage> {
             int data = sp.getInt('lastSteps')!;
             final achievement = getAchievement(data, sp);
             return Container(
-              color: Color.fromARGB(255, 130, 207, 243),
+              color: const Color.fromARGB(255, 130, 207, 243),
               height: 100,
               width: 450,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   RichText(
                     text: TextSpan(
                         text: "Right now, you are a ",
@@ -312,7 +316,7 @@ class _HomePageState extends State<HomePage> {
                           const TextSpan(text: "!"),
                         ]),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   CircleAvatar(
                       radius: 40,
                       backgroundImage: AssetImage(achievement.assetPicture!))
@@ -320,23 +324,15 @@ class _HomePageState extends State<HomePage> {
               ),
             );
           } else {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }
         });
   }
 
-// if isSameDay(DateTime.parse(sp.getString('lastAccess),DateTime.now())){
-// // do nothing}{
-// else
-// // set lastSteps etc to 0};
-
+// Function to update missing activity DB entries. It returns an Activty only for
+// the purpose of being used in a FutureBuilder
   Future<Activity?> _updateDB() async {
     final sp = await SharedPreferences.getInstance();
-    String username = sp.getString('username')!;
-    List<User> users =
-        await Provider.of<DatabaseRepository>(context, listen: false)
-            .findAllUsers();
-    //int userId = users.firstWhere((user) => user.username == username).id!;
     int userId = sp.getInt('usercode')!;
 
     DateTime lastUpdate = DateTime.parse(sp.getString('lastUpdate')!);
@@ -345,9 +341,9 @@ class _HomePageState extends State<HomePage> {
     yesterday = DateTime(yesterday.year, yesterday.month, yesterday.day);
 
     Activity? latestActivity;
+
     // if last update was before yesterday, fill missing database entries up
     //until yesterday and update lastUpdate in shared preferences
-    //if (difference.inDays > 1) {
     if (!isSameDay(yesterday, lastUpdate)) {
       var newSteps = await _fetchActivity('steps', lastUpdate, sp);
       var newDistance = await _fetchActivity('distance', lastUpdate, sp);
@@ -375,11 +371,6 @@ class _HomePageState extends State<HomePage> {
             .insertActivity(newActivity);
 
         latestActivity = newActivity;
-
-        /*List<Activity> dayActivity =
-            await Provider.of<DatabaseRepository>(context, listen: false)
-                .findActivity(dateTest) as List<Activity>;*/
-
         print('Added $dateTest entry');
       }
 
@@ -391,7 +382,7 @@ class _HomePageState extends State<HomePage> {
           .updateDate(userId, newDate);
     }
     return latestActivity;
-  }
+  } //_updateDB
 
   Future<List<FitbitActivityTimeseriesData>> _fetchActivity(
       String dataType, DateTime lastUpdate, SharedPreferences sp) async {
@@ -410,5 +401,5 @@ class _HomePageState extends State<HomePage> {
       resource: fitbitActivityTimeseriesDataManager.type,
     )) as List<FitbitActivityTimeseriesData>;
     return activityList;
-  }
+  } // _fetchActivty
 }

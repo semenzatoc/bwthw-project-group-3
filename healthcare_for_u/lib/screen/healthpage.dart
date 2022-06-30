@@ -23,7 +23,7 @@ class HealthPage extends StatefulWidget {
 
 class _HealthPageState extends State<HealthPage> {
   final _key = GlobalKey<QuestionFormState>();
-  List<FormElement> diabetes_list = [];
+  List<FormElement> _diabetesAnswers = [];
   //final gender = "F";
 
   @override
@@ -84,9 +84,9 @@ class _HealthPageState extends State<HealthPage> {
                             splashColor: Colors.lightBlue,
                             onPressed: () async {
                               if (_key.currentState!.validate()) {
-                                diabetes_list =
+                                _diabetesAnswers =
                                     _key.currentState!.getElementList();
-                                _saveDiabetes(diabetes_list, context);
+                                _saveDiabetes(_diabetesAnswers, context);
                                 sp = await SharedPreferences.getInstance();
                                 DataFetcher fetcher = DataFetcher();
                                 showDialog<String>(
@@ -192,7 +192,7 @@ class _HealthPageState extends State<HealthPage> {
   }
 } //HealthPage
 
-void _saveDiabetes(List<FormElement> diabetes_list, context) async {
+void _saveDiabetes(List<FormElement> _diabetesAnswers, context) async {
   var sp = await SharedPreferences.getInstance();
   final questionList2 = [
     'weight',
@@ -203,10 +203,10 @@ void _saveDiabetes(List<FormElement> diabetes_list, context) async {
     'glu',
     'diab'
   ];
-  for (var i = 0; i < diabetes_list.length; i++) {
-    if (diabetes_list[i].answer == '') {
+  for (var i = 0; i < _diabetesAnswers.length; i++) {
+    if (_diabetesAnswers[i].answer == '') {
     } else {
-      sp.setString(questionList2[i], diabetes_list[i].answer);
+      sp.setString(questionList2[i], _diabetesAnswers[i].answer);
     }
   }
   await Provider.of<DatabaseRepository>(context, listen: false)

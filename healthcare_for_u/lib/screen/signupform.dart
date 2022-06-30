@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:conditional_questions/conditional_questions.dart';
-import 'package:healthcare_for_u/screen/loginpage.dart';
-import 'package:healthcare_for_u/screen/profilepage.dart';
 import 'package:healthcare_for_u/screen/userpage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,20 +13,19 @@ class SignUpForm extends StatefulWidget {
 
   @override
   _SignUpFormState createState() {
-    // TODO: implement createState
     return _SignUpFormState();
   }
 }
 
 class _SignUpFormState extends State<SignUpForm> {
   final _key = GlobalKey<QuestionFormState>();
-  List<FormElement> answer_list = [];
+  List<FormElement> answerList = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sign Up Form'),
+        title: const Text('Sign Up Form'),
       ),
       body: ConditionalQuestions(
         key: _key,
@@ -39,14 +36,12 @@ class _SignUpFormState extends State<SignUpForm> {
             splashColor: Colors.lightBlue,
             onPressed: () async {
               if (_key.currentState!.validate()) {
-                answer_list = _key.currentState!.getElementList();
-                final sp = await SharedPreferences.getInstance();
-
-                saveAnswers(answer_list);
+                answerList = _key.currentState!.getElementList();
+                saveAnswers(answerList);
                 Navigator.pushNamed(context, UserPage.route);
               }
             },
-            child: Text("Next"),
+            child: const Text("Next"),
           )
         ],
       ),
@@ -55,15 +50,14 @@ class _SignUpFormState extends State<SignUpForm> {
 }
 
 //Future<SharedPreferences>
-void saveAnswers(List<FormElement> answer_list) async {
+void saveAnswers(List<FormElement> answerList) async {
   final sp = await SharedPreferences.getInstance();
   final questionList = ['name', 'gender', 'dob', 'weight', 'height', 'goal'];
-  for (var i = 0; i < answer_list.length; i++) {
-    sp.setString(questionList[i], answer_list[i].answer);
+  for (var i = 0; i < answerList.length; i++) {
+    sp.setString(questionList[i], answerList[i].answer);
   }
   sp.setString('lastUpdate', '2022-03-01');
   sp.setString('imagepath', '');
-  //return sp;
 }
 
 List<Question> questions() {

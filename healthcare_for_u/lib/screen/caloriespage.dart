@@ -1,11 +1,8 @@
-import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
 import 'package:healthcare_for_u/utils/LineChartMonth.dart';
 import 'package:healthcare_for_u/utils/LineChartWeek.dart';
 import 'package:healthcare_for_u/utils/LineSeries.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../database/entities/activity.dart';
-import '../utils/appcredentials.dart';
 import '../utils/dataFetcher.dart';
 
 class CaloriesPage extends StatefulWidget {
@@ -41,7 +38,8 @@ class _CaloriesPageState extends State<CaloriesPage> {
                     var weekActivity = snapshot.data as List<Activity>;
                     for (var i = 0; i < weekActivity.length; i++) {
                       int element = weekActivity[i].calories;
-                      //create the weekCalories List<LineSeries> that is necessary for defining and displaying the LineChart
+                      //create the weekCalories List<LineSeries> that is
+                      //necessary for defining and displaying the LineChart
                       weekCalories.add(LineSeries(day: i, steps: element));
                     }
                     return Column(
@@ -65,7 +63,8 @@ class _CaloriesPageState extends State<CaloriesPage> {
                     var monthActivity = snapshot.data as List<Activity>;
                     for (var i = 0; i < monthActivity.length; i++) {
                       int element = monthActivity[i].calories;
-                      //create the monthCalories List<LineSeries> that is necessary for defining and displaying the LineChart
+                      //create the monthCalories List<LineSeries> that is
+                      //necessary for defining and displaying the LineChart
                       monthCalories.add(LineSeries(day: i, steps: element));
                     }
                     return Column(
@@ -88,5 +87,4 @@ class _CaloriesPageState extends State<CaloriesPage> {
   }
 }
 
-  
- //Page
+//CaloriesPage

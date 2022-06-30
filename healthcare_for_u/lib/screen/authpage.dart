@@ -40,8 +40,6 @@ class _AuthPageState extends State<AuthPage> {
                     redirectUri: AppCredentials.fitbitRedirectUri,
                     callbackUrlScheme: AppCredentials.fitbitCallbackScheme);
                 sp.setString('userId', userId!);
-                // REMOVE AFTER DEBUGGING
-                //sp.setString('lastUpdate', '2022-03-01');
                 Navigator.pushReplacementNamed(context, HomePage.route);
               },
               child: const Text('Tap to authorize'),
@@ -51,4 +49,4 @@ class _AuthPageState extends State<AuthPage> {
       ),
     );
   }
-} //Login Page
+} //Auth Page
