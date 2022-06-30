@@ -104,7 +104,7 @@ List<Question> questions() {
       },
     ),
     Question(
-      question: "What's your steps goal?",
+      question: "What's your daily step goal?",
       //isMandatory: true,
       validate: (field) {
         if (field.isEmpty) return "Field cannot be empty";

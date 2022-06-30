@@ -30,8 +30,9 @@ class _HealthPageState extends State<HealthPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: const Text('FINnish Diabetes RIsk SCore \n(FINDRISC)'),
-            centerTitle: true),
+          title: const Text('FINnish Diabetes RIsk SCore \n (FINDRISC)'),
+          //centerTitle: true
+        ),
         bottomNavigationBar: BottomAppBar(
           color: Colors.white,
           child: Row(
@@ -103,6 +104,7 @@ class _HealthPageState extends State<HealthPage> {
                                                   fontWeight: FontWeight.bold),
                                             )),
                                             body: Column(
+                                              mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 FutureBuilder(
                                                     future: fetcher
@@ -127,27 +129,38 @@ class _HealthPageState extends State<HealthPage> {
                                                           children: [
                                                             const SizedBox(
                                                                 height: 10),
-                                                            Text(
-                                                                'Your total risk score is:'
-                                                                '$riskValue!',
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .center),
+                                                            RichText(
+                                                              text: TextSpan(
+                                                                  text:
+                                                                      'Your total risk score is: ',
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    color: Colors
+                                                                        .black,
+                                                                    fontSize:
+                                                                        20,
+                                                                  ),
+                                                                  children: [
+                                                                    TextSpan(
+                                                                      text:
+                                                                          "$riskValue",
+                                                                      style:
+                                                                          const TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                      ),
+                                                                    )
+                                                                  ]),
+                                                            ),
                                                             const SizedBox(
                                                                 height: 20),
-                                                            GradientProgress(
+                                                            _gradientProgress(
                                                                 riskValue),
                                                             const SizedBox(
-                                                                height: 10),
-                                                            Text(
-                                                                'The risk of developing type'
-                                                                ' 2 diabetes within 10 years'
-                                                                ' is classified as '
-                                                                '${riskLevel.title} = '
-                                                                '${riskLevel.description}',
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .center),
+                                                                height: 20),
+                                                            _textResult(
+                                                                riskValue,
+                                                                riskLevel),
                                                           ],
                                                         );
                                                       } else {
@@ -202,13 +215,13 @@ void _saveDiabetes(List<FormElement> diabetes_list, context) async {
       .updateHeight(sp.getInt('usercode')!, sp.getString('height')!);
 } //_saveDiabetes
 
-Widget GradientProgress(int riskValue) {
+Widget _gradientProgress(int riskValue) {
   return Stack(alignment: AlignmentDirectional.centerStart, children: [
     const StepProgressIndicator(
       totalSteps: 26,
       currentStep: 0,
       direction: Axis.horizontal,
-      size: 20,
+      size: 40,
       padding: 0,
       unselectedColor: Colors.black,
       roundedEdges: Radius.circular(10),
@@ -222,7 +235,7 @@ Widget GradientProgress(int riskValue) {
       totalSteps: 26,
       currentStep: riskValue,
       direction: Axis.horizontal,
-      size: 21,
+      size: 41,
       padding: 0,
       selectedColor: Color.fromARGB(255, 8, 36, 44).withOpacity(0.0),
       unselectedColor: Colors.white,
@@ -231,23 +244,50 @@ Widget GradientProgress(int riskValue) {
   ]);
 }
 
+Widget _textResult(int riskValue, RiskLevel riskLevel) {
+  return RichText(
+      textAlign: TextAlign.center,
+      text: TextSpan(
+        text: "Your risk of developing type 2 diabetes within 10 years is \n",
+        style: const TextStyle(
+          color: Colors.black,
+          fontSize: 20,
+        ),
+        children: [
+          TextSpan(
+            text: "${riskLevel.title}",
+            style: const TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          TextSpan(
+            text: "\n which means that an ${riskLevel.description}",
+            style: TextStyle(
+              color: Colors.black,
+            ),
+          ),
+        ],
+      ));
+}
+
 RiskLevel _getRiskLevel(int risk) {
   RiskLevel riskLevel = RiskLevel();
   if (risk < 7) {
     riskLevel.setTitle('LOW');
-    riskLevel.setDescription('estimated 1 in 100 will develop disease');
+    riskLevel.setDescription('estimated 1 in 100 will develop diabetes.');
   } else if (risk >= 7 && risk <= 11) {
     riskLevel.setTitle('SLIGHTLY ELEVATED');
-    riskLevel.setDescription('estimated 1 in 25 will develop disease');
+    riskLevel.setDescription('estimated 1 in 25 will develop diabetes.');
   } else if (risk >= 12 && risk <= 14) {
     riskLevel.setTitle('MODERATE');
-    riskLevel.setDescription('estimated 1 in 6 will develop disease');
+    riskLevel.setDescription('estimated 1 in 6 will develop diabetes.');
   } else if (risk >= 15 && risk <= 20) {
     riskLevel.setTitle('HIGH');
-    riskLevel.setDescription('estimated 1 in 3 will develop disease');
+    riskLevel.setDescription('estimated 1 in 3 will develop diabetes.');
   } else {
     riskLevel.setTitle('VERY HIGH');
-    riskLevel.setDescription('estimated one in 1 will develop disease');
+    riskLevel.setDescription('estimated one in 1 will develop diabetes.');
   }
   return riskLevel;
 } //RiskLevel

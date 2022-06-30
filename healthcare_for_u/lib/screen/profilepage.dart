@@ -27,57 +27,54 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: const Text(ProfilePage.routename),
-          centerTitle: true,
-          actions: [
-            IconButton(
-                onPressed: () {
-                  showDialog<String>(
-                    context: context,
-                    builder: (BuildContext context) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 80),
-                      child: AlertDialog(
-                          content: Text(
-                              'Are you sure you want to delete your account?'),
-                          actions: <Widget>[
-                            TextButton(
-                              child: const Text('Delete my account'),
-                              onPressed: () async {
-                                SharedPreferences sp =
-                                    await SharedPreferences.getInstance();
-                                // delete all data of a user from the DB
-                                await Provider.of<DatabaseRepository>(context,
-                                        listen: false)
-                                    .deleteUserActivty(sp.getInt('usercode')!);
-                                await Provider.of<DatabaseRepository>(context,
-                                        listen: false)
-                                    .removeUser(sp.getInt('usercode')!);
-                                _toLoginPage(context);
-                              },
-                            ),
-                            TextButton(
-                              child: const Text('Cancel'),
-                              onPressed: () {
-                                Navigator.pop(context, 'Cancel');
-                              },
-                            )
-                          ]),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.delete)),
-            IconButton(
-                onPressed: () async {
-                  Navigator.pushNamed(context, UtilityPage.route);
-                },
-                icon: const Icon(MdiIcons.hammerWrench)),
-            IconButton(
-                onPressed: () async {
-                  _toLoginPage(context);
-                },
-                icon: const Icon(Icons.logout))
-          ]),
+      appBar: AppBar(title: const Text(ProfilePage.routename), actions: [
+        IconButton(
+            onPressed: () async {
+              Navigator.pushNamed(context, UtilityPage.route);
+            },
+            icon: const Icon(MdiIcons.hammerWrench)),
+        IconButton(
+            onPressed: () {
+              showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 80),
+                  child: AlertDialog(
+                      content: const Text(
+                          'Are you sure you want to delete your account?'),
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text('Delete my account'),
+                          onPressed: () async {
+                            SharedPreferences sp =
+                                await SharedPreferences.getInstance();
+                            // delete all data of a user from the DB
+                            await Provider.of<DatabaseRepository>(context,
+                                    listen: false)
+                                .deleteUserActivty(sp.getInt('usercode')!);
+                            await Provider.of<DatabaseRepository>(context,
+                                    listen: false)
+                                .removeUser(sp.getInt('usercode')!);
+                            _toLoginPage(context);
+                          },
+                        ),
+                        TextButton(
+                          child: const Text('Cancel'),
+                          onPressed: () {
+                            Navigator.pop(context, 'Cancel');
+                          },
+                        )
+                      ]),
+                ),
+              );
+            },
+            icon: const Icon(Icons.delete)),
+        IconButton(
+            onPressed: () async {
+              _toLoginPage(context);
+            },
+            icon: const Icon(Icons.logout))
+      ]),
       bottomNavigationBar: BottomAppBar(
         color: Colors.white,
         child: Row(
@@ -127,7 +124,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             var sp = snapshot.data as SharedPreferences;
-                            var user = sp.getString('username');
+                            var user = sp.getString('name');
                             return Text(
                               'Hello, $user!',
                               style: TextStyle(fontSize: 30),
@@ -314,22 +311,54 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
             ),
-            const SizedBox(height: 30),
-            MaterialButton(
-                child: const Text("Click here to update your step goal!"),
-                color: Colors.blue,
-                splashColor: Colors.lightBlue,
-                onPressed: () async {
-                  var sp = await SharedPreferences.getInstance();
-                  String? updateGoal = sp.getString('goal');
-                  showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 80),
-                          child: AlertDialog(
-                            content: TextFormField(
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+          child: Icon(MdiIcons.pencil),
+          onPressed: () async {
+            var sp = await SharedPreferences.getInstance();
+            String? updateGoal = sp.getString('goal');
+            String? updateWeight = sp.getString('weight');
+            String? updateHeight = sp.getString('height');
+            showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 80),
+                    child: AlertDialog(
+                      content: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextFormField(
                               decoration: const InputDecoration(
-                                  labelText: 'Insert your new goal'),
+                                  labelText: 'Insert your new weight (in kg)'),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return null;
+                                } else {
+                                  updateWeight = value;
+                                  return null;
+                                }
+                              },
+                              onChanged: (value) => updateWeight = value,
+                            ),
+                            TextFormField(
+                              decoration: const InputDecoration(
+                                  labelText: 'Insert your new height (in cm)'),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return null;
+                                } else {
+                                  updateHeight = value;
+                                  return null;
+                                }
+                              },
+                              onChanged: (value) => updateHeight = value,
+                            ),
+                            TextFormField(
+                              decoration: const InputDecoration(
+                                  labelText: 'Insert your new step goal'),
                               validator: (value) {
                                 if (value == null || value.trim().isEmpty) {
                                   return null;
@@ -340,31 +369,41 @@ class _ProfilePageState extends State<ProfilePage> {
                               },
                               onChanged: (value) => updateGoal = value,
                             ),
-                            actions: <Widget>[
-                              TextButton(
-                                onPressed: () =>
-                                    Navigator.pop(context, 'Cancel'),
-                                child: const Text('Cancel'),
-                              ),
-                              TextButton(
-                                  child: const Text('Update'),
-                                  onPressed: () async {
-                                    var sp =
-                                        await SharedPreferences.getInstance();
-                                    sp.setString('goal', updateGoal!);
-                                    await Provider.of<DatabaseRepository>(
-                                            context,
-                                            listen: false)
-                                        .updateGoal(sp.getInt('usercode')!,
-                                            int.parse(updateGoal!));
-                                    Navigator.pop(context, 'Update');
-                                  }),
-                            ],
-                          )));
-                })
-          ],
-        ),
-      ),
+                          ],
+                        ),
+                      ),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'Cancel'),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                            child: const Text('Update'),
+                            onPressed: () async {
+                              var sp = await SharedPreferences.getInstance();
+                              // update the weight
+                              sp.setString('weight', updateWeight!);
+                              await Provider.of<DatabaseRepository>(context,
+                                      listen: false)
+                                  .updateWeight(
+                                      sp.getInt('usercode')!, updateWeight!);
+                              // update the height
+                              sp.setString('height', updateHeight!);
+                              await Provider.of<DatabaseRepository>(context,
+                                      listen: false)
+                                  .updateHeight(
+                                      sp.getInt('usercode')!, updateHeight!);
+                              // update the step goal
+                              sp.setString('goal', updateGoal!);
+                              await Provider.of<DatabaseRepository>(context,
+                                      listen: false)
+                                  .updateGoal(sp.getInt('usercode')!,
+                                      int.parse(updateGoal!));
+                              Navigator.pop(context, 'Update');
+                            }),
+                      ],
+                    )));
+          }),
     );
   }
 

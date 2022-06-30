@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     print('${HomePage.routename} built');
     return Scaffold(
-      appBar: AppBar(title: Text(HomePage.routename), centerTitle: true),
+      appBar: AppBar(title: const Text('AmoebaFit'), centerTitle: true),
       bottomNavigationBar: BottomAppBar(
         color: Colors.white,
         child: Row(
@@ -178,13 +178,33 @@ class _HomePageState extends State<HomePage> {
 
     final sp = await SharedPreferences.getInstance();
 
-    final data = await fitbitActivityTimeseriesDataManager
-        .fetch(FitbitActivityTimeseriesAPIURL.dayWithResource(
-      date: DateTime.now(),
-      userID: sp.getString('userId'),
-      resource: fitbitActivityTimeseriesDataManager.type,
-    )) as List<FitbitActivityTimeseriesData>;
-    var result;
+    dynamic data;
+    try {
+      data = await fitbitActivityTimeseriesDataManager
+          .fetch(FitbitActivityTimeseriesAPIURL.dayWithResource(
+        date: DateTime.now(),
+        userID: sp.getString('userId'),
+        resource: fitbitActivityTimeseriesDataManager.type,
+      )) as List<FitbitActivityTimeseriesData>;
+    } on Exception catch (exception) {
+      final sp = await SharedPreferences.getInstance();
+      // Authorize the app
+      String? userId = await FitbitConnector.authorize(
+          context: context,
+          clientID: AppCredentials.fitbitClientID,
+          clientSecret: AppCredentials.fitbitClientSecret,
+          redirectUri: AppCredentials.fitbitRedirectUri,
+          callbackUrlScheme: AppCredentials.fitbitCallbackScheme);
+      sp.setString('userId', userId!);
+
+      data = await fitbitActivityTimeseriesDataManager
+          .fetch(FitbitActivityTimeseriesAPIURL.dayWithResource(
+        date: DateTime.now(),
+        userID: sp.getString('userId'),
+        resource: fitbitActivityTimeseriesDataManager.type,
+      )) as List<FitbitActivityTimeseriesData>;
+    }
+    dynamic result;
     if (dataType == 'steps' || dataType == 'calories') {
       result = data[0].value!.toInt();
     } else {

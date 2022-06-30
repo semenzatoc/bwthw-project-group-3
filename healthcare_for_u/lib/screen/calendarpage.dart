@@ -185,8 +185,10 @@ class _CalendarPageState extends State<CalendarPage> {
             .findAllActivities() as List<Activity>;
 
     final daySteps = Provider.of<DatabaseRepository>(context, listen: false)
-        .getDaySteps(day.subtract(const Duration(hours: 2)));
+        .getDaySteps(day);
     // remove two hours to account for timezone
+    //final daySteps = Provider.of<DatabaseRepository>(context, listen: false)
+    //.getDaySteps(day.subtract(const Duration(hours: 2)));
     return daySteps;
   }
 

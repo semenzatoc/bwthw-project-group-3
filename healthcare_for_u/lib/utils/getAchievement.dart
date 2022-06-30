@@ -7,10 +7,10 @@ Achievement getAchievement(int steps, SharedPreferences sp) {
 
   Achievement achievement = Achievement();
 
-  if (steps < ((33/100)*goal)) {
+  if (steps < ((50 / 100) * goal)) {
     achievement.setTitle('Amoeba');
     achievement.setPicture('assets/trying.jpg');
-  } else if (steps >= ((33/100)*goal) && steps < ((66/100)*goal)) {
+  } else if (steps >= ((50 / 100) * goal) && steps < goal) {
     achievement.setTitle('Fighter');
     achievement.setPicture('assets/fighter.jpg');
   } else {
